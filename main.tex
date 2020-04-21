@@ -1,0 +1,253 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{titling}
+\usepackage{lipsum}
+\usepackage[space]{grffile}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{upgreek}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\usepackage[thmmarks, amsmath, thref]{ntheorem}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newcommand{\bibTitle}[1]{``#1''}
+
+
+
+\title{Scaling problem for 3-Dimensional Tensor}
+\author{Tung D. Nguyen - Jeffrey Uhlmann}
+\postdate{}
+
+\begin{document}
+\maketitle
+\section{Introduction}
+Base on the papers related the matrix scaling problem, I will demonstrate the generalization of the problem from a matrix to a three-dimensional tensor. 
+
+
+\section{Some denfinitions of Tensors}
+We go through some definitions of a tensor position and the tensor modal folding.
+
+\begin{definition} An element at position $\textbf{i} = (i_1, i_2, \cdots, i_d)$ of a tensor $A \in \mathbb{R}^{n_1 \times n_2 \times \cdots \times n_d}$ is defined as $A(\textbf{i}) \equiv A(i_1, \cdots, i_d) \equiv A_{i_1i_2\cdots i_d}.$ Also, a fiber by dimension $k$ and position $(\alpha_1, \cdots, \alpha_{k-1}, -, \alpha_{k+1}, \cdots, \alpha_n)$ is defined as 
+$$A(\alpha_1, \cdots, \alpha_{k-1}, :, \alpha_{k+1}, \cdots, \alpha_n),$$ where "$:$" is a short-cut notation for $1:n_k$. 
+\end{definition}{}
+
+\begin{definition}{(Unfolding matrix by a given dimension)} Given a tensor $A \in \mathbb{R}^{n_1 \times n_2 \times \cdots \times n_d}$. Let $N = \prod^d_{j=1} n_j.$ The unfolding matrix $A_{(k)} \in \mathbb{R}^{n_k\times (N/n_k)}$ via dimension $k$ is defined via the following mapping. For a vector $\textbf{i} = (i_1, i_2, \cdots, i_d)$:
+$$A (\textbf{i}) \mapsto A_{(k)} (i_k, j_i)$$
+for 
+\begin{equation}
+    j_i = 1 + \sum\limits_{\substack{s=1 \\ s\neq k}}^d \left( (i_s - 1) \prod\limits_{\substack{m=1 \\ m\neq k}}^{s-1} n_m \right)
+\end{equation}{}
+\label{getthej_i}
+\end{definition}{}
+The formula of $j_i$ is demonstrated to be important in our generalization of matrix scaling problem. With that being discussed later on, here is an example of getting the unfolding matrices from a tensor.
+\begin{example}
+\label{unfoldingmatrix}
+Let $A \in \mathbb{R}^{3\times 4\times 2}$ be a tensor with the following 2 frontal slices.
+\begin{equation}
+ A_1 = \begin{bmatrix}
+    1 & 4 & 7 & 10 \\
+    2 & 5 & 8 & 11 \\
+    3 & 6 & 9 & 12
+\end{bmatrix}
+, A_2 =  
+\begin{bmatrix}
+    13 & 16 & 19 & 22 \\
+    14 & 17 & 20 & 23 \\
+    15 & 18 & 21 & 24
+\end{bmatrix} 
+\end{equation}
+Then the unfolding matrices for $k \in \{1,2,3\}$ is 
+\begin{equation}
+    A_{(1)} = \begin{bmatrix}
+    1 & 4 & 7 & 10 & 13 & 16 & 19 & 22 \\
+    2 & 5 & 8 & 11 & 14 & 17 & 20 & 23 \\
+    3 & 6 & 9 & 12 & 15 & 18 & 21 & 24
+    \end{bmatrix}{}
+\end{equation}
+\begin{equation}{}
+    A_{(2)} = \begin{bmatrix}
+    1 & 2 & 3 & 13 & 14 & 15 \\
+    4 & 5 & 6 & 16 & 17 & 18 \\
+    7 & 8 & 9 & 19 & 20 & 21 \\
+    10 & 11 & 12 & 22 & 23 & 24
+    \end{bmatrix}{}
+\end{equation}
+\begin{equation}{}
+    A_{(3)} = \begin{bmatrix}
+    1 & 2 & 3 & \cdots & 10 & 11 & 12 \\
+    13 & 14 & 15 & \cdots & 22 & 23 & 24
+    \end{bmatrix}{}
+\end{equation}
+\end{example}
+
+Basically, the mode-$k$ product takes all the vector slices corresponding to the $k$ dimension in tensor $A$ and stacks them up as a matrix. This unfolding matrix gives a clearer idea to do scaling over each slices of the tensor.
+\\ 
+One challenging topic is to define the scaling problem. The idea is to define a multiplication operation of multiple matrices on one tensor to scale the tensor across all dimensions. To overcome this challenge, I use the unfolding matrix definition and modify the definition of the modal product and the Multilinear product []. Here are their definitions
+
+
+\begin{definition}{(Left-sided Modal Product)}
+Let $A \in \mathbb{R}^{n_1 \times n_2 \times \cdots \times n_d}$ and $M\in \mathbb{R}^{m_k \times n_k},$ for $1\leq k \leq d$. For any $k$ in the mentioned range, tensor $S,$ with the same dimension as $A,$ is defined by the result of the mode-$k$ product:
+$$S_{(k)} = M\cdot A_{(k)}$$
+The notation is
+$$S = A\times_{k} M$$
+and each element at position $(\alpha_1, \cdots, \alpha_{k-1}, i, \alpha_{k+1}, \cdots, \alpha_n)$ of S is defined by
+\begin{equation}
+    S(\alpha_1, \cdots, \alpha_{k-1}, i, \alpha_{k+1}, \cdots, \alpha_n) = \sum_{j=1}^{n_k} M(i,j) \cdot A(\alpha_1, \cdots, \alpha_k, i, \alpha_{k+1}, \cdots, \alpha_n)
+\end{equation}{}
+\end{definition}{}
+
+\begin{definition}{(Left-sided Multilinear Product)}
+Let $A \in \mathbb{R}^{n_1 \times n_2 \times \cdots \times n_d}$ and $M_k \in \mathbb{R}^{m_k \times n_k},$ for $1\leq k \leq d$. The Multilinear product of the tensor $S$ with respect to all the matrix $M_k$ is 
+$$S = A \times_{1} M_1 \times_{2} M_2 \cdots \times_{d} M_d$$
+\end{definition}{}
+
+The reason I called left is that $M$ is that generating $S_{(k)}$, $M$ is on the left-side of the multiplication operation. However, these left-sided products are not a perfect match for our scaling problem. In the three-dimension tensor, we need to scale the tensor by each fiber, but the left-sided Multilinear product will scale the tensor by each slice, which is either $A(:,:,j), A(:,j,:),$ or $A(j,:,:)$, for any $j$ that makes defining the position feasible.
+
+Base on this challenge, instead of generating multiplication formula by the left-handed side, we generate the multiplication by the right-hand side and obtain the following definitions:
+
+\begin{definition}{(Right-sided Modal Product)}
+Let $N = \prod^d_{j=1} n_j$, $N_i = N/n_i,$ $A \in \mathbb{R}^{n_1 \times n_2 \times \cdots \times n_d}$ and $M\in \mathbb{R}^{m_k \times N_k},$ for $1\leq k \leq d$. For any $k$ in the mentioned range, tensor $S,$ with the same dimension as $A,$ is defined by the result of the mode-$k$ product:
+$$S_{(k)} = A_{(k)} \cdot M$$
+The notation is
+$$S = M \times_{k} A$$
+and element of A is defined by (It's currently hard to generalize the formula. The calculation without diagonal matrix is quite complicated, but I do believe this method works)
+
+\end{definition}{}
+
+\begin{definition}{(Right-sided Multilinear Product)}
+Let $N = \prod^d_{j=1} n_j$, $N_i = N/n_i,$ $A \in \mathbb{R}^{n_1 \times n_2 \times \cdots \times n_d}$ and $M_k \in \mathbb{R}^{m_k \times N_k},$ for $1\leq k \leq d$. The Multilinear product of the tensor $A$ with respect to all the matrix $M_k$ is 
+$$S =  M_d\times_{d} M_{d-1} \times_{d-1}  \cdots M_1 \times_{1} A$$
+\end{definition}{}
+
+By letting each matrix $M_k$ for $1 \leq k \leq d$ as being diagonal, we could scale a tensor $A$ by each fiber. To illustrate this, we consider matrix $A_{(3)}$ from Example \ref{unfoldingmatrix}. Define $M \in \mathbb{R}^{12\times 12}$, since $12 = N_3$ in this case, such that:
+$$M(i,j) \equiv M_{ij}  = \alpha_i\delta_{ij}$$
+where $\delta_{ij}$ is the Kronecker delta. Then the right-sided modal product $M\times_3 A_{(3)}$ by the third dimension scales all the columns of $A_{(3)}$, meaning that all the 12 fibers at the third dimension of tensor A will be scaled. The resulting Right-sided multilinear product will have all the possible fibers inside the tensor A scaled.
+
+\subsection{Defining problem:}
+\subsubsection{Defining main program:}
+We define the problem for 3-Dimensional scaling. It is important to distinguish the non-zero elements and the zero elements. Let $\Vec{j_i}  \equiv (\alpha_1, \cdots, \alpha_{k-1}, 0, \alpha_{k+1}, \cdots, \alpha_3)$ for $\{\alpha_1, \alpha_2, \alpha_3\} \in \mathbb{R}^{n_1\times n_2\times n_3}.$ Define the support set of $A$ at dimension $i$ as: $$\upsigma_{\Vec{j_i}(A)} = \left\{ t| A(\alpha_1, \dots, \alpha_{i-1},t, \alpha_{i+1}, \dots, \alpha_3) \neq 0 \right\}.$$
+Then the support of tensor $A$ is defined by 
+$$\upsigma(A) = \bigcup\limits_{i=1}^{3} \upsigma_{\Vec{j_i}(A)}$$
+\\
+We also define $N = n_1\cdot n_2 \cdot n_3$, $N_i = N/n_i,$ $A \in \mathbb{R}^{n_1 \times n_2 \times n_3}$ and the strictly positive vectors $S_{i} \in \mathbb{R}^{N_i}$. The scaling problem becomes the following program:
+\\
+\\
+\textbf{Program I}: Find a tensor $A' \in \mathbb{R}^{n_1 \times n_2 \times n_3}$ and the list of diagonal matrices $M\in \mathbb{R}^{N_k \times N_k}$ for $1\leq k \leq 3$ such that
+\begin{equation}
+    A' =  M_3\times_{3} M_{2} \times_{2} M_1 \times_{1} A
+\end{equation}{}
+and 
+\begin{equation}
+\prod_{\alpha_i \in \upsigma_{\Vec{j_i}(A)}} A'_{\alpha_1\alpha_2\alpha_3} = S_{\Vec{j_i}}  
+\end{equation}
+By taking the logarithms by two sides of program I, we define the following. Consider the tensor $a \in \mathbb{R}^{n_1\times n_2\times n_3}$ and the vectors $s_i$ likewise such that:
+
+\begin{eqnarray*}
+a_{\alpha_1\alpha_2\alpha_3} \equiv   \left\{ 
+\begin{array}{c}
+ln(A_{\alpha_1\alpha_2\alpha_3}) \qquad \text{if} \qquad (\alpha_1,\alpha_2,\alpha_3) \in \upsigma(A)  \\ 
+0 \quad \text{  if  } \quad (\alpha_1,\alpha_2,\alpha_3) \in ([n_1]\times[n_2]\times[n_3]) \backslash \upsigma(A)
+\end{array}
+\right.
+\end{eqnarray*}
+$$s_{\Vec{j_i}} \equiv ln(S_{\Vec{j_i}} )$$
+$$m_i(j_i) \equiv ln(M_i(j_i, j_i)) $$
+\\
+Additionally, we use the definition of $j_i$ number from Definition \ref{getthej_i}. Then \textbf{Program I} becomes finding the tensor $a'$ and $m_i$ such that:
+\begin{eqnarray*}
+a'_{\alpha_1\alpha_2\alpha_3} \equiv   \left\{ 
+\begin{array}{c}
+a_{\alpha_1\alpha_2\alpha_3} + m_1(j_1) + m_2(j_2) + m_3(j_3) \qquad \text{if} \qquad (\alpha_1,\alpha_2,\alpha_3) \in \upsigma(A)  \\ 
+0 \quad \text{  if  } \quad (\alpha_1,\alpha_2,\alpha_3) \in ([n_1]\times[n_2]\times[n_3]) \backslash \upsigma(A)
+\end{array}
+\right.
+\end{eqnarray*}
+and 
+\begin{equation}
+\sum_{\alpha_i \in \upsigma_{\Vec{j_i}(A)}} a'_{\alpha_1\alpha_2\alpha_3} = s_{\Vec{j_i}}  
+\end{equation}
+The number of boundary conditions is $n_1n_2 + n_2n_3 + n_3n_1 =  \prod\limits_{i=1}^{3}n_i\sum\limits_{i=1}^{3}\dfrac{1}{n_i}.$ This formula could be generalize.
+
+\subsubsection{Defining the equivalent program:}
+We show by the Kuhn- Tucker (TH) conditions that \textbf{Problem I} is equivalent to the following program.
+\\\\
+\textbf{Program II}: min $2^{-1}\sum_{\alpha_i \in \upsigma_{\Vec{j_i}(A')}} (x_{\alpha_1\alpha_2\alpha_3} - a_{\alpha_1\alpha_2\alpha_3})^2$ \\
+\begin{center}
+ subject to  $\sum\limits_{\alpha_i \in \upsigma{\Vec{j_i}(A)}} x_{\alpha_1\alpha_2\alpha_3} = s_{\Vec{j_i}} $
+    
+\end{center}
+Let $\Vec{\alpha_1} =(\alpha_1, 0,0)$, and similarly for $\Vec{\alpha_2}$ and $\Vec{\alpha_3}.$ We define the partile graph with tensor $A$ as $G= (T,E)$ such that 
+$$E\equiv \{\{\Vec{j_i}, \alpha_i\}: (\Vec{\alpha_i} + \Vec{j_i} \in \upsigma(A)) \}$$ 
+for $|T| = n_1n_2 + n_2n_3 + n_3n_1 =  \prod\limits_{i=1}^{3}n_i\sum\limits_{i=1}^{3}\dfrac{1}{n_i}$. Then the node-arc incidence matrix of graph $G$ is the matrix $C \in \mathbb{R}^{|T|\times |E|}$ such that 
+\begin{eqnarray*}
+C_{\Vec{j_i}e} \equiv C_{j_i e} \equiv  \left\{ 
+\begin{array}{c}
+1 \qquad \text{if} \qquad e = (\Vec{j_i}, \alpha_i) \in E  \\ 
+0 \quad \text{  otherwise }
+\end{array}
+\right.
+\end{eqnarray*}
+where $j_i$ is defined from Definition \ref{getthej_i}. We order the vector index of $\Vec{j_i}$ in the matrix $C$ as the following \textbf{Ordering:}.
+\begin{itemize}
+    \item $\Vec{j_i}$ comes before $\Vec{j_k}$ if $i < k$.
+    \item All vector $\Vec{j_i}$ with index $i$ must be ordered together before going to another index.
+    \item For two vectors $\Vec{j_i^{(1)}}$ and $\Vec{j_i^{(2)}}$ with the same index $i,$ $\Vec{j_i^{(2)}} > \Vec{j_i^{(1)}}$ if the vector $\Vec{j_i^{(2)}}- \Vec{j_i^{(1)}}$ is positive. The group of ordering by the index $i$ is denoted by $\{ \}$
+    \item $\Vec{j_i^{(1)}} = \Vec{j_i^{(2)}}$ if $\Vec{j_i^{(1)}} - \Vec{j_i^{(2)}} = \Vec{0}$ .
+\end{itemize}{}
+
+For a vector position $\Vec{\alpha} = (\alpha_1, \alpha_2, \alpha_3)$, the points $e = (\Vec{j_1}, \alpha_1)$, $e = (\Vec{j_2}, \alpha_2)$, and $e = ( \Vec{j_3}, \alpha_3)$, where $\Vec{j_i} = \{\alpha_1, \alpha_2, \alpha_3\}/\{\alpha_i\}$, represent the same position of $\Vec{\alpha}$. the setup of $C$ matrix satisfies $$[(m_{1}^{T}, m_{2}^{T}, m_{3}^{T})C]_{e} =m_1(j_1) + m_2(j_2) + m_3(j_3)$$
+Consider vector $b \in \mathbb{R}^{n_1n_2+n_2n_3+n_3n_1}$ such that $b = [\{s_{\Vec{j_1}}^{T}\}| \{s_{\Vec{j_2}}^{T}\}| \{s_{\Vec{j_3}}^{T}\}]^{T}$, where the ordering of elements in $\{s_{\Vec{j_i}}^{T}\}$ correlates to the rules in the \textbf{Ordering} section. Finally, the ordering by the columns of $C$ and vector $\Vec{x} = \{x_{ijk}\}$ could be chosen such that the equation $Cx=b$ is equivalent to:
+$$\sum\limits_{\alpha_i \in \upsigma{\Vec{j_i}(A)}} x_{\alpha_1\alpha_2\alpha_3} = s_{\Vec{j_i}} $$
+Then we could use the result from the Optimization problem in section 3 of Rothblum $\&$ Zenios (RZ) to obtain \textbf{Program 2} is feasible, have a optimal solution, and is equivalent to \textbf{Program I}.
+
+\subsubsection{Getting the solution for program II:}
+We have done with the characterization problem for the scaling problem. We are going to prove the existence of a general solution
+\begin{theorem}{(Characterization)} The followings are equivalent
+\begin{enumerate}
+    \item There exists a solution to \textbf{Program I}
+    \item There exists a solution to \textbf{Program II}
+    \item There exists a tensor $A' \in \mathbb{R}^{n_1 \times n_2\times n_3}$ that satisfies \textbf{Program I} and has $\upsigma(A) = \upsigma(A')$
+    \item \textbf{Program II} is feasible 
+    \item \textbf{Program II} has a optimal solution
+    \item For a position vector $\alpha = (\alpha_1, \alpha_2, \alpha_3)$ and $\mu_{i} \in \mathbb{R}^{N_i}$ satisfy $\mu_1(j_1) + \mu_2(j_2) + \mu_3(j_3) = 0$  for $1\leq i \leq 3,$ where $j_i$ is defined by $(\alpha_1, \alpha_2, \alpha_3)$ via Definition \ref{getthej_i}. Then 
+    $$\prod_{i=1}^3\prod\limits_{s=1}^{N_i} S_{\Vec{j_i}}^{\mu_i(j_i)} = 1 $$ 
+    \item Similarly from condition 6, 
+    $$\sum_{i=1}^3\sum\limits_{s=1}^{N_i}s_{\Vec{j_i}} \cdot  \mu_i(j_i) = 0 $$
+\end{enumerate}{}
+Proving from conditions $1$ to condition $5$ is simply based on the proof from Section 3 of KZ algorithm. Since 6 is equivalent to 7, we only show the equivalency of condition 7 with other conditions. Let $\Vec{0}_i \in \mathbb{R}^{N_i}$ and consider the vector $\Vec{z}\limits_{\alpha_1,\alpha_2,\alpha_3} = \sum_{i=1}^3(\Vec{0}_1^{T}, \cdots, \mu_i^{T}, \Vec{0}_{i+1}^{T}, \cdots, \Vec{0}_{3}^{T})^{T}$, and the equation $Cx=b$ asserts that:
+$$\Vec{z}\limits_{\alpha_1,\alpha_2,\alpha_3}^{T}b = \Vec{z}\limits_{\alpha_1,\alpha_2,\alpha_3}^{T}Cx = \Vec{0}$$
+By changing the pairs of $(s,t) \in [3] \times [3],$ we obtain condition $7$ and the theorem is fully proved. 
+\end{theorem}{}
+
+The only challenge on these theorem is to generate a unique solution for these systems. However, from the theorem mentioned above, I strongly hypothesize that the following theorem is true, since the uniqueness of the tensor can be demonstrated via the uniqueness of the matrix via \textbf{Program II}.
+
+\begin{theorem}{(Uniqueness)} There exists at most one tensor $A' \in \mathbb{R}^{n_1\times n_2\times n_3}$ such that there exist diagonal matrices $M_i \in \mathbb{R}^{N_i\times N_i}$ for $1 \leq i \leq 3$ with positive diagonal elements such that $(A', M_1, M_2, M_3)$ satisfies \textbf{Program I}. Furthermore, if $(A', M_1^1, M_2^1, M_3^1)$ satisfies \textbf{Program I}, then the general solution of \textbf{Program I} is $(A', T_1M_1^1, T_2M_2^1, T_3M_3^1)$ where $T_i (1\leq i\leq 3)$ are diagonal matrices having positive diagonal elements and
+\begin{equation}
+    T_1(j_1)T_2(j_2)T_3(j_3) = 1 \qquad \forall (\alpha_1, \alpha_2, \alpha_3)  \in \upsigma(A)
+\end{equation}{}
+where $j_i$ is defined by $(\alpha_1, \alpha_2, \alpha_3)$ via Definition \ref{getthej_i}. 
+
+
+\end{theorem}{}
+
+
+
+
+\bibliographystyle{plain}
+\begin{thebibliography}{9}
+\bibitem{RZalgorithm} U.G. Rothblum and S.A. Zenios, “Scalings of Matrices Satisfying Line-Product Constraints and Generalizations,”
+Linear Algebra and Its Applications, 175: 159-175, 1992.
+\bibitem{Tensor definitions} Stephan Rabanser, Oleksandr Shchur, and Stephan Günnemann. Introduction to tensor decom-positions and their applications in machine learning.arXiv preprint arXiv:1711.10781, 2017.
+\bibitem{Tensor foundation}  Golub, G. H., van Loan, C. F. (2013). Matrix Computations. JHU Press. ISBN: 1421407949 9781421407944 
+
+
+\end{thebibliography}
+\end{document}
