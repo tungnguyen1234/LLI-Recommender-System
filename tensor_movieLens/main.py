@@ -14,7 +14,7 @@ parser = ArgumentParser()
 
 # general arguments
 parser.add_argument("type", choices = ("matrix", "tensor"))
-parser.add_argument("--percent", type=float, required=False, default = None)
+parser.add_argument("--percent", type=float, required=False, default = 0.2)
 parser.add_argument("--eps", type=float, required=False, default = 1e-10)
 
 # Configure for tensor

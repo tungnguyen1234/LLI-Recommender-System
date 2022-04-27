@@ -17,6 +17,10 @@ and all the possible features in the third dimension:
 
 ```python main.c tensor --percent 0.2 --limit 800```
 
+or a simpler command is:
+
+```python main.c tensor```
+
 To run all data points with only the ```age``` feature label, the command is:
 
 ```python main.c tensor --percent 0.2 --age True```
