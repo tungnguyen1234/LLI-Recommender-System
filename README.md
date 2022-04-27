@@ -3,9 +3,9 @@
 
 For now, we access file path ".../tensor_movieLens" to run the matrix and tensor latent scaling.
 
-For matrix scaling, we run: 
 
-```python matrix_movieLens.py```
+For matrix scaling, we run ```python matrix_movieLens.py```
+
 
 For tensor scaling, for now we will configure the  manually inside the file ".../tensor_movieLens.py". The third dimension of features would include either age or occupation or both of the user.
 
