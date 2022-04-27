@@ -1,19 +1,19 @@
-# Recommender-system-project
+# Learning Latent Invariance (LLI)
 
 
-For now, we access file path ".../tensor_movieLens" to run the matrix and tensor latent scaling. The output of the algorithm are the MAE and the MSE of the algorithm.
+For now, we access file path ".../tensor_movieLens" to run the matrix and tensor latent scaling. 
 
+The command to run the matrix latent algorithm with train-test-split percentage is:
+```python main.c matrix --percent 0.2```
 
-For matrix scaling, we run ```python matrix_movieLens.py``` and we could configure the ```percent``` variable from the function ```matrix_traintest_score``` before running.
+For the tensor, we add only 3 feature labels for the user: age, occupation, and gender.
+The command to run the tensor case with train-test-split percentage, and number of limited data points, and all features
+in the third dimension is:
 
+```python main.c tensor --percent 0.2 --limit 800```
 
-For tensor scaling, for now we will configure the  manually inside the file ```.../tensor_movieLens.py```. The third dimension of features would include either age or occupation or both of the user.
+If we do not limit the number of data points and run only the ```age``` feature, the command is
+```python main.c tensor --percent 0.2 --age True```
 
-- To run the third dimension of age, decomment the function ```tensor_age``` at line 159.
-- To run the third dimension of occupation, decomment the function ```tensor_occupation``` at line 161.
-- To run the third dimension of both age and occupation, decomment the function ```tensor_age_occup``` at line 163.
-- We could configure the ```percent``` variable from the function ```tensor_traintest_score``` before running.
-
-Then we run: 
-
-```python tensor_movieLens.py```
+If we also add feature ```occupation``` to the label, the command is:
+```python main.c tensor --percent 0.2 --age True --occup True```

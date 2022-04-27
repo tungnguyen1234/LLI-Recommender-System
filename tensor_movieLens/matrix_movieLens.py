@@ -3,13 +3,12 @@ import numpy as np
 from numpy import *
 from math import *
 from matrix_latent import matrix_latent
-from tensor_3D_latent import tensor_latent
 
 
 '''
 This function gathers csv files of MovieLens1M and return the numpy matrix of user-rating
 '''
-def matrix_rating():
+def matrix_construct():
     ratings = pd.read_csv('ratings.csv', names = ["UserID", "MovieID","Rating","Timestamp"])
     df = pd.DataFrame(ratings)    
     sort_rating = df.sort_values(by = ['UserID', 'MovieID'], ignore_index = True)
@@ -23,10 +22,13 @@ def matrix_rating():
 This function takes a matrix and percentage of train-test split to split a train matrix for 
 latent scaling algorithm and a testing vector for comparision. It also calculates the MAE and MSE.
 '''
-def matrix_traintest_score(matrix, percent):
+def matrix_traintest_score(matrix, percent = None):
+    if not percent:
+        percent = 1
+
     users, films = np.nonzero(matrix)
     per = np.random.permutation(range(len(users)))
-    num_test = round(percent*len(users))
+    num_test = int(percent*len(users))
     test = per[:num_test]
 
     re_train = []
@@ -53,16 +55,14 @@ def matrix_traintest_score(matrix, percent):
         MAE += diff
         MSE += diff**2
 
-    # re_train = np.array(re_train)
-    # re_test = np.array(re_test)
     MAE = float(MAE/len(test))
     MSE = float(MSE/len(test))
     return MAE, MSE, errors
 
 
-if __name__ == '__main__':
-    matrix_rating = matrix_rating()
-    MAE, MSE, errors = matrix_traintest_score(matrix_rating, 0.2)
+def matrix_movieLens(percent):
+    matrix_rating = matrix_construct()
+    MAE, MSE, errors = matrix_traintest_score(matrix_rating, percent)
     print("MAE is", round(MAE, 2))
     print("MSE is", round(MSE, 2))
-    print("Error intervals has", errors)
+    print("Errors from the iteration process is:\n", errors)

@@ -6,42 +6,58 @@ File descriptions
 __author__      = 'Tung Nguyen, Sang Truong'
 __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
-from argparse import Namespace, 
+from argparse import Namespace
 import pandas as pd
 import numpy as np
 from numpy import *
 from math import *
-from matrix_movieLens import matrix_rating
+from matrix_movieLens import matrix_construct
 from tensor_3D_latent import tensor_latent
 
 def extract_3D_dataset(limit = None):
     '''
     Desciption:
-        Extracts the age and occupation features
+        Extracts the age, occupation, and gender features from the users
     Input:
-        limit: TODO: give the type of limit (int, bool, string?) and describe what it does
+        limit: int 
+            The limit amount of data that would be process. Default is None, meaning no limit to data
     Output:
-        similar to input
+        Array of ages, occupation, and genders of the users
     '''
     
-    # csv_movies = pd.read_csv('movies.csv')
     csv_users = pd.read_csv('users.csv', names = ["UserID", "Gender","Age","Occupation", "Zip-code"])
     df = pd.DataFrame(csv_users)
-    df = df.head(limit) if limit else df.head()
+    if limit:
+        df = df.head(limit)
     # Get age and profile info
     ages = df['Age'].to_numpy()
     # Job
     occupations = df['Occupation'].to_numpy()
 
     # Gender
-    # gender = df['Gender'].to_numpy()
+    genders = df['Gender'].to_numpy()
 
-    return ages, occupations
+    return ages, occupations, genders
 
 
 
-''' This function constructs the tensor with third dimension as occupation and 6 ranges of ages.'''
 def tensor_age_occup(matrix_rating, ages, occupations):
+    '''
+    Desciption:
+        Extracts the tensor having age and occupation as the third dimension.
+    Input:
+        matrix_rating: np.array 
+            The matrix of user prediction on films
+        ages: np.array
+            The ages of the users
+        occupcations: np.array
+            The occupations of the users
+        
+    Output:
+        Returns the tensor having the rating by (user, product, age) 
+                                and (user, product, occupation) category
+    '''
+
     # Get the nonzero for faster process
     idxusers, idxfilms = np.nonzero(matrix_rating)
 
@@ -72,9 +88,19 @@ def tensor_age_occup(matrix_rating, ages, occupations):
     return tensor_rating 
 
 
-''' This function onstructs the tensor with third dimension as 6 ranges of ages'''
-
 def tensor_age(matrix_rating, ages):
+    '''
+    Desciption:
+        Extracts the tensor having age as the third dimension.
+    Input:
+        matrix_rating: np.array 
+            The matrix of user prediction on films
+        ages: np.array
+            The ages of the users
+    Output:
+        Returns the tensor having the rating by (user, product, age) category
+    '''
+
     # Get the nonzero for faster process
     idxusers, idxfilms = np.nonzero(matrix_rating)
 
@@ -87,14 +113,27 @@ def tensor_age(matrix_rating, ages):
     for i in range(len(idxusers)):
         user = idxusers[i]
         film = idxfilms[i]
-        if user < len(occupations):
+        if user < len(ages):
             age = int(ages[user]/10)      
             tensor_rating[user, film, age] = matrix_rating[user, film]
     return tensor_rating 
 
 
-'''This function constructs the tensor with third dimension as occupation'''
 def tensor_occupation(matrix_rating, occupations):
+    '''
+    Desciption:
+        Extracts the tensor having age and occupation as the third dimension.
+    Input:
+        matrix_rating: np.array 
+            The matrix of user prediction on films
+        occupcations: np.array
+            The occupations of the users
+        
+    Output:
+        Returns the tensor having the rating by (user, product, occupation) category
+    '''
+
+
     # Get the nonzero for faster process
     idxusers, idxfilms = np.nonzero(matrix_rating)
 
@@ -117,14 +156,29 @@ def tensor_occupation(matrix_rating, occupations):
 
 
 '''
-This function takes a tensor and percentage of train-test split to split a train tensor for 
-latent scaling algorithm and a testing vector for comparision. It also calculates the MAE and MSE.
+This function takes a tensor and percentage of train-test split to It also calculates the MAE and MSE.
 '''
-def tensor_traintest_score(tensor, percent): 
+def tensor_traintest_score(tensor, percent = None): 
+    '''
+    Desciption:
+        split a training tensor for latent scaling algorithm and a testing vector of ratings for comparison. 
+    Input:
+        tensor: np.array 
+            The tensor of user prediction on films based on different features
+        percent: int
+            The percentage of splitting for training and testing data. Default is None.
+    Output:
+        Returns the tensor having the rating by (user, product, feature) category
+    '''
+
+    if not percent:
+        percent = 1
+
     users, films, features = np.nonzero(tensor)
     per = np.random.permutation(range(len(users)))
     # Get random test by percent
-    num_test = round(percent*len(users))
+    percent = min(1, percent)
+    num_test = int(percent*len(users))
     test = per[:num_test]
 
     re_train = []
@@ -161,3 +215,28 @@ def tensor_traintest_score(tensor, percent):
     MAE = float(MAE/len(test))
     MSE = float(MSE/len(test))
     return MAE, MSE, errors
+
+
+def tensor_movieLens(percent, limit, feature_vector):
+    ages, occupations, genders = extract_3D_dataset(limit)
+    # print(ages, occupations, genders)
+    # matrix_rating = matrix_construct()
+    matrix_rating = np.array([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
+    ages = np.array([1, 20, 30])
+    occupations = np.array([0, 4, 5, 6])
+
+    tensor_rating = np.array([])
+    if len(feature_vector) == 1:
+        feature = feature_vector[-1]
+        if feature == 'age':
+            tensor_rating = tensor_age(matrix_rating, ages)
+        if feature == 'occup':
+            tensor_rating = tensor_occupation(matrix_rating, occupations)
+    elif len(feature_vector) == 2:
+        if any(_ in feature_vector for _ in ['age', 'occup']):
+            tensor_rating = tensor_age_occup(matrix_rating, ages, occupations)
+    print(tensor_rating)
+    MAE, MSE, errors = tensor_traintest_score(tensor_rating, percent)
+    print("MAE is", round(MAE, 2))
+    print("MSE is", round(MSE, 2))
+    print("Errors from the iteration process is:\n", errors)

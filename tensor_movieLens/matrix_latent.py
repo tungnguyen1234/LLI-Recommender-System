@@ -59,10 +59,12 @@ def matrix_latent(matrix, epsilon = 1e-15):
                 error += rho_col**2
 
         trial += 1
-        print('This is my ', trial, ' time with error ', error)
+        print('This is my', trial, 'time with error', error)
         errors.append(round(error, 20))
         if error <= epsilon:
             break
 
     # return the latent variables and errors
     return np.exp(latent_u), np.exp(latent_p), errors
+
+
