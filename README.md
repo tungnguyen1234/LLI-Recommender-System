@@ -1,4 +1,4 @@
-# Recommender-system-project
+# Learning Latent Invariance (LLI)
 
 
 For now, we access file path ".../tensor_movieLens" to run the matrix and tensor latent scaling. The output of the algorithm are the MAE and the MSE of the algorithm.
