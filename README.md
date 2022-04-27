@@ -13,7 +13,9 @@ in the third dimension is:
 ```python main.c tensor --percent 0.2 --limit 800```
 
 If we do not limit the number of data points and run only the ```age``` feature, the command is
+
 ```python main.c tensor --percent 0.2 --age True```
 
 If we also add feature ```occupation``` to the label, the command is:
+
 ```python main.c tensor --percent 0.2 --age True --occup True```
