@@ -14,16 +14,6 @@ from math import *
 from matrix_movieLens import matrix_rating
 from tensor_3D_latent import tensor_latent
 
-
-parser = ArgumentParser()
-
-# general arguments
-parser.add_argument("--age", choices=("True", "False"), default="True")
-
-args = parser.parse_args()
-args.amortized_vi = True if args.amortized_vi == "True" else False
-
-
 def extract_3D_dataset(limit = None):
     '''
     Desciption:
