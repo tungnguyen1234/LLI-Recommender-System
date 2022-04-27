@@ -5,10 +5,14 @@ from math import *
 from matrix_latent import matrix_latent
 
 
-'''
-This function gathers csv files of MovieLens1M and return the numpy matrix of user-rating
-'''
 def matrix_construct():
+    '''
+    Desciption:
+        Gather csv files of MovieLens to retrievie the the numpy matrix of user-rating
+    Output:
+       A numpy matrix of user-rating
+    '''
+
     ratings = pd.read_csv('ratings.csv', names = ["UserID", "MovieID","Rating","Timestamp"])
     df = pd.DataFrame(ratings)    
     sort_rating = df.sort_values(by = ['UserID', 'MovieID'], ignore_index = True)
@@ -18,12 +22,25 @@ def matrix_construct():
     
     return matrix_rating
 
-'''
-This function takes a matrix and percentage of train-test split to split a train matrix for 
-latent scaling algorithm and a testing vector for comparision. It also calculates the MAE and MSE.
-'''
-def matrix_traintest_score(matrix, percent = None):
-    if not percent:
+
+def matrix_traintest_score(matrix, percent, epsilon):
+    '''
+    Desciption:
+        This function splits a training matrix for latent scaling algorithm and a testing vector to compare 
+        and retrivie 
+    Input:
+        matrix: np.array 
+            The matrix of user rating on films.
+        percent: int
+            The percentage of splitting for training and testing data. This value ranges from 
+            0 to 1 and default is None.
+        epsilon: float
+            The convergence number for the algorithm.
+    Output:
+        Returns the MAE, MSE and errors from the latent scaling convergence steps.
+    '''
+
+    if not (0<= percent <1):
         percent = 1
 
     users, films = np.nonzero(matrix)
@@ -42,7 +59,7 @@ def matrix_traintest_score(matrix, percent = None):
         re_train.append(rating)
         matrix[user, film] = 0
     # Scaling
-    latent_user, latent_prod, errors = matrix_latent(matrix)
+    latent_user, latent_prod, errors = matrix_latent(matrix, epsilon)
     # Test
     MAE = 0
     MSE = 0
@@ -60,9 +77,25 @@ def matrix_traintest_score(matrix, percent = None):
     return MAE, MSE, errors
 
 
-def matrix_movieLens(percent):
+def matrix_movieLens(percent, epsilon):
+    '''
+    Desciption:
+        This function runs all the steps to pre-processing MovieLens data, running the tensor latent
+        algorithm, and retrieving the MAE and MSE score. 
+    Input:
+        percent: int
+            The percentage of splitting for training and testing data. Default is None.
+        limit: int 
+            The limit amount of data that would be process. Default is None, meaning having no limit
+        feature_vector: List[str]
+            The features by string that would be added in the third dimension. There are three types:
+            age, occupation, and gender.
+    Output:
+        Prints the MAE and MSE score.
+    '''
+
     matrix_rating = matrix_construct()
-    MAE, MSE, errors = matrix_traintest_score(matrix_rating, percent)
+    MAE, MSE, errors = matrix_traintest_score(matrix_rating, percent, epsilon)
     print("MAE is", round(MAE, 2))
     print("MSE is", round(MSE, 2))
     print("Errors from the iteration process is:\n", errors)

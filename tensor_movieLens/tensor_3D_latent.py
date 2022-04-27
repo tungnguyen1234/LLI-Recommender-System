@@ -3,13 +3,19 @@ import numpy as np
 from numpy import *
 from math import *
 
+def tensor_latent(tensor, epsilon = 1e-10):
+    '''
+    Desciption:
+        This function runs the tensor latent invariant algorithm.
+    Input:
+        tensor: np.array
+            The tensor to retrive the latent variables from. 
+        epsilon: float
+            The convergence number for the algorithm.
+    Output:
+        Returns the latent vectors and the convergent errors from the iterative steps.
+    '''
 
-'''
-This function takes a tensor and perform tensor latent scaling algorithm. It returns the latent
-vectors and the convergent errors after the iteration.
-'''
-
-def tensor_latent(tensor, epsilon = 1e-15):
     d1, d2, d3 = tensor.shape
 
     # Get the total number of nonzeros

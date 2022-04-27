@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 from numpy import *
 from math import *
+import collections
 from matrix_movieLens import matrix_construct
 from tensor_3D_latent import tensor_latent
 
@@ -20,7 +21,7 @@ def extract_3D_dataset(limit = None):
         Extracts the age, occupation, and gender features from the users
     Input:
         limit: int 
-            The limit amount of data that would be process. Default is None, meaning no limit to data
+            The limit amount of data that would be process. Default is None, meaning having no limit
     Output:
         Array of ages, occupation, and genders of the users
     '''
@@ -29,8 +30,10 @@ def extract_3D_dataset(limit = None):
     df = pd.DataFrame(csv_users)
     if limit:
         df = df.head(limit)
+
     # Get age and profile info
     ages = df['Age'].to_numpy()
+
     # Job
     occupations = df['Occupation'].to_numpy()
 
@@ -44,7 +47,9 @@ def extract_3D_dataset(limit = None):
 def tensor_age_occup(matrix_rating, ages, occupations):
     '''
     Desciption:
-        Extracts the tensor having age and occupation as the third dimension.
+        Extracts the tensor having age and occupation as the third dimension. We construct the tensor
+        by project the matrix rating of (user, product) pair into the respective tuple
+        (user, product, age) and (user, product, occupation) in the tensor.
     Input:
         matrix_rating: np.array 
             The matrix of user prediction on films
@@ -63,14 +68,11 @@ def tensor_age_occup(matrix_rating, ages, occupations):
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
-    # The third one is tricky: First occupation then age.
+
+    # First group by occupation then age.
     # For Age: from 0 to 56 -> group 1 to 6. 
     # For Occupation:  20 0
     third_dim = max(occupations) + 1 + int(max(ages)/10) + 1
-    
-    # Only occupation or age
-    # third_dim = max(occupations)
-    # third_dim = max(age)//10
 
     tensor_rating = zeros((first_dim, second_dim, third_dim))
   
@@ -91,7 +93,9 @@ def tensor_age_occup(matrix_rating, ages, occupations):
 def tensor_age(matrix_rating, ages):
     '''
     Desciption:
-        Extracts the tensor having age as the third dimension.
+        Extracts the tensor having age as the third dimension. We construct the tensor
+        by project the matrix rating of (user, product) pair into the respective tuple
+        (user, product, age) in the tensor.
     Input:
         matrix_rating: np.array 
             The matrix of user prediction on films
@@ -106,6 +110,7 @@ def tensor_age(matrix_rating, ages):
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
+
     # Only age
     third_dim = int(max(ages)/10) + 1
     tensor_rating = zeros((first_dim, second_dim, third_dim))
@@ -122,7 +127,9 @@ def tensor_age(matrix_rating, ages):
 def tensor_occupation(matrix_rating, occupations):
     '''
     Desciption:
-        Extracts the tensor having age and occupation as the third dimension.
+        Extracts the tensor having age and occupation as the third dimension. We construct the tensor
+        by project the matrix rating of (user, product) pair into the respective tuple
+        (user, product, occupation) in the tensor.
     Input:
         matrix_rating: np.array 
             The matrix of user prediction on films
@@ -155,23 +162,23 @@ def tensor_occupation(matrix_rating, occupations):
     return tensor_rating 
 
 
-'''
-This function takes a tensor and percentage of train-test split to It also calculates the MAE and MSE.
-'''
-def tensor_traintest_score(tensor, percent = None): 
+def tensor_traintest_score(tensor, percent, epsilon): 
     '''
     Desciption:
-        split a training tensor for latent scaling algorithm and a testing vector of ratings for comparison. 
+        This function splits a training tensor for latent scaling algorithm. For testing, we obtain the 
+        recommendation result as the maximum value by the feature dimension for each (user, product) pair 
+        as max(tensor[user, product, :]) 
     Input:
         tensor: np.array 
-            The tensor of user prediction on films based on different features
+            The tensor of user ratings on films based on different features
         percent: int
-            The percentage of splitting for training and testing data. Default is None.
+            The percentage of splitting for training and testing data. This value ranges from 
+            0 to 1 and default is None.
     Output:
-        Returns the tensor having the rating by (user, product, feature) category
+        Returns the MAE, MSE and errors from the latent scaling convergence steps.
     '''
 
-    if not percent:
+    if not (0<= percent <1):
         percent = 1
 
     users, films, features = np.nonzero(tensor)
@@ -181,8 +188,8 @@ def tensor_traintest_score(tensor, percent = None):
     num_test = int(percent*len(users))
     test = per[:num_test]
 
-    re_train = []
-    re_test = []
+    re_train = {}
+    re_test = {}
 
     # Setup
     for i in range(len(test)):
@@ -190,12 +197,12 @@ def tensor_traintest_score(tensor, percent = None):
         film = films[test[i]]
         feature = features[test[i]]
         rating = tensor[user, film, feature]
-        re_train.append(rating)
+        re_train[(user, film)] = rating
         tensor[user, film, feature] = 0
 
 
     # Run the latent scaling
-    latent_user, latent_prod, latent_feature, errors = tensor_latent(tensor)
+    latent_user, latent_prod, latent_feature, errors = tensor_latent(tensor, epsilon)
 
     # Test
     MAE = 0
@@ -205,8 +212,10 @@ def tensor_traintest_score(tensor, percent = None):
         film = films[test[i]]
         feature = features[test[i]]
         rating = 1/(latent_user[user]*latent_prod[film]*latent_feature[feature])
-        diff = abs(re_train[i] - rating)
-        re_test.append(rating)
+        re_test[(user, film)] = max(re_train[(user, film)], rating)
+        
+    for key, rating in re_test.items():
+        diff = abs(re_train[key] - re_test[key])
         MAE += diff
         MSE += diff**2
 
@@ -217,13 +226,31 @@ def tensor_traintest_score(tensor, percent = None):
     return MAE, MSE, errors
 
 
-def tensor_movieLens(percent, limit, feature_vector):
+def tensor_movieLens(feature_vector, percent, limit, epsilon):
+    '''
+    Desciption:
+        This function runs all the steps to pre-processing MovieLens data, running the tensor latent
+        algorithm, and retrieving the MAE and MSE score. 
+    Input:
+        percent: int
+            The percentage of splitting for training and testing data. Default is None.
+        limit: int 
+            The limit amount of data that would be process. Default is None, meaning having no limit
+        limit: int 
+            The limit amount of data that would be process. Default is None, meaning having no limit
+        feature_vector: List[str]
+            The features by string that would be added in the third dimension. There are three types:
+            age, occupation, and gender.
+    Output:
+        Prints the MAE and MSE score.
+    '''
+
+
     ages, occupations, genders = extract_3D_dataset(limit)
-    # print(ages, occupations, genders)
-    # matrix_rating = matrix_construct()
-    matrix_rating = np.array([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
-    ages = np.array([1, 20, 30])
-    occupations = np.array([0, 4, 5, 6])
+    matrix_rating = matrix_construct()
+    # matrix_rating = np.array([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
+    # ages = np.array([1, 20, 30])
+    # occupations = np.array([0, 4, 5, 6])
 
     tensor_rating = np.array([])
     if len(feature_vector) == 1:
@@ -235,8 +262,9 @@ def tensor_movieLens(percent, limit, feature_vector):
     elif len(feature_vector) == 2:
         if any(_ in feature_vector for _ in ['age', 'occup']):
             tensor_rating = tensor_age_occup(matrix_rating, ages, occupations)
-    print(tensor_rating)
-    MAE, MSE, errors = tensor_traintest_score(tensor_rating, percent)
+    
+    
+    MAE, MSE, errors = tensor_traintest_score(tensor_rating, percent, epsilon)
     print("MAE is", round(MAE, 2))
     print("MSE is", round(MSE, 2))
     print("Errors from the iteration process is:\n", errors)

@@ -4,11 +4,19 @@ from numpy import *
 from math import *
 
 
-'''
-This function runs the latent algorithm with matrix A and convergent distance as epsilon.
-It returns the latent vectors and the iteration errors.
-'''
-def matrix_latent(matrix, epsilon = 1e-15):  
+def matrix_latent(matrix, epsilon = 1e-10):  
+    '''
+    Desciption:
+        This function runs the matrix latent invariant algorithm.
+    Input:
+        tensor: np.array
+            The tensor to retrive the latent variables from. 
+        epsilon: float
+            The convergence number for the algorithm.
+    Output:
+        Returns the latent vectors and the convergent errors from the iterative steps.
+    '''
+
     m, n = matrix.shape
     # get the number of zeros in each dimension
     sigma_row = zeros(m)

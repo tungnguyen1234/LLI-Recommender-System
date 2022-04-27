@@ -15,6 +15,7 @@ parser = ArgumentParser()
 # general arguments
 parser.add_argument("type", choices = ("matrix", "tensor"))
 parser.add_argument("--percent", type=float, required=False, default = None)
+parser.add_argument("--eps", type=float, required=False, default = 1e-10)
 
 # Configure for tensor
 parser.add_argument("--limit", type=int, required=False, default = None)
@@ -26,7 +27,7 @@ parser.add_argument("--gender", choices=('True', 'False'), default='False')
 args = parser.parse_args()
 
 if args.type == 'matrix':
-    matrix_movieLens(args.percent)
+    matrix_movieLens(args.percent, args.eps)
 
 if args.type == 'tensor':
     args.feature_vector = []
@@ -38,10 +39,9 @@ if args.type == 'tensor':
         args.feature_vector.append("gender")
 
     if not args.feature_vector:
-        args.feature_vector = ["age", "occup", "gender"]
+        # args.feature_vector = ["age", "occup", "gender"]
+        args.feature_vector = ["age", "occup"]
 
-    tensor_movieLens(args.percent, args.limit, args.feature_vector)
-
-
+    tensor_movieLens(args.feature_vector, args.percent, args.limit, args.eps)
 
 
