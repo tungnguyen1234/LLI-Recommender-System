@@ -59,7 +59,7 @@ def tensor_age(matrix_rating, ages):
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
 
-    # Only age
+    # For Age: from 0 to 56 -> group 1 to 6. 
     third_dim = int(max(ages)/10) + 1
     tensor_rating = zeros((first_dim, second_dim, third_dim))
   
@@ -94,16 +94,12 @@ def tensor_occupation(matrix_rating, occupations):
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
-    
-    # Only occupation
     third_dim = max(occupations) + 1
     tensor_rating = zeros((first_dim, second_dim, third_dim))
   
     for i in range(len(idxusers)):
-        # set at age
         user = idxusers[i]
         product = idxproducts[i]
-        # Occupation as job or gender, as long as the index starts with 0
         if user < len(occupations):
             occup = occupations[user]         
             tensor_rating[user, product, occup] = matrix_rating[user, product]
@@ -133,16 +129,14 @@ def tensor_gender(matrix_rating, genders):
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
-    
-    # Only occupation
     third_dim = max(genders) + 1
+    
+
     tensor_rating = zeros((first_dim, second_dim, third_dim))
   
     for i in range(len(idxusers)):
-        # set at age
         user = idxusers[i]
         product = idxproducts[i]
-        # Occupation as job or gender, as long as the index starts with 0
         if user < len(genders):
             gender = genders[user]         
             tensor_rating[user, product, gender] = matrix_rating[user, product]
@@ -172,19 +166,14 @@ def tensor_age_occup(matrix_rating, ages, occupations):
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
-
     # First group by occupation then age.
-    # For Age: from 0 to 56 -> group 1 to 6. 
-    # For Occupation:  20 0
     third_dim = max(occupations) + 1 + int(max(ages)/10) + 1
 
     tensor_rating = zeros((first_dim, second_dim, third_dim))
   
     for i in range(len(idxusers)):
-        # set at age
         user = idxusers[i]
         product = idxproducts[i]
-        # Occupation as job or gender, as long as the index starts with 0
         if user < min(len(occupations), len(ages)):
             occup = occupations[user]     
             age = max(occupations) + 1 + int(ages[user]/10)
@@ -218,16 +207,12 @@ def tensor_age_gender(matrix_rating, genders, ages):
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
-    
-    # Only occupation
     third_dim = int(max(ages)/10) + 1 + max(genders) + 1
     tensor_rating = zeros((first_dim, second_dim, third_dim))
   
     for i in range(len(idxusers)):
-        # set at age
         user = idxusers[i]
         product = idxproducts[i]
-        # Occupation as job or gender, as long as the index starts with 0
         if user < min(len(genders), len(ages)):
             age = int(ages[user]/10)  
             gender = int(max(ages)/10) + 1 + genders[user]      
@@ -260,16 +245,12 @@ def tensor_gender_occup(matrix_rating, genders, occupations):
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
-    
-    # Only occupation
     third_dim = max(genders) + 1 + max(occupations) + 1 
     tensor_rating = zeros((first_dim, second_dim, third_dim))
   
     for i in range(len(idxusers)):
-        # set at age
         user = idxusers[i]
         product = idxproducts[i]
-        # Occupation as job or gender, as long as the index starts with 0
         if user < min(len(genders), len(occupations)):
             gender = genders[user]
             occup = max(genders) + 1 + occupations[user]         
@@ -307,16 +288,12 @@ def tensor_all(matrix_rating, ages, genders, occupations):
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
-    
-    # Only occupation
     third_dim = int(max(ages)/10) + 1 + max(genders) + 1 + max(occupations) + 1 
     tensor_rating = zeros((first_dim, second_dim, third_dim))
   
     for i in range(len(idxusers)):
-        # set at age
         user = idxusers[i]
         product = idxproducts[i]
-        # Occupation as job or gender, as long as the index starts with 0
         if user < min(len(genders), len(occupations), len(ages)):
             age = int(ages[user]/10) 
             gender = int(max(ages)/10) + 1 + genders[user]     

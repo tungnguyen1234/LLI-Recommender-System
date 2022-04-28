@@ -25,7 +25,7 @@ def tensor_latent(tensor, epsilon = 1e-10):
     sigma_second = zeros(d2)  
     sigma_third = zeros(d3)
 
-    # Get the number of nonzeros inside each 2-dimensional tensor, meaning two “:s”
+    # Get the number of nonzeros inside each 2-dimensional tensor
     for first in range(d1):
         sigma_first[first] = sum(rho_sign[first, :, :])
 
@@ -63,8 +63,6 @@ def tensor_latent(tensor, epsilon = 1e-10):
                 tensor_log[:, second, :] += rho_second*rho_sign[:, second, :]
                 latent_2[second] += rho_second
                 error += rho_second**2
-
-
 
         # Starting the first iterative step 
         for first in range(d1):
