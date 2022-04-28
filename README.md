@@ -11,7 +11,7 @@ The command is also self-configured with a 20% percentage and convergence condit
  
  ```python main.c matrix```
 
-For the tensor, there are 3 feature labels from the user: age, occupation, and gender. The 
+For the tensor, there are 3 feature categories from the user: age, occupation, and gender. The 
 command to run the tensor algorithm with train-test-split percentage, the number of limited data points, 
 and all the possible features in the third dimension:
 
@@ -21,10 +21,10 @@ or a simpler command is:
 
 ```python main.c tensor```
 
-To run all data points with only the ```age``` feature label, the command is:
+To run all data points with only the ```age``` feature, the command is:
 
 ```python main.c tensor --percent 0.2 --age True```
 
-To add the feature ```occupation``` as the label, the command is:
+To add the feature ```occupation```, the command is:
 
 ```python main.c tensor --percent 0.2 --age True --occup True```

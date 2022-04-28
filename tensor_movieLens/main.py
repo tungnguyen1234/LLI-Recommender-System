@@ -30,18 +30,14 @@ if args.type == 'matrix':
     matrix_movieLens(args.percent, args.eps)
 
 if args.type == 'tensor':
-    args.feature_vector = []
+    args.features= set()
     if args.age == 'True':
-        args.feature_vector.append("age")
+        args.features.add("age")
     if args.occup == 'True':
-        args.feature_vector.append("occup")
+        args.features.add("occup")
     if args.gender == 'True':
-        args.feature_vector.append("gender")
+        args.features.add("gender")
 
-    if not args.feature_vector:
-        # args.feature_vector = ["age", "occup", "gender"]
-        args.feature_vector = ["age", "occup"]
-
-    tensor_movieLens(args.feature_vector, args.percent, args.limit, args.eps)
+    tensor_movieLens(args.features, args.percent, args.limit, args.eps)
 
 

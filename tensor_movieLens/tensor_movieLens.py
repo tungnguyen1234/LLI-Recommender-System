@@ -13,12 +13,50 @@ from numpy import *
 from math import *
 from matrix_movieLens import matrix_construct
 from tensor_3D_latent import tensor_latent
-from tensor_retrieve import *
+from tensor_retrieve import tensor_construct
+
+
+
+def tensor_movieLens(feature_vector, percent, limit, epsilon):
+    '''
+    Desciption:
+        This function runs all the steps to pre-processing MovieLens data, running the tensor latent
+        algorithm, and retrieving the MAE and MSE score. 
+    Input:
+        percent: int
+            The percentage of splitting for training and testing data. Default is None.
+        limit: int 
+            The limit amount of data that would be process. Default is None, meaning having no limit
+        limit: int 
+            The limit amount of data that would be process. Default is None, meaning having no limit
+        feature_vector: List[str]
+            The features by string that would be added in the third dimension. There are three types:
+            age, occupation, and gender.
+    Output:
+        Prints the MAE and MSE score.
+    '''
+
+
+    ages, occupations, genders = extract_3D_dataset(limit)
+
+    # Testing purpose
+    # matrix_rating = np.array([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
+    # ages = np.array([1, 20, 30])
+    # occupations = np.array([0, 4, 5])
+    # genders = np.array([0, 1, 0])
+    
+    tensor_rating = tensor_construct(matrix_rating, feature_vector, ages, occupations, genders)
+    MAE, MSE, errors = tensor_traintest_score(tensor_rating, percent, epsilon)
+    print("MAE is", round(MAE, 2))
+    print("MSE is", round(MSE, 2))
+    print("Errors from the iteration process is:\n", errors)
+
 
 def extract_3D_dataset(limit = None):
     '''
     Desciption:
-        Extracts the age, occupation, and gender features from the users
+        Extracts the age, occupation, and gender features from the users. Here we label gender 'F' as
+        0 and gender 'M' as 1. The index of occupations are from 0 to 20, and the index of ages is from 1 to 56.
     Input:
         limit: int 
             The limit amount of data that would be process. Default is None, meaning having no limit
@@ -38,8 +76,14 @@ def extract_3D_dataset(limit = None):
     occupations = df['Occupation'].to_numpy()
 
     # Gender
-    genders = df['Gender'].to_numpy()
+    genders = []
+    for gender in list(df['Gender']):
+        if gender == 'F':
+            genders.append(0)
+        elif gender == 'M':
+            genders.append(1)
 
+    genders = np.array(genders)
     return ages, occupations, genders
 
 
@@ -107,49 +151,3 @@ def tensor_traintest_score(tensor, percent, epsilon):
     return MAE, MSE, errors
 
 
-def tensor_movieLens(feature_vector, percent, limit, epsilon):
-    '''
-    Desciption:
-        This function runs all the steps to pre-processing MovieLens data, running the tensor latent
-        algorithm, and retrieving the MAE and MSE score. 
-    Input:
-        percent: int
-            The percentage of splitting for training and testing data. Default is None.
-        limit: int 
-            The limit amount of data that would be process. Default is None, meaning having no limit
-        limit: int 
-            The limit amount of data that would be process. Default is None, meaning having no limit
-        feature_vector: List[str]
-            The features by string that would be added in the third dimension. There are three types:
-            age, occupation, and gender.
-    Output:
-        Prints the MAE and MSE score.
-    '''
-
-
-    ages, occupations, genders = extract_3D_dataset(limit)
-    matrix_rating = matrix_construct()
-
-    # Testing purpose
-    matrix_rating = np.array([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
-    ages = np.array([1, 20, 30])
-    occupations = np.array([0, 4, 5, 6])
-
-    tensor_rating = np.array([])
-    if len(feature_vector) == 1:
-        feature = feature_vector[-1]
-        if feature == 'age':
-            tensor_rating = tensor_age(matrix_rating, ages)
-        if feature == 'occup':
-            tensor_rating = tensor_occupation(matrix_rating, occupations)
-        if feature == 'gender':
-            tensor_rating = tensor_gender(matrix_rating, genders)
-    elif len(feature_vector) == 2:
-        if any(_ in feature_vector for _ in ['age', 'occup']):
-            tensor_rating = tensor_age_occup(matrix_rating, ages, occupations)
-    
-    
-    MAE, MSE, errors = tensor_traintest_score(tensor_rating, percent, epsilon)
-    print("MAE is", round(MAE, 2))
-    print("MSE is", round(MSE, 2))
-    print("Errors from the iteration process is:\n", errors)

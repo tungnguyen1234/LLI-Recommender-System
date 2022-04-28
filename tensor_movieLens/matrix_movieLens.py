@@ -5,6 +5,32 @@ from math import *
 from matrix_latent import matrix_latent
 
 
+
+def matrix_movieLens(percent, epsilon):
+    '''
+    Desciption:
+        This function runs all the steps to pre-processing MovieLens data, running the tensor latent
+        algorithm, and retrieving the MAE and MSE score. 
+    Input:
+        percent: int
+            The percentage of splitting for training and testing data. Default is None.
+        limit: int 
+            The limit amount of data that would be process. Default is None, meaning having no limit
+        feature_vector: List[str]
+            The features by string that would be added in the third dimension. There are three types:
+            age, occupation, and gender.
+    Output:
+        Prints the MAE and MSE score.
+    '''
+
+    matrix_rating = matrix_construct()
+    MAE, MSE, errors = matrix_traintest_score(matrix_rating, percent, epsilon)
+    print("MAE is", round(MAE, 2))
+    print("MSE is", round(MSE, 2))
+    print("Errors from the iteration process is:\n", errors)
+
+
+
 def matrix_construct():
     '''
     Desciption:
@@ -21,6 +47,7 @@ def matrix_construct():
     matrix_rating = matrix_rating.to_numpy()
     
     return matrix_rating
+
 
 
 def matrix_traintest_score(matrix, percent, epsilon):
@@ -75,27 +102,3 @@ def matrix_traintest_score(matrix, percent, epsilon):
     MAE = float(MAE/len(test))
     MSE = float(MSE/len(test))
     return MAE, MSE, errors
-
-
-def matrix_movieLens(percent, epsilon):
-    '''
-    Desciption:
-        This function runs all the steps to pre-processing MovieLens data, running the tensor latent
-        algorithm, and retrieving the MAE and MSE score. 
-    Input:
-        percent: int
-            The percentage of splitting for training and testing data. Default is None.
-        limit: int 
-            The limit amount of data that would be process. Default is None, meaning having no limit
-        feature_vector: List[str]
-            The features by string that would be added in the third dimension. There are three types:
-            age, occupation, and gender.
-    Output:
-        Prints the MAE and MSE score.
-    '''
-
-    matrix_rating = matrix_construct()
-    MAE, MSE, errors = matrix_traintest_score(matrix_rating, percent, epsilon)
-    print("MAE is", round(MAE, 2))
-    print("MSE is", round(MSE, 2))
-    print("Errors from the iteration process is:\n", errors)
