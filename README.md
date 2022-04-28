@@ -28,3 +28,7 @@ To run all data points with only the ```age``` feature, the command is:
 To add the feature ```occupation```, the command is:
 
 ```python main.c tensor --age True --occup True```
+
+To run the feature ```gender```, the command is:
+
+```python main.c tensor --gender True```
