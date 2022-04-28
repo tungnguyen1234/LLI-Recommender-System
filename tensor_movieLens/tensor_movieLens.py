@@ -26,7 +26,7 @@ def tensor_movieLens(features, percent, limit, epsilon):
         percent: int
             The percentage of splitting for training and testing data. Default is None.
         limit: int 
-            The limit amount of data that would be process. Default is None, meaning having no limit
+            The limit number of data that would be process. Default is None, meaning having no limit
         features: set()
             The features by string that would be added in the third dimension. There are three types:
             age, occupation, and gender.
@@ -37,7 +37,7 @@ def tensor_movieLens(features, percent, limit, epsilon):
     '''
 
 
-    ages, occupations, genders = extract_tensor_dataset(limit)
+    ages, occupations, genders = extract_features(limit)
     matrix_rating = matrix_construct()
 
     # Testing purpose
@@ -53,14 +53,14 @@ def tensor_movieLens(features, percent, limit, epsilon):
     print("Errors from the iteration process is:\n", errors)
 
 
-def extract_tensor_dataset(limit = None):
+def extract_features(limit = None):
     '''
     Desciption:
         Extracts the age, occupation, and gender features from the users. Here we label gender 'F' as
         0 and gender 'M' as 1. The index of occupations are from 0 to 20, and the index of ages is from 1 to 56.
     Input:
         limit: int 
-            The limit amount of data that would be process. Default is None, meaning having no limit
+            The limit number of data that would be process. Default is None, meaning having no limit
     Output:
         Array of ages, occupation, and genders of the users
     '''
