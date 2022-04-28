@@ -8,24 +8,23 @@ from math import *
 def tensor_construct(matrix_rating, features, ages, occupations, genders):
     '''
     Desciption:
-        Extracts the tensor from the matrix_rating depending on the feature vectors for the third dim
+        Extracts the tensor from matrix_rating depending on the feature vectors for the third dimension
     Input:
         matrix_rating: np.array 
-            The matrix of user prediction on films
+            The matrix of user prediction on products
         features: set
             The feature categories
     Output:
-        Returns the tensor having the rating by (user, product, feature) category
+        Returns the tensor having the rating by (user, product, feature) tuple
     '''
 
     tensor_rating = np.array([])
     if len(features) == 1:
-        feature = features[-1]
-        if 'age' in feature:
+        if 'age' in features:
             tensor_rating = tensor_age(matrix_rating, ages)
-        if 'occup' in feature:
+        if 'occup' in features:
             tensor_rating = tensor_occupation(matrix_rating, occupations)
-        if 'gender' in feature:
+        if 'gender' in features:
             tensor_rating = tensor_gender(matrix_rating, genders)
     elif len(features) == 2:
         if features == set(['age', 'occup']):
@@ -42,20 +41,20 @@ def tensor_construct(matrix_rating, features, ages, occupations, genders):
 def tensor_age(matrix_rating, ages):
     '''
     Desciption:
-        Extracts the tensor having age as the third dimension. We construct the tensor
-        by project the matrix rating of (user, product) pair into the respective tuple
-        (user, product, age) in the tensor.
+        Extracts the tensor having ages as the third dimension. We construct the tensor
+        by projecting the matrix rating of (user, product) pair into the respective tuple
+        (user, product, age) in the tensor
     Input:
         matrix_rating: np.array 
-            The matrix of user prediction on films
+            The matrix of user prediction on products
         ages: np.array
             The ages of the users
     Output:
-        Returns the tensor having the rating by (user, product, age) category
+        Returns the tensor having the rating by (user, product, age) tuple
     '''
 
     # Get the nonzero for faster process
-    idxusers, idxfilms = np.nonzero(matrix_rating)
+    idxusers, idxproducts = np.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
@@ -66,32 +65,32 @@ def tensor_age(matrix_rating, ages):
   
     for i in range(len(idxusers)):
         user = idxusers[i]
-        film = idxfilms[i]
+        product = idxproducts[i]
         if user < len(ages):
             age = int(ages[user]/10)      
-            tensor_rating[user, film, age] = matrix_rating[user, film]
+            tensor_rating[user, product, age] = matrix_rating[user, product]
     return tensor_rating 
 
 
 def tensor_occupation(matrix_rating, occupations):
     '''
     Desciption:
-        Extracts the tensor having age and occupation as the third dimension. We construct the tensor
-        by project the matrix rating of (user, product) pair into the respective tuple
-        (user, product, occupation) in the tensor.
+        Extracts the tensor having occupations as the third dimension. We construct the tensor
+        by projecting the matrix rating of (user, product) pair into the respective tuple
+        (user, product, occupation) in the tensor
     Input:
         matrix_rating: np.array 
-            The matrix of user prediction on films
+            The matrix of user prediction on products
         occupcations: np.array
             The occupations of the users
         
     Output:
-        Returns the tensor having the rating by (user, product, occupation) category
+        Returns the tensor having the rating by (user, product, occupation) tuple
     '''
 
 
     # Get the nonzero for faster process
-    idxusers, idxfilms = np.nonzero(matrix_rating)
+    idxusers, idxproducts = np.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
@@ -103,11 +102,11 @@ def tensor_occupation(matrix_rating, occupations):
     for i in range(len(idxusers)):
         # set at age
         user = idxusers[i]
-        film = idxfilms[i]
+        product = idxproducts[i]
         # Occupation as job or gender, as long as the index starts with 0
         if user < len(occupations):
             occup = occupations[user]         
-            tensor_rating[user, film, occup] = matrix_rating[user, film]
+            tensor_rating[user, product, occup] = matrix_rating[user, product]
     return tensor_rating 
 
 
@@ -115,22 +114,22 @@ def tensor_occupation(matrix_rating, occupations):
 def tensor_gender(matrix_rating, genders):
     '''
     Desciption:
-        Extracts the tensor having age and genders as the third dimension. We construct the tensor
-        by project the matrix rating of (user, product) pair into the respective tuple
-        (user, product, gender) in the tensor.
+        Extracts the tensor having genders as the third dimension. We construct the tensor
+        by projecting the matrix rating of (user, product) pair into the respective tuple
+        (user, product, gender) in the tensor
     Input:
         matrix_rating: np.array 
-            The matrix of user prediction on films
+            The matrix of user prediction on products
         genders: np.array
             The genders of the users
         
     Output:
-        Returns the tensor having the rating by (user, product, gender) category
+        Returns the tensor having the rating by (user, product, gender) tuple
     '''
 
 
     # Get the nonzero for faster process
-    idxusers, idxfilms = np.nonzero(matrix_rating)
+    idxusers, idxproducts = np.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
@@ -142,22 +141,22 @@ def tensor_gender(matrix_rating, genders):
     for i in range(len(idxusers)):
         # set at age
         user = idxusers[i]
-        film = idxfilms[i]
+        product = idxproducts[i]
         # Occupation as job or gender, as long as the index starts with 0
         if user < len(genders):
             gender = genders[user]         
-            tensor_rating[user, film, gender] = matrix_rating[user, film]
+            tensor_rating[user, product, gender] = matrix_rating[user, product]
     return tensor_rating 
 
 def tensor_age_occup(matrix_rating, ages, occupations):
     '''
     Desciption:
         Extracts the tensor having ages and occupation as the third dimension. We construct the tensor
-        by project the matrix rating of (user, product) pair into the respective tuple
+        by projecting the matrix rating of (user, product) pair into the respective tuples
         (user, product, age) and (user, product, occupation) in the tensor.
     Input:
         matrix_rating: np.array 
-            The matrix of user prediction on films
+            The matrix of user prediction on products
         ages: np.array
             The ages of the users
         occupcations: np.array
@@ -165,11 +164,11 @@ def tensor_age_occup(matrix_rating, ages, occupations):
         
     Output:
         Returns the tensor having the rating by (user, product, age) 
-                                and (user, product, occupation) category
+                                and (user, product, occupation) tuples
     '''
 
     # Get the nonzero for faster process
-    idxusers, idxfilms = np.nonzero(matrix_rating)
+    idxusers, idxproducts = np.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
@@ -184,14 +183,14 @@ def tensor_age_occup(matrix_rating, ages, occupations):
     for i in range(len(idxusers)):
         # set at age
         user = idxusers[i]
-        film = idxfilms[i]
+        product = idxproducts[i]
         # Occupation as job or gender, as long as the index starts with 0
         if user < min(len(occupations), len(ages)):
             occup = occupations[user]     
             age = max(occupations) + 1 + int(ages[user]/10)
 
-            tensor_rating[user, film, occup] = matrix_rating[user, film]
-            tensor_rating[user, film, age] = matrix_rating[user, film]
+            tensor_rating[user, product, occup] = matrix_rating[user, product]
+            tensor_rating[user, product, age] = matrix_rating[user, product]
     return tensor_rating 
 
 
@@ -199,23 +198,23 @@ def tensor_age_gender(matrix_rating, genders, ages):
     '''
     Desciption:
         Extracts the tensor having genders and ages as the third dimension. We construct the tensor
-        by project the matrix rating of (user, product) pair into the respective tuple
+        by projecting the matrix rating of (user, product) pair into the respective tuples
         (user, product, gender) and (user, product, age) in the tensor.
     Input:
         matrix_rating: np.array 
-            The matrix of user prediction on films
+            The matrix of user prediction on products
         genders: np.array
             The genders of the users
         ages: np.array
             The ages of the users
         
     Output:
-        Returns the tensor having the rating by (user, product, gender) and (user, product, age) category
+        Returns the tensor having the rating by (user, product, gender) and (user, product, age) tuples
     '''
 
 
     # Get the nonzero for faster process
-    idxusers, idxfilms = np.nonzero(matrix_rating)
+    idxusers, idxproducts = np.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
@@ -227,13 +226,13 @@ def tensor_age_gender(matrix_rating, genders, ages):
     for i in range(len(idxusers)):
         # set at age
         user = idxusers[i]
-        film = idxfilms[i]
+        product = idxproducts[i]
         # Occupation as job or gender, as long as the index starts with 0
         if user < min(len(genders), len(ages)):
             age = int(ages[user]/10)  
             gender = int(max(ages)/10) + 1 + genders[user]      
-            tensor_rating[user, film, age] = matrix_rating[user, film]
-            tensor_rating[user, film, gender] = matrix_rating[user, film]
+            tensor_rating[user, product, age] = matrix_rating[user, product]
+            tensor_rating[user, product, gender] = matrix_rating[user, product]
     return tensor_rating 
 
 
@@ -241,23 +240,23 @@ def tensor_gender_occup(matrix_rating, genders, occupations):
     '''
     Desciption:
         Extracts the tensor having genders and occupations as the third dimension. 
-        We construct the tensor by project the matrix rating of (user, product) pair into 
-        the respective tuple (user, product, gender) and (user, product, occupation) in the tensor.
+        We construct the tensor by projecting the matrix rating of (user, product) pair into 
+        the respective tuples (user, product, gender) and (user, product, occupation) in the tensor
     Input:
         matrix_rating: np.array 
-            The matrix of user prediction on films
+            The matrix of user prediction on products
         genders: np.array
             The genders of the users
         occupations: np.array
             The occupations of the users
         
     Output:
-        Returns the tensor having the rating by (user, product, gender) and (user, product, occupation) category
+        Returns the tensor having the rating by (user, product, gender) and (user, product, occupation) tuples
     '''
 
 
     # Get the nonzero for faster process
-    idxusers, idxfilms = np.nonzero(matrix_rating)
+    idxusers, idxproducts = np.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
@@ -269,13 +268,13 @@ def tensor_gender_occup(matrix_rating, genders, occupations):
     for i in range(len(idxusers)):
         # set at age
         user = idxusers[i]
-        film = idxfilms[i]
+        product = idxproducts[i]
         # Occupation as job or gender, as long as the index starts with 0
         if user < min(len(genders), len(occupations)):
             gender = genders[user]
             occup = max(genders) + 1 + occupations[user]         
-            tensor_rating[user, film, occup] = matrix_rating[user, film]
-            tensor_rating[user, film, gender] = matrix_rating[user, film]
+            tensor_rating[user, product, occup] = matrix_rating[user, product]
+            tensor_rating[user, product, gender] = matrix_rating[user, product]
     return tensor_rating 
 
 
@@ -284,12 +283,12 @@ def tensor_all(matrix_rating, ages, genders, occupations):
     '''
     Desciption:
         Extracts the tensor having ages, genders, and occupations as the third dimension. 
-        We construct the tensor by project the matrix rating of (user, product) pair into 
-        the respective tuple (user, product, gender), (user, product, age), 
-        and (user, product, occupation) in the tensor.
+        We construct the tensor by projecting the matrix rating of (user, product) pair into 
+        the respective tuples (user, product, gender), (user, product, age), 
+        and (user, product, occupation) in the tensor
     Input:
         matrix_rating: np.array 
-            The matrix of user prediction on films
+            The matrix of user prediction on products
         genders: np.array
             The genders of the users
         occupations: np.array
@@ -299,12 +298,12 @@ def tensor_all(matrix_rating, ages, genders, occupations):
         
     Output:
         Returns the tensor having the rating by (user, product, gender), (user, product, age)
-        and (user, product, occupation) category
+        and (user, product, occupation) tuples
     '''
 
 
     # Get the nonzero for faster process
-    idxusers, idxfilms = np.nonzero(matrix_rating)
+    idxusers, idxproducts = np.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
@@ -316,15 +315,15 @@ def tensor_all(matrix_rating, ages, genders, occupations):
     for i in range(len(idxusers)):
         # set at age
         user = idxusers[i]
-        film = idxfilms[i]
+        product = idxproducts[i]
         # Occupation as job or gender, as long as the index starts with 0
         if user < min(len(genders), len(occupations), len(ages)):
             age = int(ages[user]/10) 
             gender = int(max(ages)/10) + 1 + genders[user]     
             occup =  int(max(ages)/10) + 1 + max(genders) + 1 + occupations[user]
-            tensor_rating[user, film, age] = matrix_rating[user, film]
-            tensor_rating[user, film, gender] = matrix_rating[user, film]
-            tensor_rating[user, film, occup] = matrix_rating[user, film]
+            tensor_rating[user, product, age] = matrix_rating[user, product]
+            tensor_rating[user, product, gender] = matrix_rating[user, product]
+            tensor_rating[user, product, occup] = matrix_rating[user, product]
     return tensor_rating 
 
 

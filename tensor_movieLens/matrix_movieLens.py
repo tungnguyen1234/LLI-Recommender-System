@@ -57,7 +57,7 @@ def matrix_traintest_score(matrix, percent, epsilon):
         and retrivie 
     Input:
         matrix: np.array 
-            The matrix of user rating on films.
+            The matrix of user rating on products.
         percent: int
             The percentage of splitting for training and testing data. This value ranges from 
             0 to 1 and default is None.
@@ -70,7 +70,7 @@ def matrix_traintest_score(matrix, percent, epsilon):
     if not (0<= percent <1):
         percent = 1
 
-    users, films = np.nonzero(matrix)
+    users, products = np.nonzero(matrix)
     per = np.random.permutation(range(len(users)))
     num_test = int(percent*len(users))
     test = per[:num_test]
@@ -81,10 +81,10 @@ def matrix_traintest_score(matrix, percent, epsilon):
     # Setup
     for i in range(len(test)):
         user = users[test[i]]
-        film = films[test[i]]
-        rating = matrix[user, film]
+        product = products[test[i]]
+        rating = matrix[user, product]
         re_train.append(rating)
-        matrix[user, film] = 0
+        matrix[user, product] = 0
     # Scaling
     latent_user, latent_prod, errors = matrix_latent(matrix, epsilon)
     # Test
@@ -92,8 +92,8 @@ def matrix_traintest_score(matrix, percent, epsilon):
     MSE = 0
     for i in range(len(test)):
         user = users[test[i]]
-        film = films[test[i]]
-        rating = 1/(latent_user[user]*latent_prod[film])
+        product = products[test[i]]
+        rating = 1/(latent_user[user]*latent_prod[product])
         diff = abs(re_train[i] - rating)
         re_test.append(rating)
         MAE += diff

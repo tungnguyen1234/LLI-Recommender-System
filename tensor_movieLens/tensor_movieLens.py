@@ -17,7 +17,7 @@ from tensor_retrieve import tensor_construct
 
 
 
-def tensor_movieLens(feature_vector, percent, limit, epsilon):
+def tensor_movieLens(features, percent, limit, epsilon):
     '''
     Desciption:
         This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -27,17 +27,18 @@ def tensor_movieLens(feature_vector, percent, limit, epsilon):
             The percentage of splitting for training and testing data. Default is None.
         limit: int 
             The limit amount of data that would be process. Default is None, meaning having no limit
-        limit: int 
-            The limit amount of data that would be process. Default is None, meaning having no limit
-        feature_vector: List[str]
+        features: set()
             The features by string that would be added in the third dimension. There are three types:
             age, occupation, and gender.
+        epsilon: float
+            The convergence number for the algorithm.
     Output:
         Prints the MAE and MSE score.
     '''
 
 
-    ages, occupations, genders = extract_3D_dataset(limit)
+    ages, occupations, genders = extract_tensor_dataset(limit)
+    matrix_rating = matrix_construct()
 
     # Testing purpose
     # matrix_rating = np.array([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
@@ -45,14 +46,14 @@ def tensor_movieLens(feature_vector, percent, limit, epsilon):
     # occupations = np.array([0, 4, 5])
     # genders = np.array([0, 1, 0])
     
-    tensor_rating = tensor_construct(matrix_rating, feature_vector, ages, occupations, genders)
+    tensor_rating = tensor_construct(matrix_rating, features, ages, occupations, genders)
     MAE, MSE, errors = tensor_traintest_score(tensor_rating, percent, epsilon)
     print("MAE is", round(MAE, 2))
     print("MSE is", round(MSE, 2))
     print("Errors from the iteration process is:\n", errors)
 
 
-def extract_3D_dataset(limit = None):
+def extract_tensor_dataset(limit = None):
     '''
     Desciption:
         Extracts the age, occupation, and gender features from the users. Here we label gender 'F' as
@@ -95,10 +96,12 @@ def tensor_traintest_score(tensor, percent, epsilon):
         as max(tensor[user, product, :]) 
     Input:
         tensor: np.array 
-            The tensor of user ratings on films based on different features
+            The tensor of user ratings on products based on different features
         percent: int
             The percentage of splitting for training and testing data. This value ranges from 
             0 to 1 and default is None.
+        epsilon: float
+            The convergence number for the algorithm.
     Output:
         Returns the MAE, MSE and errors from the latent scaling convergence steps.
     '''
@@ -106,7 +109,7 @@ def tensor_traintest_score(tensor, percent, epsilon):
     if not (0<= percent <1):
         percent = 1
 
-    users, films, features = np.nonzero(tensor)
+    users, products, features = np.nonzero(tensor)
     per = np.random.permutation(range(len(users)))
     # Get random test by percent
     percent = min(1, percent)
@@ -119,11 +122,11 @@ def tensor_traintest_score(tensor, percent, epsilon):
     # Setup
     for i in range(len(test)):
         user = users[test[i]]
-        film = films[test[i]]
+        product = products[test[i]]
         feature = features[test[i]]
-        rating = tensor[user, film, feature]
-        re_train[(user, film)] = rating
-        tensor[user, film, feature] = 0
+        rating = tensor[user, product, feature]
+        re_train[(user, product)] = rating
+        tensor[user, product, feature] = 0
 
 
     # Run the latent scaling
@@ -134,10 +137,10 @@ def tensor_traintest_score(tensor, percent, epsilon):
     MSE = 0
     for i in range(len(test)):
         user = users[test[i]]
-        film = films[test[i]]
+        product = products[test[i]]
         feature = features[test[i]]
-        rating = 1/(latent_user[user]*latent_prod[film]*latent_feature[feature])
-        re_test[(user, film)] = max(re_train[(user, film)], rating)
+        rating = 1/(latent_user[user]*latent_prod[product]*latent_feature[feature])
+        re_test[(user, product)] = max(re_train[(user, product)], rating)
         
     for key, rating in re_test.items():
         diff = abs(re_train[key] - re_test[key])
