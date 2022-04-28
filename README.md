@@ -23,8 +23,8 @@ or a simpler command is:
 
 To run all data points with only the ```age``` feature, the command is:
 
-```python main.c tensor --percent 0.2 --age True```
+```python main.c tensor --age True```
 
 To add the feature ```occupation```, the command is:
 
-```python main.c tensor --percent 0.2 --age True --occup True```
+```python main.c tensor --age True --occup True```
