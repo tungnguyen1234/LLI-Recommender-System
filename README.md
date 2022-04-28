@@ -5,7 +5,7 @@ For now, we access the file path ".../tensor_movieLens" to run the learning late
 
 The command to run the matrix latent algorithm with train-test-split percentage and convergence condition is is:
 
-```python main.c matrix --percent 0.2 -eps 1e-10```
+```python main.c matrix --percent 0.2 --eps 1e-10```
 
 The command is also self-configured with a 20% percentage and convergence condition of $10^{-5}$:
  
