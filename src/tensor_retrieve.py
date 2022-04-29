@@ -8,7 +8,7 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
 import pandas as pd
 import numpy as np
-from numpy import *
+import torch as t
 from math import *
 
 
@@ -17,7 +17,7 @@ def tensor_construct(matrix_rating, features, ages, occupations, genders):
     Desciption:
         Extracts the tensor from matrix_rating depending on the feature vectors for the third dimension
     Input:
-        matrix_rating: np.array 
+        matrix_rating: t.tensor 
             The matrix of user prediction on products
         features: set
             The feature categories
@@ -25,7 +25,7 @@ def tensor_construct(matrix_rating, features, ages, occupations, genders):
         Returns the tensor having the rating by (user, product, feature) tuple
     '''
 
-    tensor_rating = np.array([])
+    tensor_rating = t.tensor([])
     if len(features) == 1:
         if 'age' in features:
             tensor_rating = tensor_age(matrix_rating, ages)
@@ -52,27 +52,25 @@ def tensor_age(matrix_rating, ages):
         by projecting the matrix rating of (user, product) pair into the respective tuple
         (user, product, age) in the tensor
     Input:
-        matrix_rating: np.array 
+        matrix_rating: t.tensor 
             The matrix of user prediction on products
-        ages: np.array
+        ages: t.tensor
             The ages of the users
     Output:
         Returns the tensor having the rating by (user, product, age) tuple
     '''
 
     # Get the nonzero for faster process
-    idxusers, idxproducts = np.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
 
     # For Age: from 0 to 56 -> group 1 to 6. 
     third_dim = int(max(ages)/10) + 1
-    tensor_rating = zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
   
-    for i in range(len(idxusers)):
-        user = idxusers[i]
-        product = idxproducts[i]
+    for user, product in user_product:
         if user < len(ages):
             age = int(ages[user]/10)      
             tensor_rating[user, product, age] = matrix_rating[user, product]
@@ -86,9 +84,9 @@ def tensor_occupation(matrix_rating, occupations):
         by projecting the matrix rating of (user, product) pair into the respective tuple
         (user, product, occupation) in the tensor
     Input:
-        matrix_rating: np.array 
+        matrix_rating: t.tensor 
             The matrix of user prediction on products
-        occupcations: np.array
+        occupcations: t.tensor
             The occupations of the users
         
     Output:
@@ -97,16 +95,14 @@ def tensor_occupation(matrix_rating, occupations):
 
 
     # Get the nonzero for faster process
-    idxusers, idxproducts = np.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = max(occupations) + 1
-    tensor_rating = zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
   
-    for i in range(len(idxusers)):
-        user = idxusers[i]
-        product = idxproducts[i]
+    for user, product in user_product:
         if user < len(occupations):
             occup = occupations[user]         
             tensor_rating[user, product, occup] = matrix_rating[user, product]
@@ -121,9 +117,9 @@ def tensor_gender(matrix_rating, genders):
         by projecting the matrix rating of (user, product) pair into the respective tuple
         (user, product, gender) in the tensor
     Input:
-        matrix_rating: np.array 
+        matrix_rating: t.tensor 
             The matrix of user prediction on products
-        genders: np.array
+        genders: t.tensor
             The genders of the users
         
     Output:
@@ -132,18 +128,16 @@ def tensor_gender(matrix_rating, genders):
 
 
     # Get the nonzero for faster process
-    idxusers, idxproducts = np.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = max(genders) + 1
     
 
-    tensor_rating = zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
   
-    for i in range(len(idxusers)):
-        user = idxusers[i]
-        product = idxproducts[i]
+    for user, product in user_product:
         if user < len(genders):
             gender = genders[user]         
             tensor_rating[user, product, gender] = matrix_rating[user, product]
@@ -156,11 +150,11 @@ def tensor_age_occup(matrix_rating, ages, occupations):
         by projecting the matrix rating of (user, product) pair into the respective tuples
         (user, product, age) and (user, product, occupation) in the tensor.
     Input:
-        matrix_rating: np.array 
+        matrix_rating: t.tensor 
             The matrix of user prediction on products
-        ages: np.array
+        ages: t.tensor
             The ages of the users
-        occupcations: np.array
+        occupcations: t.tensor
             The occupations of the users
         
     Output:
@@ -169,18 +163,16 @@ def tensor_age_occup(matrix_rating, ages, occupations):
     '''
 
     # Get the nonzero for faster process
-    idxusers, idxproducts = np.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     # First group by occupation then age.
     third_dim = max(occupations) + 1 + int(max(ages)/10) + 1
 
-    tensor_rating = zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
   
-    for i in range(len(idxusers)):
-        user = idxusers[i]
-        product = idxproducts[i]
+    for user, product in user_product:
         if user < min(len(occupations), len(ages)):
             occup = occupations[user]     
             age = max(occupations) + 1 + int(ages[user]/10)
@@ -197,11 +189,11 @@ def tensor_age_gender(matrix_rating, genders, ages):
         by projecting the matrix rating of (user, product) pair into the respective tuples
         (user, product, gender) and (user, product, age) in the tensor.
     Input:
-        matrix_rating: np.array 
+        matrix_rating: t.tensor 
             The matrix of user prediction on products
-        genders: np.array
+        genders: t.tensor
             The genders of the users
-        ages: np.array
+        ages: t.tensor
             The ages of the users
         
     Output:
@@ -210,16 +202,14 @@ def tensor_age_gender(matrix_rating, genders, ages):
 
 
     # Get the nonzero for faster process
-    idxusers, idxproducts = np.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = int(max(ages)/10) + 1 + max(genders) + 1
-    tensor_rating = zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
   
-    for i in range(len(idxusers)):
-        user = idxusers[i]
-        product = idxproducts[i]
+    for user, product in user_product:
         if user < min(len(genders), len(ages)):
             age = int(ages[user]/10)  
             gender = int(max(ages)/10) + 1 + genders[user]      
@@ -235,11 +225,11 @@ def tensor_gender_occup(matrix_rating, genders, occupations):
         We construct the tensor by projecting the matrix rating of (user, product) pair into 
         the respective tuples (user, product, gender) and (user, product, occupation) in the tensor
     Input:
-        matrix_rating: np.array 
+        matrix_rating: t.tensor 
             The matrix of user prediction on products
-        genders: np.array
+        genders: t.tensor
             The genders of the users
-        occupations: np.array
+        occupations: t.tensor
             The occupations of the users
         
     Output:
@@ -248,16 +238,14 @@ def tensor_gender_occup(matrix_rating, genders, occupations):
 
 
     # Get the nonzero for faster process
-    idxusers, idxproducts = np.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = max(genders) + 1 + max(occupations) + 1 
-    tensor_rating = zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
   
-    for i in range(len(idxusers)):
-        user = idxusers[i]
-        product = idxproducts[i]
+    for user, product in user_product:
         if user < min(len(genders), len(occupations)):
             gender = genders[user]
             occup = max(genders) + 1 + occupations[user]         
@@ -275,13 +263,13 @@ def tensor_all(matrix_rating, ages, genders, occupations):
         the respective tuples (user, product, gender), (user, product, age), 
         and (user, product, occupation) in the tensor
     Input:
-        matrix_rating: np.array 
+        matrix_rating: t.tensor 
             The matrix of user prediction on products
-        genders: np.array
+        genders: t.tensor
             The genders of the users
-        occupations: np.array
+        occupations: t.tensor
             The occupations of the users
-        ages: np.array
+        ages: t.tensor
             The ages of the users
         
     Output:
@@ -291,16 +279,14 @@ def tensor_all(matrix_rating, ages, genders, occupations):
 
 
     # Get the nonzero for faster process
-    idxusers, idxproducts = np.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = int(max(ages)/10) + 1 + max(genders) + 1 + max(occupations) + 1 
-    tensor_rating = zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
   
-    for i in range(len(idxusers)):
-        user = idxusers[i]
-        product = idxproducts[i]
+    for user, product in user_product:
         if user < min(len(genders), len(occupations), len(ages)):
             age = int(ages[user]/10) 
             gender = int(max(ages)/10) + 1 + genders[user]     

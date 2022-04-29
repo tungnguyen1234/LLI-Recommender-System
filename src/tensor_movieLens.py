@@ -9,7 +9,7 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 from argparse import Namespace
 import pandas as pd
 import numpy as np
-from numpy import *
+import torch as t
 from math import *
 from matrix_movieLens import matrix_construct
 from tensor_3D_latent import tensor_latent
@@ -21,7 +21,7 @@ def tensor_movieLens(features, percent, limit, epsilon):
     '''
     Desciption:
         This function runs all the steps to pre-processing MovieLens data, running the tensor latent
-        algorithm, and retrieving the MAE and MSE score. 
+        algorithm, and retrieving the MAE and RMSE score. 
     Input:
         percent: int
             The percentage of splitting for training and testing data. Default is None.
@@ -33,24 +33,27 @@ def tensor_movieLens(features, percent, limit, epsilon):
         epsilon: float
             The convergence number for the algorithm.
     Output:
-        Prints the MAE and MSE score.
+        Prints the MAE and 
+ score.
     '''
 
+    device = t.device('cuda' if t.cuda.is_available() else 'cpu')
 
-    ages, occupations, genders = extract_features(limit)
-    matrix_rating = matrix_construct()
+    if device.type == 'cuda':
+        ages, occupations, genders = extract_features(limit)
+        matrix_rating = matrix_construct()
 
-    # Testing purpose
-    # matrix_rating = np.array([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
-    # ages = np.array([1, 20, 30])
-    # occupations = np.array([0, 4, 5])
-    # genders = np.array([0, 1, 0])
-    
-    tensor_rating = tensor_construct(matrix_rating, features, ages, occupations, genders)
-    MAE, MSE, errors = tensor_traintest_score(tensor_rating, percent, epsilon)
-    print("MAE is", round(MAE, 2))
-    print("MSE is", round(MSE, 2))
-    print("Errors from the iteration process is:\n", errors)
+        # Testing purpose
+        # matrix_rating = t.tensor([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
+        # ages = t.tensor([1, 20, 30])
+        # occupations = t.tensor([0, 4, 5])
+        # genders = t.tensor([0, 1, 0])
+        
+        tensor_rating = tensor_construct(matrix_rating, features, ages, occupations, genders)
+        MAE, RMSE, errors = tensor_traintest_score(tensor_rating, percent, epsilon)
+        print("MAE is", round(MAE, 2))
+        print("RMSE is", round(RMSE, 2))
+        print("Errors from the iteration process is:\n", errors)
 
 
 def extract_features(limit = None):
@@ -65,16 +68,16 @@ def extract_features(limit = None):
         Array of ages, occupation, and genders of the users
     '''
     
-    csv_users = pd.read_csv('users.csv', names = ["UserID", "Gender","Age","Occupation", "Zip-code"])
+    csv_users = pd.read_csv('data/users.csv', names = ["UserID", "Gender","Age","Occupation", "Zip-code"])
     df = pd.DataFrame(csv_users)
     if limit:
         df = df.head(limit)
 
     # Get age and profile info
-    ages = df['Age'].to_numpy()
+    ages = t.tensor(df['Age'].to_numpy())
 
     # Job
-    occupations = df['Occupation'].to_numpy()
+    occupations = t.tensor(df['Occupation'].to_numpy())
 
     # Gender
     genders = []
@@ -84,7 +87,7 @@ def extract_features(limit = None):
         elif gender == 'M':
             genders.append(1)
 
-    genders = np.array(genders)
+    genders = t.tensor(genders)
     return ages, occupations, genders
 
 
@@ -95,7 +98,7 @@ def tensor_traintest_score(tensor, percent, epsilon):
         recommendation result as the maximum value by the feature dimension for each (user, product) pair 
         as max(tensor[user, product, :]) 
     Input:
-        tensor: np.array 
+        tensor: t.tensor 
             The tensor of user ratings on products based on different features
         percent: int
             The percentage of splitting for training and testing data. This value ranges from 
@@ -103,17 +106,16 @@ def tensor_traintest_score(tensor, percent, epsilon):
         epsilon: float
             The convergence number for the algorithm.
     Output:
-        Returns the MAE, MSE and errors from the latent scaling convergence steps.
+        Returns the MAE, RMSE and errors from the latent scaling convergence steps.
     '''
 
     if not (0<= percent <1):
         percent = 1
 
-    users, products, features = np.nonzero(tensor)
-    per = np.random.permutation(range(len(users)))
+    user_prod_feat = t.nonzero(tensor)
+    per = t.randperm(len(user_prod_feat))
     # Get random test by percent
-    percent = min(1, percent)
-    num_test = int(percent*len(users))
+    num_test = int(percent*len(user_prod_feat))
     test = per[:num_test]
 
     re_train = {}
@@ -121,36 +123,30 @@ def tensor_traintest_score(tensor, percent, epsilon):
 
     # Setup
     for i in range(len(test)):
-        user = users[test[i]]
-        product = products[test[i]]
-        feature = features[test[i]]
-        rating = tensor[user, product, feature]
-        re_train[(user, product)] = rating
+        user, product, feature = user_prod_feat[test[i]]
+        rating = tensor[user, product, feature].clone()
+        re_train[(int(user), int(product))] = rating
         tensor[user, product, feature] = 0
-
 
     # Run the latent scaling
     latent_user, latent_prod, latent_feature, errors = tensor_latent(tensor, epsilon)
 
     # Test
-    MAE = 0
-    MSE = 0
+    MAE = 0.0
+    MSE = 0.0
     for i in range(len(test)):
-        user = users[test[i]]
-        product = products[test[i]]
-        feature = features[test[i]]
+        user, product, feature = user_prod_feat[test[i]]
         rating = 1/(latent_user[user]*latent_prod[product]*latent_feature[feature])
-        re_test[(user, product)] = max(re_train[(user, product)], rating)
+        comp = re_train[(int(user), int(product))]
+        re_test[int(user), int(product)] = t.max(comp, rating)
         
     for key, rating in re_test.items():
-        diff = abs(re_train[key] - re_test[key])
+        diff = float(abs(re_train[key] - re_test[key]))
         MAE += diff
         MSE += diff**2
 
-    re_train = np.array(re_train)
-    re_test = np.array(re_test)
-    MAE = float(MAE/len(test))
-    MSE = float(MSE/len(test))
-    return MAE, MSE, errors
+    MAE = MAE/len(test)
+    RMSE = np.sqrt(MSE/len(test))
+    return MAE, RMSE, errors
 
 
