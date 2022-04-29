@@ -1,3 +1,11 @@
+#!/usr/bin/env python
+'''
+File descriptions
+'''
+
+__author__      = 'Tung Nguyen, Sang Truong'
+__copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
+
 import pandas as pd
 import numpy as np
 from numpy import *
