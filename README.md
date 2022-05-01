@@ -1,5 +1,6 @@
 # Learning Latent Invariance (LLI)
 
+## Usage
 To run the matrix latent algorithm with train-test-split percentage and convergence condition:
 ```python src/main.py matrix --percent 0.2 --eps 1e-10```
 
@@ -22,3 +23,14 @@ To add the feature ```occupation```:
 
 To run the feature ```gender```:
 ```python src/main.py tensor --gender True```
+
+## Citation
+```
+@misc{
+    nguyen2022LLI,
+    title={Learning Latent Invariant with Tensor Decomposition for Recommender Systems},
+    author={Tung Nguyen, Sang Truong, and Jeffrey Uhlmann},
+    publisher={arXiv},
+    year={2022},
+}
+```
