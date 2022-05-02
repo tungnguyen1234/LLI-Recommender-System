@@ -15,14 +15,29 @@ and all the possible features in the third dimension:
 or a simpler command is:
 ```python src/main.py tensor```
 
-To run all data points with only the ```age``` feature:
+
+Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID:
+
+Adding one feature:
+
 ```python src/main.py tensor --age True```
 
-To add the feature ```occupation```:
+```python src/main.py tensor --occup True```
+
+```python src/main.py tensor --gender True```
+
+Adding two features:
+
+```python src/main.py tensor --age True --gender True```
+
 ```python src/main.py tensor --age True --occup True```
 
-To run the feature ```gender```:
-```python src/main.py tensor --gender True```
+```python src/main.py tensor --gender True --occup True```
+
+
+Adding three features:
+
+```python src/main.py tensor```
 
 ## Citation
 ```
