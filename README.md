@@ -24,6 +24,21 @@ To add the feature ```occupation```:
 To run the feature ```gender```:
 ```python src/main.py tensor --gender True```
 
+Overall, we could reproduce experiements in movielens by the following operations:
+
+Adding one feature:
+```python src/main.py tensor --age True```
+```python src/main.py tensor --occup True```
+```python src/main.py tensor --gender True```
+
+Adding two features:
+```python src/main.py tensor --age True --gender True```
+```python src/main.py tensor --age True --occup True```
+```python src/main.py tensor --gender True --occup True```
+
+Adding three features:
+```python src/main.py tensor```
+
 ## Citation
 ```
 @misc{
