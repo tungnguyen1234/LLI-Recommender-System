@@ -16,7 +16,7 @@ or a simpler command is:
 ```python src/main.py tensor```
 
 
-Overall, we could reproduce experiements in movielens by the following operations:
+Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID:
 
 Adding one feature:
 
