@@ -35,6 +35,10 @@ def matrix_movieLens(percent, epsilon):
 
     if device.type == 'cuda':
         matrix_rating = matrix_construct()
+
+        # Testing purpose:
+        # matrix_rating = t.tensor([[0,1,2,3,4,1,1,0,0,0,0], \
+        #  [0,2,0,1,0,0, 4, 7, 8, 9, 10]], dtype=t.float)
         MAE, RMSE, errors = matrix_traintest_score(matrix_rating, percent, epsilon)
         print("MAE is", np.round(MAE, 2))
         print("RMSE is", np.round(RMSE, 2))
@@ -58,6 +62,3 @@ def matrix_construct():
     matrix_rating = t.tensor(matrix_rating.to_numpy(), dtype = t.float)
     
     return matrix_rating
-
-
-

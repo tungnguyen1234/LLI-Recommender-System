@@ -42,16 +42,14 @@ def matrix_traintest_score(matrix, percent, epsilon):
     # Scaling
     latent_user, latent_prod, errors = matrix_latent(matrix, epsilon)
     # Test
-    MAE = 0.0
-    MSE = 0.0
     for i in range(len(test)):
         user, product = user_product[test[i]]
         rating = 1/(latent_user[user]*latent_prod[product])
-        diff = float(abs(re_train[i] - rating))
         re_test.append(rating)
-        MAE += diff
-        MSE += diff**2
 
-    MAE = MAE/len(test)
-    RMSE = np.sqrt(MSE/len(test))
+    mae_loss = t.nn.L1Loss()
+    mse_loss = t.nn.MSELoss()
+    re_train, re_test = t.tensor(re_train), t.tensor(re_test)
+    RMSE = t.sqrt(mse_loss(re_train, re_test))
+    MAE = mae_loss(re_train, re_test)
     return MAE, RMSE, errors

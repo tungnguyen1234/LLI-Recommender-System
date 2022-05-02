@@ -43,21 +43,26 @@ def tensor_traintest_score(tensor, percent, epsilon):
     # Run the latent scaling
     latent_user, latent_prod, latent_feature, errors = tensor_latent(tensor, epsilon)
 
-    # Test
-    MAE = 0.0
-    MSE = 0.0
+    # Get the maximum rating for each user and product 
     for i in range(len(test)):
         user, product, feature = user_prod_feat[test[i]]
         rating = 1/(latent_user[user]*latent_prod[product]*latent_feature[feature])
         comp = re_train[(int(user), int(product))]
         re_test[int(user), int(product)] = t.max(comp, rating)
-        
+    
+    # Regroup the ratings to get RMSE and MSE
+    score_train = [] 
+    score_test = []
     for key, rating in re_test.items():
-        diff = float(abs(re_train[key] - re_test[key]))
-        MAE += diff
-        MSE += diff**2
+        score_train.append(re_train[key])
+        score_test.append(rating)
 
-    MAE = MAE/len(test)
-    RMSE = np.sqrt(MSE/len(test))
+    # Get RMSE and MSE
+    mae_loss = t.nn.L1Loss()
+    mse_loss = t.nn.MSELoss()
+    score_train, score_test = t.tensor(score_train), t.tensor(score_test)
+    RMSE = t.sqrt(mse_loss(score_train, score_test))
+    MAE = mae_loss(score_train, score_test)
+
     return MAE, RMSE, errors
 

@@ -9,6 +9,7 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 from argparse import Namespace
 import pandas as pd
 import torch as t
+import numpy as np
 from math import *
 from matrix_movieLens import matrix_construct
 from tensor_retrieve import tensor_construct
@@ -50,8 +51,8 @@ def tensor_movieLens(features, percent, limit, epsilon):
         
         tensor_rating = tensor_construct(matrix_rating, features, ages, occupations, genders)
         MAE, RMSE, errors = tensor_traintest_score(tensor_rating, percent, epsilon)
-        print("MAE is", round(MAE, 2))
-        print("RMSE is", round(RMSE, 2))
+        print("MAE of LLI MovieLens is", t.round(MAE, decimals = 2))
+        print("RMSE of LLI MovieLens is", t.round(RMSE, decimals = 2))
         print("Errors from the iteration process is:\n", errors)
 
 
