@@ -42,4 +42,4 @@ if args.type == 'tensor':
     if args.gender == 'True':
         args.features.add("gender")
 
-    tensor_movieLens(args.features, args.percent, args.limit, args.eps, args.gpuid, device)
+    tensor_movieLens(args.features, args.percent, args.limit, args.eps, device)
