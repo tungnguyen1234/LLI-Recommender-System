@@ -9,6 +9,7 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 from argparse import Namespace, ArgumentParser
 from matrix_movieLens import matrix_movieLens
 from tensor_movieLens import tensor_movieLens
+import torch 
 
 parser = ArgumentParser()
 
@@ -22,9 +23,12 @@ parser.add_argument("--limit", type=int, required=False, default = None)
 parser.add_argument("--age", choices=('True', 'False'), default='False')
 parser.add_argument("--occup", choices=('True', 'False'), default='False')
 parser.add_argument("--gender", choices=('True', 'False'), default='False')
+parser.add_argument("--gpuid", type=int)
 
 # JSON-like format
 args = parser.parse_args()
+
+device = torch.device(f"cuda:{args.gpuid}" if torch.cuda.is_available() else "cpu")
 
 if args.type == 'matrix':
     matrix_movieLens(args.percent, args.eps)
@@ -38,6 +42,4 @@ if args.type == 'tensor':
     if args.gender == 'True':
         args.features.add("gender")
 
-    tensor_movieLens(args.features, args.percent, args.limit, args.eps)
-
-
+    tensor_movieLens(args.features, args.percent, args.limit, args.eps, args.gpuid, device)
