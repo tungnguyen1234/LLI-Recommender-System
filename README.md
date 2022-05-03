@@ -14,12 +14,15 @@ Running matrix LLI
 ------------------
 
 To run the matrix latent algorithm with train-test-split percentage and convergence condition on MovieLens1M data:
+
 ```python src/main.py matrix ml-1m --percent 0.2 --eps 1e-10```
 
 The command is also self-configured with a 20% percentage and convergence condition of $10^{-5}$:
+
 ```python src/main.py matrix ml-1m```
 
 The same command for Jester2 dataset is 
+
 ```python src/main.py matrix jester```
 
 Evaluation of other matrix methods
