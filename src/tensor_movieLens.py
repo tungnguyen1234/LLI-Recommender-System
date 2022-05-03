@@ -57,9 +57,9 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
         list_errors.append(errors)
     
     print("-------------------------------------------------")    
-    print("MAE list is", MAEs)
-    print("RMSE list is", RMSEs)
-    print("Errors from the iteration process is:\n", list_errors)
+    print("Mean MAE is", np.mean(MAEs), "and the std is", np.std(MAEs))
+    print("Mean RMSE is", np.mean(RMSEs), "and the std is", np.std(RMSEs))
+    print("Errors from the iteration process is\n", list_errors[0], "and \n", list_errors[1])
 
     
 
