@@ -35,12 +35,15 @@ Running tensor LLI
 For the tensor, there are 3 feature categories from the user: age, occupation, and gender. The 
 command to run the tensor algorithm with train-test-split percentage, the number of limited data points, 
 and all the possible features in the third dimension of MovieLens1M data:
+
 ```python src/main.py tensor ml-1m --percent 0.2 --limit 800```
 
 or a simpler command is:
+
 ```python src/main.py tensor ml-1m```
 
 The same command for Jester2 dataset is 
+
 ```python src/main.py tensor jester```
 
 
