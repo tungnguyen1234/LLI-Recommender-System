@@ -60,7 +60,6 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
         MAEs.append(MAE)
         RMSEs.append(RMSE)
         list_errors.append(errors)
-    print(list_errors)
     print("-------------------------------------------------")    
     mean_errors = [np.mean([list_errors[0][i], list_errors[1][i]]) for i in range(len(list_errors[0]))]
     std_errors = [np.std([list_errors[0][i], list_errors[1][i]]) for i in range(len(list_errors[0]))]
