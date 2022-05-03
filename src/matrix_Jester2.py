@@ -14,7 +14,7 @@ from matrix_score_eval import matrix_traintest_score
 
 
 
-def matrix_Jester2(percent, epsilon):
+def matrix_Jester2(device, percent, epsilon):
     '''
     Desciption:
         This function runs all the steps to pre-processing jester2 data, running the tensor latent
@@ -28,15 +28,26 @@ def matrix_Jester2(percent, epsilon):
         Prints the MAE and RMSE score.
     '''
 
-    matrix_rating = matrix_construct()
-    MAE, RMSE, errors = matrix_traintest_score(matrix_rating, percent, epsilon)
-    print("MAE of LLI Jester 2 is", t.round(MAE, decimals = 2))
-    print("RMSE of LLI Jester 2 is", t.round(RMSE, decimals = 2))
-    print("Errors from the iteration process is:\n", np.array(errors))  
+    matrix_rating = matrix_construct(device)
+    MAEs = []
+    RMSEs = []
+    list_errors = []
+    
+    for _ in range(2):
+        MAE, RMSE, errors = matrix_traintest_score(device, matrix_rating, percent, epsilon)
+        MAE = float(MAE)
+        RMSE = float(RMSE)
+        MAEs.append(MAE)
+        RMSEs.append(RMSE)
+        list_errors.append(errors)
+        
+    print("MAE is", MAEs)
+    print("RMSE is", RMSEs)
+    print("Errors from the iteration process is:\n", list_errors)
 
 
 
-def matrix_construct():
+def matrix_construct(device):
     '''
     Desciption:
         Gather csv files of Jester2 to retrievie the the numpy matrix of user-rating
@@ -48,13 +59,13 @@ def matrix_construct():
     # Eliminate the first column
     ratings = ratings.iloc[:,1:]
     matrix_rating = pd.DataFrame(ratings).to_numpy()    
-    matrix_rating = t.tensor(matrix_rating, dtype = t.float)
+    matrix_rating = t.tensor(matrix_rating, dtype = t.float).to(device)
 
     # Change 99 into 0 and rescale the matrix by the fill value 
     observed_matrix = (matrix_rating != 99)*1
     fill_value = t.abs(t.min(matrix_rating)) + 1
     matrix_rating = matrix_rating + t.full(matrix_rating.shape, fill_value = fill_value)
-    matrix_rating = t.mul(matrix_rating, observed_matrix)
+    matrix_rating = t.mul(matrix_rating, observed_matrix).to(device)
 
 
     return matrix_rating

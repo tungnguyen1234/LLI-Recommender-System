@@ -14,10 +14,11 @@ from math import *
 from matrix_movieLens import matrix_construct
 from tensor_retrieve import tensor_construct
 from tensor_score_eval import tensor_traintest_score
+from tensor_3D_latent import tensor_latent
 
 
 
-def tensor_movieLens(features, percent, limit, epsilon, device):
+def tensor_movieLens(device, features, percent, limit, epsilon):
     '''
     Desciption:
         This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -36,10 +37,30 @@ def tensor_movieLens(features, percent, limit, epsilon, device):
         Prints the MAE, RMSE and errors from the latent scaling convergence steps.
  score.
     '''
-<<<<<<< HEAD
+    MAEs = []
+    RMSEs = []
+    list_errors = []
     
     ages, occupations, genders = extract_features(device, limit)
     matrix_rating = matrix_construct(device)
+
+    print("The algorithm runs 2 times to get the mean and std!")
+    for i in range(2):
+        print("-------------------------------------------------")
+        print(f"Step {i+1}:")
+        MAE, RMSE, errors = tensor_traintest_score(device, tensor_rating, percent, epsilon)
+        MAE = float(MAE)
+        RMSE = float(RMSE)
+        MAEs.append(MAE)
+        RMSEs.append(RMSE)
+        list_errors.append(errors)
+    
+    print("-------------------------------------------------")    
+    print("MAE list is", MAEs)
+    print("RMSE list is", RMSEs)
+    print("Errors from the iteration process is:\n", list_errors)
+
+    
 
     # Testing purpose
     # matrix_rating = t.tensor([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
@@ -48,30 +69,10 @@ def tensor_movieLens(features, percent, limit, epsilon, device):
     # genders = t.tensor([0, 1, 0])
     
     tensor_rating = tensor_construct(device, matrix_rating, features, ages, occupations, genders)
-    MAE, RMSE, errors = tensor_traintest_score(device, tensor_rating, percent, epsilon)
+    
     print("MAE is", round(MAE, 2))
     print("RMSE is", round(RMSE, 2))
     print("Errors from the iteration process is:\n", errors)
-=======
-
-    device = t.device('cuda' if t.cuda.is_available() else 'cpu')
-
-    if device.type == 'cuda':
-        ages, occupations, genders = extract_features(limit)
-        matrix_rating = matrix_construct()
-
-        # Testing purpose
-        # matrix_rating = t.tensor([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
-        # ages = t.tensor([1, 20, 30])
-        # occupations = t.tensor([0, 4, 5])
-        # genders = t.tensor([0, 1, 0])
-        
-        tensor_rating = tensor_construct(matrix_rating, features, ages, occupations, genders)
-        MAE, RMSE, errors = tensor_traintest_score(tensor_rating, percent, epsilon)
-        print("MAE of LLI MovieLens is", t.round(MAE, decimals = 2))
-        print("RMSE of LLI MovieLens is", t.round(RMSE, decimals = 2))
-        print("Errors from the iteration process is:\n", errors)
->>>>>>> 6e8a2328c63a03f8b04fcf5170409f32859676bb
 
 
 def extract_features(device, limit = None):
@@ -108,7 +109,6 @@ def extract_features(device, limit = None):
     genders = t.tensor(genders).to(device)
     return ages, occupations, genders
 
-<<<<<<< HEAD
 
 def tensor_traintest_score(device, tensor, percent, epsilon): 
     '''
@@ -148,7 +148,7 @@ def tensor_traintest_score(device, tensor, percent, epsilon):
         tensor[user, product, feature] = 0
 
     # Run the latent scaling
-    latent_user, latent_prod, latent_feature, errors = tensor_latent(tensor, epsilon)
+    latent_user, latent_prod, latent_feature, errors = tensor_latent(device, tensor, epsilon)
 
     # Test
     MAE = 0.0
@@ -167,5 +167,3 @@ def tensor_traintest_score(device, tensor, percent, epsilon):
     MAE = MAE/len(test)
     RMSE = np.sqrt(MSE/len(test))
     return MAE, RMSE, errors
-=======
->>>>>>> 6e8a2328c63a03f8b04fcf5170409f32859676bb

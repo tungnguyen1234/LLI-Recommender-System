@@ -11,7 +11,7 @@ import numpy as np
 import torch as t
 from math import *
 
-def tensor_latent(tensor, epsilon = 1e-10):
+def tensor_latent(device, tensor, epsilon = 1e-10):
     '''
     Desciption:
         This function runs the tensor latent invariant algorithm.
@@ -23,15 +23,15 @@ def tensor_latent(tensor, epsilon = 1e-10):
     Output:
         Returns the latent vectors and the convergent errors from the iterative steps.
     '''
-
+    tensor = tensor.to(device)
     d1, d2, d3 = tensor.shape
 
     # Get the total number of nonzeros
     rho_sign = (tensor != 0)*1
     # Get number of nonzeros in each dimension
-    sigma_first = t.zeros(d1)  
-    sigma_second = t.zeros(d2)  
-    sigma_third = t.zeros(d3)
+    sigma_first = t.zeros(d1).to(device)  
+    sigma_second = t.zeros(d2).to(device)  
+    sigma_third = t.zeros(d3).to(device)
 
     # Get the number of nonzeros inside each 2-dimensional tensor
     for first in range(0,d1):
@@ -49,9 +49,9 @@ def tensor_latent(tensor, epsilon = 1e-10):
     tensor_log[tensor_log == - np.Inf] = 0.0
 
     # Initiate convergence 
-    latent_1 = t.zeros(d1)
-    latent_2 = t.zeros(d2)
-    latent_3 = t.zeros(d3)
+    latent_1 = t.zeros(d1).to(device)
+    latent_2 = t.zeros(d2).to(device)
+    latent_3 = t.zeros(d3).to(device)
 
     # Iteration errors
     errors = []

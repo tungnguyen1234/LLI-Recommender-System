@@ -11,7 +11,7 @@ from math import *
 import torch as t
 
 
-def matrix_latent(matrix, epsilon = 1e-10):  
+def matrix_latent(device, matrix, epsilon = 1e-10):  
     '''
     Desciption:
         This function runs the matrix latent invariant algorithm.
@@ -23,11 +23,11 @@ def matrix_latent(matrix, epsilon = 1e-10):
     Output:
         Returns the latent vectors and the convergent errors from the iterative steps.
     '''
-
+    matrix = matrix.to(device)
     m, n = matrix.shape
     # get the number of zeros in each dimension
-    sigma_row = t.zeros(m)
-    sigma_col = t.zeros(n)
+    sigma_row = t.zeros(m).to(device)
+    sigma_col = t.zeros(n).to(device)
     # Create a mask of non-zero elements
     rho_sign = (matrix != 0)*1
         
@@ -42,8 +42,8 @@ def matrix_latent(matrix, epsilon = 1e-10):
     matrix_log[matrix_log == - float('inf')] = 0.0
   
     # Initiate lantent variables
-    latent_u = t.zeros((m, 1))
-    latent_p = t.zeros((n, 1))
+    latent_u = t.zeros((m, 1)).to(device)
+    latent_p = t.zeros((n, 1)).to(device)
     
     # get the errors after each iteration
     errors = []

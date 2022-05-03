@@ -12,7 +12,7 @@ import torch as t
 from math import *
 
 
-def tensor_construct(matrix_rating, features, ages, occupations, genders):
+def tensor_construct(device, matrix_rating, features, ages, occupations, genders):
     '''
     Desciption:
         Extracts the tensor from matrix_rating depending on the feature vectors for the third dimension
@@ -28,24 +28,25 @@ def tensor_construct(matrix_rating, features, ages, occupations, genders):
     tensor_rating = t.tensor([])
     if len(features) == 1:
         if 'age' in features:
-            tensor_rating = tensor_age(matrix_rating, ages)
+            tensor_rating = tensor_age(device, matrix_rating, ages)
         if 'occup' in features:
-            tensor_rating = tensor_occupation(matrix_rating, occupations)
+            tensor_rating = tensor_occupation(device, matrix_rating, occupations)
         if 'gender' in features:
-            tensor_rating = tensor_gender(matrix_rating, genders)
+            tensor_rating = tensor_gender(device, matrix_rating, genders)
     elif len(features) == 2:
         if features == set(['age', 'occup']):
-            tensor_rating = tensor_age_occup(matrix_rating, ages, occupations)
+            tensor_rating = tensor_age_occup(device, matrix_rating, ages, occupations)
         if features == set(['age', 'gender']):
-            tensor_rating = tensor_age_gender(matrix_rating, ages, genders)
+            tensor_rating = tensor_age_gender(device, matrix_rating, ages, genders)
         if features == set(['gender', 'occup']):
-            tensor_rating = tensor_gender_occup(matrix_rating, genders, occupations)
+            tensor_rating = tensor_gender_occup(device, matrix_rating, genders, occupations)
     else:
-        tensor_rating = tensor_all(matrix_rating, ages, genders, occupations)
+        tensor_rating = tensor_all(device, matrix_rating, ages, genders, occupations)
 
     return tensor_rating
 
-def tensor_age(matrix_rating, ages):
+
+def tensor_age(device, matrix_rating, ages):
     '''
     Desciption:
         Extracts the tensor having ages as the third dimension. We construct the tensor
@@ -61,14 +62,14 @@ def tensor_age(matrix_rating, ages):
     '''
 
     # Get the nonzero for faster process
-    user_product = t.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating).to(device)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
 
     # For Age: from 0 to 56 -> group 1 to 6. 
     third_dim = int(max(ages)/10) + 1
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
   
     for user, product in user_product:
         if user < len(ages):
@@ -77,7 +78,7 @@ def tensor_age(matrix_rating, ages):
     return tensor_rating 
 
 
-def tensor_occupation(matrix_rating, occupations):
+def tensor_occupation(device, matrix_rating, occupations):
     '''
     Desciption:
         Extracts the tensor having occupations as the third dimension. We construct the tensor
@@ -95,12 +96,12 @@ def tensor_occupation(matrix_rating, occupations):
 
 
     # Get the nonzero for faster process
-    user_product = t.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating).to(device)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = max(occupations) + 1
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
   
     for user, product in user_product:
         if user < len(occupations):
@@ -110,7 +111,7 @@ def tensor_occupation(matrix_rating, occupations):
 
 
 
-def tensor_gender(matrix_rating, genders):
+def tensor_gender(device, matrix_rating, genders):
     '''
     Desciption:
         Extracts the tensor having genders as the third dimension. We construct the tensor
@@ -128,14 +129,14 @@ def tensor_gender(matrix_rating, genders):
 
 
     # Get the nonzero for faster process
-    user_product = t.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating).to(device)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = max(genders) + 1
     
 
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
   
     for user, product in user_product:
         if user < len(genders):
@@ -143,7 +144,7 @@ def tensor_gender(matrix_rating, genders):
             tensor_rating[user, product, gender] = matrix_rating[user, product]
     return tensor_rating 
 
-def tensor_age_occup(matrix_rating, ages, occupations):
+def tensor_age_occup(device, matrix_rating, ages, occupations):
     '''
     Desciption:
         Extracts the tensor having ages and occupation as the third dimension. We construct the tensor
@@ -163,14 +164,14 @@ def tensor_age_occup(matrix_rating, ages, occupations):
     '''
 
     # Get the nonzero for faster process
-    user_product = t.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating).to(device)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     # First group by occupation then age.
     third_dim = max(occupations) + 1 + int(max(ages)/10) + 1
 
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
   
     for user, product in user_product:
         if user < min(len(occupations), len(ages)):
@@ -182,7 +183,7 @@ def tensor_age_occup(matrix_rating, ages, occupations):
     return tensor_rating 
 
 
-def tensor_age_gender(matrix_rating, genders, ages):
+def tensor_age_gender(device, matrix_rating, genders, ages):
     '''
     Desciption:
         Extracts the tensor having genders and ages as the third dimension. We construct the tensor
@@ -202,12 +203,12 @@ def tensor_age_gender(matrix_rating, genders, ages):
 
 
     # Get the nonzero for faster process
-    user_product = t.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating).to(device)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = int(max(ages)/10) + 1 + max(genders) + 1
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
   
     for user, product in user_product:
         if user < min(len(genders), len(ages)):
@@ -218,7 +219,7 @@ def tensor_age_gender(matrix_rating, genders, ages):
     return tensor_rating 
 
 
-def tensor_gender_occup(matrix_rating, genders, occupations):
+def tensor_gender_occup(device, matrix_rating, genders, occupations):
     '''
     Desciption:
         Extracts the tensor having genders and occupations as the third dimension. 
@@ -238,12 +239,12 @@ def tensor_gender_occup(matrix_rating, genders, occupations):
 
 
     # Get the nonzero for faster process
-    user_product = t.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating).to(device)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = max(genders) + 1 + max(occupations) + 1 
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
   
     for user, product in user_product:
         if user < min(len(genders), len(occupations)):
@@ -255,7 +256,7 @@ def tensor_gender_occup(matrix_rating, genders, occupations):
 
 
 
-def tensor_all(matrix_rating, ages, genders, occupations):
+def tensor_all(device, matrix_rating, ages, genders, occupations):
     '''
     Desciption:
         Extracts the tensor having ages, genders, and occupations as the third dimension. 
@@ -279,12 +280,12 @@ def tensor_all(matrix_rating, ages, genders, occupations):
 
 
     # Get the nonzero for faster process
-    user_product = t.nonzero(matrix_rating)
+    user_product = t.nonzero(matrix_rating).to(device)
 
     # Get the dimensions 
     first_dim, second_dim = matrix_rating.shape
     third_dim = int(max(ages)/10) + 1 + max(genders) + 1 + max(occupations) + 1 
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim))
+    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
   
     for user, product in user_product:
         if user < min(len(genders), len(occupations), len(ages)):

@@ -10,11 +10,7 @@ from argparse import Namespace, ArgumentParser
 from matrix_movieLens import matrix_movieLens
 from matrix_Jester2 import matrix_Jester2
 from tensor_movieLens import tensor_movieLens
-<<<<<<< HEAD
 import torch 
-=======
-from matrix_other_methods import matrix_other_methods
->>>>>>> 6e8a2328c63a03f8b04fcf5170409f32859676bb
 
 parser = ArgumentParser()
 other_methods = ('svd', 'slopeone', 'mormpred', 'nmf', 'knn', 'knnmean', 'knnzscore', 'knnbaseline')
@@ -36,23 +32,15 @@ parser.add_argument("--gpuid", type=int)
 # JSON-like format
 args = parser.parse_args()
 
-<<<<<<< HEAD
 device = torch.device(f"cuda:{args.gpuid}" if torch.cuda.is_available() else "cpu")
 
 if args.type == 'matrix':
-    matrix_movieLens(args.percent, args.eps)
-=======
-if args.type == 'matrix' and not args.method:
     if args.dataname == 'ml-1m':
-        matrix_movieLens(args.percent, args.eps)
+        matrix_movieLens(device, args.percent, args.eps)
     elif args.dataname == 'jester':
-        matrix_Jester2(args.percent, args.eps)
-elif args.type == 'matrix' and args.dataname and args.method:
-    matrix_other_methods(args.percent, args.dataname, args.method)
+        matrix_Jester2(device, args.percent, args.eps)
 
->>>>>>> 6e8a2328c63a03f8b04fcf5170409f32859676bb
-
-if args.type == 'tensor':
+if args.type == 'tensor' and args.dataname != 'jester':
     args.features= set()
     if args.age == 'True':
         args.features.add("age")
@@ -61,4 +49,4 @@ if args.type == 'tensor':
     if args.gender == 'True':
         args.features.add("gender")
 
-    tensor_movieLens(args.features, args.percent, args.limit, args.eps, device)
+    tensor_movieLens(device, args.features, args.percent, args.limit, args.eps)

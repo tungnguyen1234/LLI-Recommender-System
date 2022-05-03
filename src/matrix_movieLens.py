@@ -14,7 +14,7 @@ from matrix_score_eval import matrix_traintest_score
 
 
 
-def matrix_movieLens(percent, epsilon):
+def matrix_movieLens(device, percent, epsilon):
     '''
     Desciption:
         This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -31,22 +31,34 @@ def matrix_movieLens(percent, epsilon):
         Prints the MAE and RMSE score.
     '''
 
-    device = t.device('cuda' if t.cuda.is_available() else 'cpu')
+    matrix_rating = matrix_construct(device)
 
-    if device.type == 'cuda':
-        matrix_rating = matrix_construct()
+    # Testing purpose:
+    # matrix_rating = t.tensor([[0,1,2,3,4,1,1,0,0,0,0], \
+    #  [0,2,0,1,0,0, 4, 7, 8, 9, 10]], dtype=t.float)
+    MAEs = []
+    RMSEs = []
+    list_errors = []
+    
+    print("The algorithm runs 2 times to get the mean and std!")
+    for i in range(2):
+        print("-------------------------------------------------")
+        print(f"Step {i+1}:")
+        MAE, RMSE, errors = matrix_traintest_score(device, matrix_rating, percent, epsilon)
+        MAE = float(MAE)
+        RMSE = float(RMSE)
+        MAEs.append(MAE)
+        RMSEs.append(RMSE)
+        list_errors.append(errors)
+    
+    print("-------------------------------------------------")   
+    print("MAE list is", MAEs)
+    print("RMSE list is", RMSEs)
+    print("Errors from the iteration process is:\n", list_errors)  
 
-        # Testing purpose:
-        # matrix_rating = t.tensor([[0,1,2,3,4,1,1,0,0,0,0], \
-        #  [0,2,0,1,0,0, 4, 7, 8, 9, 10]], dtype=t.float)
-        MAE, RMSE, errors = matrix_traintest_score(matrix_rating, percent, epsilon)
-        print("MAE is", np.round(MAE, 2))
-        print("RMSE is", np.round(RMSE, 2))
-        print("Errors from the iteration process is:\n", np.array(errors))  
 
 
-
-def matrix_construct():
+def matrix_construct(device):
     '''
     Desciption:
         Gather csv files of MovieLens to retrievie the the numpy matrix of user-rating
@@ -59,6 +71,6 @@ def matrix_construct():
     sort_rating = df.sort_values(by = ['UserID', 'MovieID'], ignore_index = True)
     sort_rating_fill_0 = sort_rating.fillna(0)
     matrix_rating = sort_rating_fill_0.pivot(index = 'UserID', columns = 'MovieID', values = 'Rating').fillna(0)
-    matrix_rating = t.tensor(matrix_rating.to_numpy(), dtype = t.float)
+    matrix_rating = t.tensor(matrix_rating.to_numpy(), dtype = t.float).to(device)
     
     return matrix_rating

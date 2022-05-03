@@ -4,7 +4,7 @@ import numpy as np
 from math import *
 from matrix_latent import matrix_latent
 
-def matrix_traintest_score(matrix, percent, epsilon):
+def matrix_traintest_score(device, matrix, percent, epsilon):
     '''
     Desciption:
         This function splits a training matrix for latent scaling algorithm and a testing vector to compare 
@@ -24,8 +24,8 @@ def matrix_traintest_score(matrix, percent, epsilon):
     if not (0<= percent <1):
         percent = 1
 
-    user_product = t.nonzero(matrix)
-    per = t.randperm(len(user_product))
+    user_product = t.nonzero(matrix).to(device)
+    per = t.randperm(len(user_product)).to(device)
     num_test = int(percent*len(user_product))
     test = per[:num_test]
 
@@ -40,7 +40,7 @@ def matrix_traintest_score(matrix, percent, epsilon):
         matrix[user, product] = 0
 
     # Scaling
-    latent_user, latent_prod, errors = matrix_latent(matrix, epsilon)
+    latent_user, latent_prod, errors = matrix_latent(device, matrix, epsilon)
     # Test
     for i in range(len(test)):
         user, product = user_product[test[i]]
@@ -49,7 +49,7 @@ def matrix_traintest_score(matrix, percent, epsilon):
 
     mae_loss = t.nn.L1Loss()
     mse_loss = t.nn.MSELoss()
-    re_train, re_test = t.tensor(re_train), t.tensor(re_test)
+    re_train, re_test = t.tensor(re_train).to(device), t.tensor(re_test).to(device)
     RMSE = t.sqrt(mse_loss(re_train, re_test))
     MAE = mae_loss(re_train, re_test)
     return MAE, RMSE, errors
