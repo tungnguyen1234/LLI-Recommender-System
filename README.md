@@ -4,8 +4,8 @@ Getting started
 ---------------
 The LLI method is based on latent variable model. The LLI algorithm extracts the latent variable vectors from using a linear optimization framework for tensor and retrieve recommendation from caculations of those latent variable vectors.
 
-Getting started
----------------
+Packages
+--------
 The main packages for LLI are ```PyTorch```, ```Numpy```, and ```Pandas```. 
 
 We also use the [SurPRISE](http://surpriselib.com) python package to run other benchmark recommendation methods. The installation instruction is in the Installation section of the attached [link](https://github.com/NicolasHug/Surprise/tree/fa7455880192383f01475162b4cbd310d91d29ca)
