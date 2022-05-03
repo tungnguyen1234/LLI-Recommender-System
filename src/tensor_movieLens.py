@@ -9,7 +9,7 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 from argparse import Namespace
 import pandas as pd
 import numpy as np
-import torch
+import torch as t
 from math import *
 from matrix_movieLens import matrix_construct
 from tensor_3D_latent import tensor_latent
@@ -41,10 +41,10 @@ def tensor_movieLens(features, percent, limit, epsilon, device):
     matrix_rating = matrix_construct(device)
 
     # Testing purpose
-    # matrix_rating = torch.tensor([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
-    # ages = torch.tensor([1, 20, 30])
-    # occupations = torch.tensor([0, 4, 5])
-    # genders = torch.tensor([0, 1, 0])
+    # matrix_rating = t.tensor([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
+    # ages = t.tensor([1, 20, 30])
+    # occupations = t.tensor([0, 4, 5])
+    # genders = t.tensor([0, 1, 0])
     
     tensor_rating = tensor_construct(device, matrix_rating, features, ages, occupations, genders)
     MAE, RMSE, errors = tensor_traintest_score(device, tensor_rating, percent, epsilon)
@@ -71,10 +71,10 @@ def extract_features(device, limit = None):
         df = df.head(limit)
 
     # Get age and profile info
-    ages = torch.tensor(df['Age'].to_numpy()).to(device)
+    ages = t.tensor(df['Age'].to_numpy()).to(device)
 
     # Job
-    occupations = torch.tensor(df['Occupation'].to_numpy()).to(device)
+    occupations = t.tensor(df['Occupation'].to_numpy()).to(device)
 
     # Gender
     genders = []
@@ -84,7 +84,7 @@ def extract_features(device, limit = None):
         elif gender == 'M':
             genders.append(1)
 
-    genders = torch.tensor(genders).to(device)
+    genders = t.tensor(genders).to(device)
     return ages, occupations, genders
 
 
@@ -109,8 +109,8 @@ def tensor_traintest_score(device, tensor, percent, epsilon):
     if not (0<= percent <1):
         percent = 1
 
-    user_prod_feat = torch.nonzero(tensor).to(device)
-    per = torch.randperm(len(user_prod_feat)).to(device)
+    user_prod_feat = t.nonzero(tensor).to(device)
+    per = t.randperm(len(user_prod_feat)).to(device)
     # Get random test by percent
     num_test = int(percent*len(user_prod_feat))
     test = per[:num_test]
@@ -135,7 +135,7 @@ def tensor_traintest_score(device, tensor, percent, epsilon):
         user, product, feature = user_prod_feat[test[i]]
         rating = 1/(latent_user[user]*latent_prod[product]*latent_feature[feature])
         comp = re_train[(int(user), int(product))]
-        re_test[int(user), int(product)] = torch.max(comp, rating)
+        re_test[int(user), int(product)] = t.max(comp, rating).to(device)
         
     for key, rating in re_test.items():
         diff = float(abs(re_train[key] - re_test[key]))
