@@ -19,7 +19,7 @@ other_methods = ('LLI', 'svd', 'slopeone', 'mormpred', 'nmf', 'knn', 'knnmean', 
 # general arguments
 parser.add_argument("type", choices = ("matrix", "tensor"))
 parser.add_argument("dataname", choices=('ml-1m', 'jester'), default='ml-1m')
-parser.add_argument("--method", choices=other_methods, default='svd')
+parser.add_argument("--method", choices=other_methods, default='LLI')
 parser.add_argument("--percent", type=float, required=False, default = 0.2)
 parser.add_argument("--eps", type=float, required=False, default = 1e-10)
 

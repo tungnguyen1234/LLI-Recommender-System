@@ -10,6 +10,7 @@ from argparse import Namespace
 import pandas as pd
 import torch as t
 import numpy as np
+import os
 from math import *
 from matrix_movieLens import matrix_construct
 from tensor_retrieve import tensor_construct
@@ -41,6 +42,10 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
     RMSEs = []
     list_errors = []
     
+    path = "result/"
+    output_text = path + "tensor_ml-1m_result"+".txt"
+    # os.remove(output_text)
+
     ages, occupations, genders = extract_features(device, limit)
     matrix_rating = matrix_construct(device)
     tensor_rating = tensor_construct(device, matrix_rating, features, ages, occupations, genders)
@@ -55,11 +60,22 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
         MAEs.append(MAE)
         RMSEs.append(RMSE)
         list_errors.append(errors)
-    
+    print(list_errors)
     print("-------------------------------------------------")    
-    print("Mean MAE is", np.mean(MAEs), "and the std is", np.std(MAEs))
-    print("Mean RMSE is", np.mean(RMSEs), "and the std is", np.std(RMSEs))
-    print("Errors from the iteration process is\n", list_errors[0], "and \n", list_errors[1])
+    mean_errors = [np.mean([list_errors[0][i], list_errors[1][i]]) for i in range(len(list_errors[0]))]
+    std_errors = [np.std([list_errors[0][i], list_errors[1][i]]) for i in range(len(list_errors[0]))]
+    meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
+    meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
+    print(f"MAE has mean {meanMAE} and std {stdMAE}")
+    print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
+
+
+    
+    lines = [f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
+            f"Error means from the iteration process is {mean_errors}", \
+            f"Error stds from the iteration process is {std_errors}",]
+    with open(output_text, "a", encoding='utf-8') as f:
+        f.write('\n'.join(lines))
 
     
 

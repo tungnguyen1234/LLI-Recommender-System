@@ -100,5 +100,4 @@ def tensor_latent(device, tensor, epsilon = 1e-10):
         if error < epsilon:
             break
 
-
     return np.exp(latent_1), np.exp(latent_2), np.exp(latent_3), errors

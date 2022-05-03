@@ -51,9 +51,9 @@ def matrix_movieLens(device, percent, epsilon):
         RMSEs.append(RMSE)
         list_errors.append(errors)
     
-    print("-------------------------------------------------")   
-    print("MAE list is", MAEs)
-    print("RMSE list is", RMSEs)
+    print("-------------------------------------------------")    
+    print("Mean MAE is", np.mean(MAEs), "and the std is", np.std(MAEs))
+    print("Mean RMSE is", np.mean(RMSEs), "and the std is", np.std(RMSEs))
     print("Errors from the iteration process is:\n", list_errors)  
 
 
