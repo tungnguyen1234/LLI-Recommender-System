@@ -33,7 +33,10 @@ def matrix_Jester2(device, percent, epsilon):
     RMSEs = []
     list_errors = []
     
+    print("The algorithm runs 2 times to get the mean and std!")
     for _ in range(2):
+        print("-------------------------------------------------")
+        print(f"Step {i+1}:")
         MAE, RMSE, errors = matrix_traintest_score(device, matrix_rating, percent, epsilon)
         MAE = float(MAE)
         RMSE = float(RMSE)
@@ -41,9 +44,10 @@ def matrix_Jester2(device, percent, epsilon):
         RMSEs.append(RMSE)
         list_errors.append(errors)
         
-    print("MAE is", MAEs)
-    print("RMSE is", RMSEs)
-    print("Errors from the iteration process is:\n", list_errors)
+    print("-------------------------------------------------")    
+    print("Mean MAE is", np.mean(MAEs), "and the std is", np.std(MAEs))
+    print("Mean RMSE is", np.mean(RMSEs), "and the std is", np.std(RMSEs))
+    print("Errors from the iteration process is\n", list_errors[0], "and \n", list_errors[1])
 
 
 
