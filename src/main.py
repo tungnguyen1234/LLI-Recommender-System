@@ -10,10 +10,11 @@ from argparse import Namespace, ArgumentParser
 from matrix_movieLens import matrix_movieLens
 from matrix_Jester2 import matrix_Jester2
 from tensor_movieLens import tensor_movieLens
+from matrix_other_methods import matrix_other_methods
 import torch 
 
 parser = ArgumentParser()
-other_methods = ('svd', 'slopeone', 'mormpred', 'nmf', 'knn', 'knnmean', 'knnzscore', 'knnbaseline')
+other_methods = ('LLI', 'svd', 'slopeone', 'mormpred', 'nmf', 'knn', 'knnmean', 'knnzscore', 'knnbaseline')
 
 # general arguments
 parser.add_argument("type", choices = ("matrix", "tensor"))
@@ -35,10 +36,15 @@ args = parser.parse_args()
 device = torch.device(f"cuda:{args.gpuid}" if torch.cuda.is_available() else "cpu")
 
 if args.type == 'matrix':
-    if args.dataname == 'ml-1m':
-        matrix_movieLens(device, args.percent, args.eps)
-    elif args.dataname == 'jester':
-        matrix_Jester2(device, args.percent, args.eps)
+    if args.method == 'LLI':
+        if args.dataname == 'ml-1m':
+            matrix_movieLens(device, args.percent, args.eps)
+        elif args.dataname == 'jester':
+            matrix_Jester2(device, args.percent, args.eps)
+    else:
+        matrix_other_methods(args.percent, args.dataname, args.method)        
+
+    
 
 if args.type == 'tensor' and args.dataname != 'jester':
     args.features= set()

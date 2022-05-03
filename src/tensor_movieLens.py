@@ -43,6 +43,7 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
     
     ages, occupations, genders = extract_features(device, limit)
     matrix_rating = matrix_construct(device)
+    tensor_rating = tensor_construct(device, matrix_rating, features, ages, occupations, genders)
 
     print("The algorithm runs 2 times to get the mean and std!")
     for i in range(2):
@@ -67,12 +68,6 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
     # ages = t.tensor([1, 20, 30])
     # occupations = t.tensor([0, 4, 5])
     # genders = t.tensor([0, 1, 0])
-    
-    tensor_rating = tensor_construct(device, matrix_rating, features, ages, occupations, genders)
-    
-    print("MAE is", round(MAE, 2))
-    print("RMSE is", round(RMSE, 2))
-    print("Errors from the iteration process is:\n", errors)
 
 
 def extract_features(device, limit = None):
