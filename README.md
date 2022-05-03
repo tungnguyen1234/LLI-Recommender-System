@@ -13,9 +13,9 @@ We also use the [SurPRISE](http://surpriselib.com) python package to run other b
 Running matrix LLI
 ------------------
 
-To run the matrix latent algorithm with train-test-split percentage and convergence condition on MovieLens1M data:
+To run the matrix LLI algorithm with train-test-split percentage and convergence condition on MovieLens1M data:
 
-```python src/main.py matrix ml-1m --percent 0.2 --eps 1e-10```
+```python src/main.py matrix ml-1m --method LLI --percent 0.2 --eps 1e-10```
 
 The command is also self-configured with a 20% percentage and convergence condition of $10^{-5}$:
 
@@ -33,10 +33,10 @@ Running tensor LLI
 ------------------
 
 For the tensor, there are 3 feature categories from the user: age, occupation, and gender. The 
-command to run the tensor algorithm with train-test-split percentage, the number of limited data points, 
+command to run the tensor LLI algorithm with train-test-split percentage, the number of limited data points, 
 and all the possible features in the third dimension of MovieLens1M data:
 
-```python src/main.py tensor ml-1m --percent 0.2 --limit 800```
+```python src/main.py tensor ml-1m --method LLI --percent 0.2 --limit 800```
 
 or a simpler command is:
 
