@@ -30,6 +30,10 @@ def matrix_movieLens(device, percent, epsilon):
     Output:
         Prints the MAE and RMSE score.
     '''
+    dataname = 'ml-1m' 
+    other_method = 'LLI'
+    path = "result/"
+    output_text = path + str(dataname) + ".txt"
 
     matrix_rating = matrix_construct(device)
 
@@ -51,10 +55,18 @@ def matrix_movieLens(device, percent, epsilon):
         RMSEs.append(RMSE)
         list_errors.append(errors)
     
-    print("-------------------------------------------------")    
-    print("Mean MAE is", np.mean(MAEs), "and the std is", np.std(MAEs))
-    print("Mean RMSE is", np.mean(RMSEs), "and the std is", np.std(RMSEs))
-    print("Errors from the iteration process is:\n", list_errors)  
+    meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
+    meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
+    print(f"MAE has mean {meanMAE} and std {stdMAE}")
+    print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
+
+    lines = [f"Here is the result of dataset {dataname} for {other_method} method",\
+            "---------------------------------", \
+            f"MAE has mean {meanMAE} and std {stdMAE}",\
+            f"RMSE has mean {meanRMSE} and std {stdRMSE}", \
+            "---------------------------------", "\n"]
+    with open(output_text, "a", encoding='utf-8') as f:
+        f.write('\n'.join(lines))
 
 
 

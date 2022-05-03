@@ -9,20 +9,21 @@ import os
 # Default for KNN is 40.
 def matrix_other_methods(percent, dataname, other_method):
     # Load the dataset with dataname
-    matrix_rating = load_dataset(dataname)
-    hash = {}
-    kf = KFold(n_splits=3)
+    
+    path = "result/"
+    output_text = path + str(dataname) + ".txt"
 
+    matrix_rating = load_dataset(dataname)
+    kf = KFold(n_splits=3)
     MAEs = []
     RMSEs = []
     
     # Setup the algorithm object
     algo = run_algo(other_method)
-    hash[other_method] = {}
 
     # Run the other method for steps times.
     step = 0
-    print("Here is the result for", other_method, "method")
+    print(f"Here is the result of dataset {dataname} for {other_method} method")
     for trainset, testset in kf.split(matrix_rating):
         print("---------------------------------")
 
@@ -38,18 +39,19 @@ def matrix_other_methods(percent, dataname, other_method):
         step += 1
 
     
-    print("---------------------------------")
-    print("The overall result is the following:")
+    print("-------------------------------------------------")   
     meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
     meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
-    print(f"MAE of {other_method} has mean {meanMAE} and std {stdMAE}")
-    print(f"RMSE of {other_method} has mean {meanRMSE} and std {stdRMSE}")
-    print("---------------------------------")
-    hash[other_method]['MAE'] = [meanMAE, stdMAE]
-    hash[other_method]['RMSE'] = [meanRMSE, stdRMSE]
+    print(f"MAE has mean {meanMAE} and std {stdMAE}")
+    print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
 
-    print(hash)
-
+    lines = [f"Here is the result of dataset {dataname} for {other_method} method",\
+            "---------------------------------", \
+            f"MAE has mean {meanMAE} and std {stdMAE}",\
+            f"RMSE has mean {meanRMSE} and std {stdRMSE}", \
+            "---------------------------------", "\n"]
+    with open(output_text, "a", encoding='utf-8') as f:
+        f.write('\n'.join(lines))
 
 def load_dataset(dataname):
     matrix_rating = None
@@ -74,7 +76,7 @@ def run_algo(method: str):
         return SlopeOne()
     if method == 'nmf':
         return NMF()
-    if method == 'mormpred':
+    if method == 'normpred':
         return NormalPredictor()
     if method == 'knn':
         return KNNBasic()

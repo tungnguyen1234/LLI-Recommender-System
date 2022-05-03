@@ -1,0 +1,18 @@
+Here is the result of dataset jester for slopeone method
+---------------------------------
+MAE has mean 3.2434606137159947 and std 0.0058292013970493994
+RMSE has mean 4.276264735002041 and std 0.005946277539475925
+---------------------------------
+
+Here is the result of dataset jester for svd method
+---------------------------------
+MAE has mean 3.3318470224630428 and std 0.0036909418579865257
+RMSE has mean 4.427426061562679 and std 0.0030014475306624658
+---------------------------------
+
+Here is the result of dataset jester for LLI method
+---------------------------------
+MAE has mean 3.6603386402130127 and std 2.9802322387695312e-05
+RMSE has mean 4.644750118255615 and std 0.003978729248046875
+---------------------------------
+

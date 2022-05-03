@@ -27,6 +27,10 @@ def matrix_Jester2(device, percent, epsilon):
     Output:
         Prints the MAE and RMSE score.
     '''
+    dataname = 'jester' 
+    other_method = 'LLI'
+    path = "result/"
+    output_text = path + str(dataname) + ".txt"
 
     matrix_rating = matrix_construct(device)
     MAEs = []
@@ -45,14 +49,18 @@ def matrix_Jester2(device, percent, epsilon):
         list_errors.append(errors)
     
     
-    print("-------------------------------------------------")   
-    mean_errors = [np.mean(l1[i], l2[i]) for [l1, l2] in list_errors]
-    std_errors = [np.std(l1[i], l2[i]) for [l1, l2] in list_errors]
     meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
     meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
     print(f"MAE has mean {meanMAE} and std {stdMAE}")
     print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
-    print("Errors from the iteration process is\n", mean_errors, "and \n", std_errors)
+
+    lines = [f"Here is the result of dataset {dataname} for {other_method} method",\
+            "---------------------------------", \
+            f"MAE has mean {meanMAE} and std {stdMAE}",\
+            f"RMSE has mean {meanRMSE} and std {stdRMSE}", \
+            "---------------------------------", "\n"]
+    with open(output_text, "a", encoding='utf-8') as f:
+        f.write('\n'.join(lines))
 
 def matrix_construct(device):
     '''

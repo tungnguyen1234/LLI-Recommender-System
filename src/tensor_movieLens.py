@@ -36,14 +36,13 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
             The convergence number for the algorithm.
     Output:
         Prints the MAE, RMSE and errors from the latent scaling convergence steps.
- score.
     '''
     MAEs = []
     RMSEs = []
     list_errors = []
     
     path = "result/"
-    output_text = path + "tensor_ml-1m_result"+".txt"
+    output_text = path + "tensor_ml-1m_result" + ".txt"
     # os.remove(output_text)
 
     ages, occupations, genders = extract_features(device, limit)

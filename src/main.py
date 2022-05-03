@@ -14,7 +14,7 @@ from matrix_other_methods import matrix_other_methods
 import torch 
 
 parser = ArgumentParser()
-other_methods = ('LLI', 'svd', 'slopeone', 'mormpred', 'nmf', 'knn', 'knnmean', 'knnzscore', 'knnbaseline')
+other_methods = ('LLI', 'svd', 'slopeone', 'normpred', 'nmf', 'knn', 'knnmean', 'knnzscore', 'knnbaseline')
 
 # general arguments
 parser.add_argument("type", choices = ("matrix", "tensor"))
@@ -36,7 +36,7 @@ args = parser.parse_args()
 device = torch.device(f"cuda:{args.gpuid}" if torch.cuda.is_available() else "cpu")
 
 if args.type == 'matrix':
-    if args.method == 'LLI':
+    if not args.method or args.method == 'LLI':
         if args.dataname == 'ml-1m':
             matrix_movieLens(device, args.percent, args.eps)
         elif args.dataname == 'jester':

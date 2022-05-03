@@ -1,0 +1,6 @@
+Here is the result of dataset ml-1m for LLI method
+---------------------------------
+MAE has mean 0.7440393269062042 and std 0.0009473264217376709
+RMSE has mean 0.9340194165706635 and std 0.00020560622215270996
+---------------------------------
+
