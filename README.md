@@ -29,7 +29,7 @@ The same command for Jester2 dataset is
 ```python src/main.py tensor jester```
 
 
-Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID, and the similar commands go for Jester-2 dataset as ```jester```:
+Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID on only ```ml-1m``` dataset. Jester-2 dataset can only run in matrix, but not in tensor:
 
 Adding one feature:
 
