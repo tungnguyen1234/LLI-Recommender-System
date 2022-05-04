@@ -62,28 +62,30 @@ def load_dataset(dataname):
         reader = Reader(line_format=u'user item rating', sep=',', rating_scale=(1, 6), skip_lines=1)
         matrix_rating = Dataset.load_from_file(file_path, reader=reader)
     elif dataname == 'jester':
-        file_path = os.path.expanduser('~/LLI/data/jester.dat')
-        reader = Reader('jester')
-        matrix_rating = Dataset.load_from_file(file_path, reader=reader)
-    
+        # file_path = os.path.expanduser('jester_rating.dat')
+        # file_path = os.path.expanduser('~/LLI/data/jester.dat')
+        # reader = Reader(line_format='user item rating ', sep=',',rating_scale=(1,20))
+        matrix_rating = Dataset.load_builtin('jester')
+
     return matrix_rating
 
 
 def run_algo(method: str):
+    sim_options={'name':'pearson','min_support':5,'user_based':True}
     if method == 'svd':
         return SVD()
     if method == 'slopeone':
         return SlopeOne()
     if method == 'nmf':
-        return NMF()
+        return NMF(biased = True)
     if method == 'normpred':
         return NormalPredictor()
     if method == 'knn':
-        return KNNBasic()
+        return KNNBasic(k=25,min_k=5,sim_options=sim_options,verbose=True)
     if method == 'knnmean':
-        return KNNWithMeans()
+        return KNNWithMeans(k=25,min_k=5,sim_options=sim_options,verbose=True)
     if method == 'knnzscore':
-        return KNNWithZScore()
+        return KNNWithZScore(k=25,min_k=5,sim_options=sim_options,verbose=True)
     if method == 'knnbaseline':
-        return KNNBaseline()
+        return KNNBaseline(k=25,min_k=5,sim_options=sim_options,verbose=True)
 

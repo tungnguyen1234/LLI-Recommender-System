@@ -16,3 +16,15 @@ MAE has mean 3.6603386402130127 and std 2.9802322387695312e-05
 RMSE has mean 4.644750118255615 and std 0.003978729248046875
 ---------------------------------
 
+Here is the result of dataset jester for normpred method
+---------------------------------
+MAE has mean 5.880311067340432 and std 0.007708014401522535
+RMSE has mean 7.269714118327381 and std 0.008086529442844081
+---------------------------------
+
+Here is the result of dataset jester for nmf method
+---------------------------------
+MAE has mean 3.355650612340057 and std 0.010752853351171082
+RMSE has mean 4.3741444145033554 and std 0.009248727894320123
+---------------------------------
+
