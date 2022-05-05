@@ -90,28 +90,3 @@ def tensor_latent(device, tensor, epsilon = 1e-10):
             break
 
     return np.exp(latent_1), np.exp(latent_2), np.exp(latent_3), errors
-
-
-
-
-        # # Starting the first iterative step 
-        # for first in range(0,d1):
-        #     # Get the sum by first dim
-        #     sig_size = sigma_first[first]
-        #     if sig_size > 0:
-        #         # Update rho_first
-        #         rho_first = - t.sum(tensor_log[first, :, : ])/sig_size
-        #         tensor_log[first, :, :] += rho_first*rho_sign[first, :, :]
-        #         latent_1[first] += rho_first
-        #         error += float(rho_first**2)
-            
-        # for third in range(0,d3):
-        #     # Get the sum by third dim
-        #     sig_size = sigma_third[third]
-        #     if sig_size > 0:
-        #         # Update rho_third
-        #         rho_third = - t.sum(tensor_log[:, :, third])/sig_size
-        #         tensor_log[:, :, third] += rho_third*rho_sign[:, :, third]
-        #         latent_3[third] += rho_third
-        #         error += float(rho_third**2)
-    
