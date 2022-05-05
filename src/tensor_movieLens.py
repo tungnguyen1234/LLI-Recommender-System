@@ -69,11 +69,11 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
 
 
     
-    lines = [f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
-            f"Error means from the iteration process is {mean_errors}", \
-            f"Error stds from the iteration process is {std_errors}",]
-    with open(output_text, "a", encoding='utf-8') as f:
-        f.write('\n'.join(lines))
+    # lines = [f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
+    #         f"Error means from the iteration process is {mean_errors}", \
+    #         f"Error stds from the iteration process is {std_errors}",]
+    # with open(output_text, "a", encoding='utf-8') as f:
+    #     f.write('\n'.join(lines))
 
     
 
@@ -102,7 +102,7 @@ def extract_features(device, limit = None):
         df = df.head(limit)
 
     # Get age and profile info
-    ages = t.tensor(df['Age'].to_numpy()).to(device)
+    ages = t.div(t.tensor(df['Age'].to_numpy()), 10, rounding_mode = 'floor').to(device)
 
     # Job
     occupations = t.tensor(df['Occupation'].to_numpy()).to(device)
@@ -111,9 +111,9 @@ def extract_features(device, limit = None):
     genders = []
     for gender in list(df['Gender']):
         if gender == 'F':
-            genders.append(0)
-        elif gender == 'M':
             genders.append(1)
+        elif gender == 'M':
+            genders.append(0)
 
     genders = t.tensor(genders).to(device)
     return ages, occupations, genders

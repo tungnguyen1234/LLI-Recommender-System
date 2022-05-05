@@ -28,20 +28,11 @@ def tensor_latent(device, tensor, epsilon = 1e-10):
 
     # Get the total number of nonzeros
     rho_sign = (tensor != 0)*1
-    # Get number of nonzeros in each dimension
-    sigma_first = t.zeros(d1).to(device)  
-    sigma_second = t.zeros(d2).to(device)  
-    sigma_third = t.zeros(d3).to(device)
 
     # Get the number of nonzeros inside each 2-dimensional tensor
-    for first in range(0,d1):
-        sigma_first[first] = t.sum(rho_sign[first, :, :])
-
-    for second in range(0,d2):
-        sigma_second[second] = t.sum(rho_sign[:, second, :]) 
-
-    for third in range(0,d3):
-        sigma_third[third] = t.sum(rho_sign[:, :, third])
+    sigma_first = rho_sign.sum([1,2])
+    sigma_second = rho_sign.sum([0,2])
+    sigma_third = rho_sign.sum([0,1])
 
     # Take logarithm of tensor
     tensor_log = t.log(tensor)

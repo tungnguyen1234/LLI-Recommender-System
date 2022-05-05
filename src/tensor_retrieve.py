@@ -9,8 +9,9 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 import pandas as pd
 import numpy as np
 import torch as t
-from math import *
 from tqdm import tqdm
+import random 
+
 from matrix_movieLens import matrix_construct
 
 
@@ -19,7 +20,7 @@ def tensor_train_test(device, matrix_rating, features, ages, occupations, gender
     Desciption:
         Extracts the tensor from matrix_rating depending on the feature vectors for the third dimension
     Input:
-        matrix_rating: t.tensor 
+        matrix_rating: t.tensor [first_dim, second_dim]
             The matrix of user prediction on products
         features: set
             The feature categories
@@ -44,17 +45,15 @@ def tensor_train_test(device, matrix_rating, features, ages, occupations, gender
     else:
         third_dim, bag = bag_all(device, matrix_rating, ages, genders, occupations)
     
-    first_dim, second_dim = matrix_rating.shape
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
-    total = len(bag)
+    tensor_rating = tensor_rating.reshape((*tensor_rating.shape, third_dim))
 
-    num_test = int(percent*total)
-    per = t.randperm(total).to(device)
-    train_bag = [bag[i] for i in per[num_test:]]
-    test_bag = [bag[i] for i in per[:num_test]]
+    num_test = int(percent*len(bag))
+    shuffled_bag = random.shuffle(bag)
+    train_bag = shuffled_bag[num_test:]
+    test_bag = shuffled_bag[:num_test]
 
-    for user, product, feature in train_bag:
-        tensor_rating[user, product, feature] = matrix_rating[user, product]
+    for user, product, feature, score in train_bag:
+        tensor_rating[user, product, feature] = score
     return tensor_rating, test_bag
 
 
@@ -82,8 +81,9 @@ def bag_age(device, matrix_rating, ages):
     tuples = []
     for user, product in tqdm(user_product):
         if user < len(ages):
-            age = int(ages[user]/10)      
-            tuples.append((user, product, age))
+            age = int(ages[user]/10)
+            score = matrix_rating[user, product]      
+            tuples.append((user, product, age, score))
     return third_dim, t.tensor(tuples).to(device)
 
 
@@ -299,9 +299,10 @@ def bag_all(device, matrix_rating, ages, genders, occupations):
             age = int(ages[user]/10) 
             gender = int(max(ages)/10) + 1 + genders[user]     
             occup =  int(max(ages)/10) + 1 + max(genders) + 1 + occupations[user]
-            tuples.append((user, product, age))
-            tuples.append((user, product, gender))
-            tuples.append((user, product, occup))
+            score = matrix_rating[user, product]    
+            tuples.append((user, product, age, score))
+            tuples.append((user, product, gender, score))
+            tuples.append((user, product, occup, score))
     return third_dim, t.tensor(tuples).to(device) 
 
     
