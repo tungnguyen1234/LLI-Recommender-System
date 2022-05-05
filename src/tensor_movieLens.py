@@ -140,7 +140,7 @@ def tensor_score(device, matrix_rating, ages, occupations, genders, features, pe
     if not (0<= percent <1):
         percent = 1
 
-    tensor_rating, train_bag, test_bag = tensor_train_test(device, matrix_rating, features, ages, occupations, genders, percent)
+    tensor_rating, test_bag = tensor_train_test(device, matrix_rating, features, ages, occupations, genders, percent)
     # Run the latent scaling
     latent_user, latent_prod, latent_feature, errors = tensor_latent(device, tensor_rating, epsilon)
 

@@ -54,7 +54,7 @@ def tensor_train_test(device, matrix_rating, features, ages, occupations, gender
 
     for user, product, feature in train_bag:
         tensor_rating[user, product, feature] = matrix_rating[user, product]
-    return tensor_rating, train_bag, test_bag
+    return tensor_rating, test_bag
 
 
 def bag_age(device, matrix_rating, ages):
