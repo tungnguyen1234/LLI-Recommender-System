@@ -12,10 +12,10 @@ import torch as t
 import numpy as np
 import os
 from math import *
-from matrix_movieLens import matrix_construct
-from tensor_retrieve import tensor_construct
-from tensor_score_eval import tensor_traintest_score
+from tensor_retrieve import tensor_train_test
 from tensor_3D_latent import tensor_latent
+from matrix_movieLens import matrix_construct
+from tqdm import tqdm
 
 
 
@@ -43,17 +43,17 @@ def tensor_movieLens(device, features, percent, limit, epsilon):
     
     path = "result/"
     output_text = path + "tensor_ml-1m_result" + ".txt"
-    # os.remove(output_text)
-
+        
     ages, occupations, genders = extract_features(device, limit)
     matrix_rating = matrix_construct(device)
-    tensor_rating = tensor_construct(device, matrix_rating, features, ages, occupations, genders)
+    # os.remove(output_text)
+
 
     print("The algorithm runs 2 times to get the mean and std!")
     for i in range(2):
         print("-------------------------------------------------")
         print(f"Step {i+1}:")
-        MAE, RMSE, errors = tensor_traintest_score(device, tensor_rating, percent, epsilon)
+        MAE, RMSE, errors = tensor_score(device, matrix_rating, ages, occupations, genders, features, percent, epsilon)
         MAE = float(MAE)
         RMSE = float(RMSE)
         MAEs.append(MAE)
@@ -119,7 +119,7 @@ def extract_features(device, limit = None):
     return ages, occupations, genders
 
 
-def tensor_traintest_score(device, tensor, percent, epsilon): 
+def tensor_score(device, matrix_rating, ages, occupations, genders, features, percent, epsilon): 
     '''
     Desciption:
         This function splits a training tensor for latent scaling algorithm. For testing, we obtain the 
@@ -140,39 +140,32 @@ def tensor_traintest_score(device, tensor, percent, epsilon):
     if not (0<= percent <1):
         percent = 1
 
-    user_prod_feat = t.nonzero(tensor).to(device)
-    per = t.randperm(len(user_prod_feat)).to(device)
-    # Get random test by percent
-    num_test = int(percent*len(user_prod_feat))
-    test = per[:num_test]
-
-    re_train = {}
-    re_test = {}
-
-    # Setup
-    for i in range(len(test)):
-        user, product, feature = user_prod_feat[test[i]]
-        rating = tensor[user, product, feature].clone()
-        re_train[(int(user), int(product))] = rating
-        tensor[user, product, feature] = 0
-
+    tensor_rating, train_bag, test_bag = tensor_train_test(device, matrix_rating, features, ages, occupations, genders, percent)
     # Run the latent scaling
-    latent_user, latent_prod, latent_feature, errors = tensor_latent(device, tensor, epsilon)
+    latent_user, latent_prod, latent_feature, errors = tensor_latent(device, tensor_rating, epsilon)
 
-    # Test
-    MAE = 0.0
-    MSE = 0.0
-    for i in range(len(test)):
-        user, product, feature = user_prod_feat[test[i]]
+    re_test = {}
+    # Get the maximum rating for each user and product 
+    for i in range(len(test_bag)):
+        user, product, feature = test_bag[i]
         rating = 1/(latent_user[user]*latent_prod[product]*latent_feature[feature])
-        comp = re_train[(int(user), int(product))]
-        re_test[int(user), int(product)] = t.max(comp, rating).to(device)
+        val = matrix_rating[int(user), int(product)]
+        re_test[(user, product)] = t.max(val, rating)
         
+    
+    # Regroup the ratings to get RMSE and MSE
+    score_train = [] 
+    score_test = []
     for key, rating in re_test.items():
-        diff = float(abs(re_train[key] - re_test[key]))
-        MAE += diff
-        MSE += diff**2
+        user, product = key
+        score_train.append(matrix_rating[int(user), int(product)])
+        score_test.append(rating)
 
-    MAE = MAE/len(test)
-    RMSE = np.sqrt(MSE/len(test))
+    # Get RMSE and MSE
+    mae_loss = t.nn.L1Loss()
+    mse_loss = t.nn.MSELoss()
+    score_train, score_test = t.tensor(score_train), t.tensor(score_test)
+    RMSE = t.sqrt(mse_loss(score_train, score_test))
+    MAE = mae_loss(score_train, score_test)
+
     return MAE, RMSE, errors

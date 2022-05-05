@@ -14,7 +14,7 @@ from matrix_other_methods import matrix_other_methods
 import torch 
 
 parser = ArgumentParser()
-other_methods = ('LLI', 'svd', 'slopeone', 'normpred', 'nmf', 'knn', 'knnmean', 'knnzscore', 'knnbaseline')
+other_methods = ('LLI', 'svd', 'slope_one', 'norm_pred', 'nmf', 'knn_basic', 'knn_with_means', 'knn_with_z_score', 'knn_baseline')
 
 # general arguments
 parser.add_argument("type", choices = ("matrix", "tensor"))

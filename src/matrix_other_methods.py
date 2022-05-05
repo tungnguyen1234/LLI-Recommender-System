@@ -1,20 +1,23 @@
 import random
 import numpy as np
+import hyperopt
 from surprise import Dataset, accuracy, Reader
-from surprise.model_selection import train_test_split, KFold
+from surprise.model_selection import train_test_split, KFold, cross_validate
 from surprise import SVD, NMF, SlopeOne, NormalPredictor, KNNBasic, KNNWithMeans, KNNWithZScore, KNNBaseline
-
+from surprise import Dataset
 import os
 
-# Default for KNN is 40.
+
 def matrix_other_methods(percent, dataname, other_method):
+    n_splits = int(1/percent)
+
     # Load the dataset with dataname
     
     path = "result/"
     output_text = path + str(dataname) + ".txt"
 
     matrix_rating = load_dataset(dataname)
-    kf = KFold(n_splits=3)
+    kf = KFold(n_splits=n_splits)
     MAEs = []
     RMSEs = []
     
@@ -53,39 +56,28 @@ def matrix_other_methods(percent, dataname, other_method):
     with open(output_text, "a", encoding='utf-8') as f:
         f.write('\n'.join(lines))
 
+
 def load_dataset(dataname):
-    matrix_rating = None
-
-    if dataname == 'ml-1m':
-        # Load the movielens-1M dataset 
-        file_path = os.path.expanduser('~/LLI/data/ratings.csv')
-        reader = Reader(line_format=u'user item rating', sep=',', rating_scale=(1, 6), skip_lines=1)
-        matrix_rating = Dataset.load_from_file(file_path, reader=reader)
-    elif dataname == 'jester':
-        # file_path = os.path.expanduser('jester_rating.dat')
-        # file_path = os.path.expanduser('~/LLI/data/jester.dat')
-        # reader = Reader(line_format='user item rating ', sep=',',rating_scale=(1,20))
-        matrix_rating = Dataset.load_builtin('jester')
-
+    matrix_rating = Dataset.load_builtin(dataname)
     return matrix_rating
 
 
 def run_algo(method: str):
-    sim_options={'name':'pearson','min_support':5,'user_based':True}
+    sim_options = {'name':'cosine', 'user_based':False}
     if method == 'svd':
         return SVD()
-    if method == 'slopeone':
+    if method == 'slope_one':
         return SlopeOne()
     if method == 'nmf':
         return NMF(biased = True)
-    if method == 'normpred':
+    if method == 'norm_pred':
         return NormalPredictor()
-    if method == 'knn':
-        return KNNBasic(k=25,min_k=5,sim_options=sim_options,verbose=True)
-    if method == 'knnmean':
-        return KNNWithMeans(k=25,min_k=5,sim_options=sim_options,verbose=True)
-    if method == 'knnzscore':
-        return KNNWithZScore(k=25,min_k=5,sim_options=sim_options,verbose=True)
-    if method == 'knnbaseline':
-        return KNNBaseline(k=25,min_k=5,sim_options=sim_options,verbose=True)
+    if method == 'knn_basic':
+        return KNNBasic(k=25, min_k=5, sim_options=sim_options, verbose=True)
+    if method == 'knn_with_means':
+        return KNNWithMeans(k=25, min_k=5, sim_options=sim_options, verbose=True)
+    if method == 'knn_with_z_score':
+        return KNNWithZScore(k=25, min_k=5, sim_options=sim_options, verbose=True)
+    if method == 'knn_baseline':
+        return KNNBaseline(k=25, min_k=5, sim_options=sim_options, verbose=True)
 
