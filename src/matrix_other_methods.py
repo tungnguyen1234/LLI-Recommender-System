@@ -1,10 +1,9 @@
 import random
 import numpy as np
-import hyperopt
-from surprise import Dataset, accuracy, Reader
-from surprise.model_selection import train_test_split, KFold, cross_validate
-from surprise import SVD, NMF, SlopeOne, NormalPredictor, KNNBasic, KNNWithMeans, KNNWithZScore, KNNBaseline
-from surprise import Dataset
+# from surprise import Dataset, accuracy, Reader
+# from surprise.model_selection import train_test_split, KFold
+# from surprise import SVD, NMF, SlopeOne, NormalPredictor, KNNBasic, KNNWithMeans, KNNWithZScore, KNNBaseline
+
 import os
 
 
