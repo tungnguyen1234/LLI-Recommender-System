@@ -29,21 +29,22 @@ def tensor_train_test(device, matrix_rating, features, ages, occupations, gender
     bag = None
     if len(features) == 1:
         if 'age' in features:
-            bag = bag_age(device, matrix_rating, ages)
+            third_dim, bag = bag_age(device, matrix_rating, ages)
         if 'occup' in features:
-            bag = bag_occupation(device, matrix_rating, occupations)
+            third_dim, bag = bag_occupation(device, matrix_rating, occupations)
         if 'gender' in features:
-            bag = bag_gender(device, matrix_rating, genders)
+            third_dim, bag = bag_gender(device, matrix_rating, genders)
     elif len(features) == 2:
         if features == set(['age', 'occup']):
-            bag = bag_age_occup(device, matrix_rating, ages, occupations)
+            third_dim, bag = bag_age_occup(device, matrix_rating, ages, occupations)
         if features == set(['age', 'gender']):
-            bag = bag_age_gender(device, matrix_rating, ages, genders)
+            third_dim, bag = bag_age_gender(device, matrix_rating, ages, genders)
         if features == set(['gender', 'occup']):
-            bag = bag_gender_occup(device, matrix_rating, genders, occupations)
+            third_dim, bag = bag_gender_occup(device, matrix_rating, genders, occupations)
     else:
-        first_dim, second_dim, third_dim, bag = bag_all(device, matrix_rating, ages, genders, occupations)
+        third_dim, bag = bag_all(device, matrix_rating, ages, genders, occupations)
     
+    first_dim, second_dim = matrix_rating.shape
     tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
     total = len(bag)
 
@@ -75,9 +76,6 @@ def bag_age(device, matrix_rating, ages):
     # Get the nonzero for faster process
     user_product = t.nonzero(matrix_rating).to(device)
 
-    # Get the dimensions 
-    first_dim, second_dim = matrix_rating.shape
-
     # For Age: from 0 to 56 -> group 1 to 6. 
     third_dim = int(max(ages)/10) + 1
   
@@ -86,7 +84,7 @@ def bag_age(device, matrix_rating, ages):
         if user < len(ages):
             age = int(ages[user]/10)      
             tuples.append((user, product, age))
-    return first_dim, second_dim, third_dim, t.tensor(tuples) 
+    return third_dim, t.tensor(tuples).to(device)
 
 
 def bag_occupation(device, matrix_rating, occupations):
@@ -110,15 +108,14 @@ def bag_occupation(device, matrix_rating, occupations):
     user_product = t.nonzero(matrix_rating).to(device)
 
     # Get the dimensions 
-    first_dim, second_dim = matrix_rating.shape
     third_dim = max(occupations) + 1
-    tensor_rating = t.zeros((first_dim, second_dim, third_dim)).to(device)
+    tuples = []
   
     for user, product in tqdm(user_product):
         if user < len(occupations):
             occup = occupations[user]         
-            tensor_rating[user, product, occup] = matrix_rating[user, product]
-    return tensor_rating 
+            tuples.append((user, product, occup))
+    return third_dim, t.tensor(tuples).to(device)
 
 
 
@@ -293,8 +290,7 @@ def bag_all(device, matrix_rating, ages, genders, occupations):
     # Get the nonzero for faster process
     user_product = t.nonzero(matrix_rating).to(device)
 
-    # Get the dimensions 
-    first_dim, second_dim = matrix_rating.shape
+    # Get the dimension
     third_dim = int(max(ages)/10) + 1 + max(genders) + 1 + max(occupations) + 1 
   
     tuples = []
@@ -306,7 +302,7 @@ def bag_all(device, matrix_rating, ages, genders, occupations):
             tuples.append((user, product, age))
             tuples.append((user, product, gender))
             tuples.append((user, product, occup))
-    return first_dim, second_dim, third_dim, t.tensor(tuples) 
+    return third_dim, t.tensor(tuples).to(device) 
 
     
 

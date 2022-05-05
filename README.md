@@ -40,35 +40,31 @@ and all the possible features in the third dimension of MovieLens1M data:
 
 or a simpler command is:
 
-```python src/main.py tensor ml-1m```
-
-The same command for Jester2 dataset is 
-
-```python src/main.py tensor jester```
+```python src/main.py tensor ml-1m``` (Testable)
 
 
-Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID on only ```ml-1m``` dataset. Jester-2 dataset can only run in matrix, but not in tensor:
+Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID on only ```ml-1m``` dataset. Jester-2 dataset can only run in matrix, but not in tensor. For progress revew
 
 Adding one feature:
 
-```python src/main.py tensor ml-1m --age True```
+```python src/main.py tensor ml-1m --age True``` (Testable)
 
-```python src/main.py tensor ml-1m --occup True```
+```python src/main.py tensor ml-1m --occup True``` (Testable)
 
-```python src/main.py tensor ml-1m --gender True```
+```python src/main.py tensor ml-1m --gender True``` (Not yet)
 
 Adding two features:
 
-```python src/main.py tensor ml-1m --age True --gender True```
+```python src/main.py tensor ml-1m --age True --gender True``` (Not yet)
 
-```python src/main.py tensor ml-1m --age True --occup True```
+```python src/main.py tensor ml-1m --age True --occup True``` (Not yet)
 
-```python src/main.py tensor ml-1m --gender True --occup True```
+```python src/main.py tensor ml-1m --gender True --occup True``` (Not yet)
 
 
 Adding three features:
 
-```python src/main.py tensor ml-1m```
+```python src/main.py tensor ml-1m``` (Testable)
 
 Evaluation of other tensor methods
 ----------------------------------
