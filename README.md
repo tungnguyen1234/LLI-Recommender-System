@@ -43,15 +43,17 @@ or a simpler command is:
 ```python src/main.py tensor ml-1m``` (Testable)
 
 
-Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID on only ```ml-1m``` dataset. Jester-2 dataset can only run in matrix, but not in tensor. For progress revew
+Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID on only ```ml-1m``` dataset. Jester-2 dataset can only run in matrix, but not in tensor. 
 
-Adding one feature:
+# Right now we focus testing on the following commands
+
+<!-- Adding one feature:
 
 ```python src/main.py tensor ml-1m --age True``` (Testable)
 
 ```python src/main.py tensor ml-1m --occup True``` (Testable)
 
-```python src/main.py tensor ml-1m --gender True``` (Testable)
+```python src/main.py tensor ml-1m --gender True``` (Testable) -->
 
 Adding two features:
 
@@ -61,10 +63,10 @@ Adding two features:
 
 ```python src/main.py tensor ml-1m --gender True --occup True``` (Testable)
 
-
+<!-- 
 Adding three features:
 
-```python src/main.py tensor ml-1m``` (Testable)
+```python src/main.py tensor ml-1m``` (Testable) -->
 
 
 Evaluation of other tensor methods
