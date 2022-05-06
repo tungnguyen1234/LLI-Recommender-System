@@ -62,7 +62,7 @@ class TensorScore():
         for user, product, feature in tqdm(test_idx):
             rating = 1/(latent_user[user]*latent_prod[product]*latent_feature[feature])
             ratings.append(rating)
-            re_test[(user, product)] = t.max(t.tensor(1.0), rating)
+            re_test[(user, product)] = t.max(t.tensor(0.1), rating)
 
         
         # Regroup the ratings to get RMSE and MSE
