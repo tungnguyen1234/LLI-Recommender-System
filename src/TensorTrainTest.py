@@ -8,7 +8,7 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
 import numpy as np
 import torch as t
-from tqdm import tqdmm
+from tqdm import tqdm
 
 
 class TrainTest():
