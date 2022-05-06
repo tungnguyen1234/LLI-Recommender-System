@@ -81,4 +81,4 @@ class TensorLLI():
             if error < self.epsilon:
                 break
 
-        return np.exp(latent_1), np.exp(latent_2), np.exp(latent_3), errors
+        return t.exp(latent_1), t.exp(latent_2), t.exp(latent_3), errors

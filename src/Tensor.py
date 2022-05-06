@@ -82,6 +82,8 @@ class Tensor():
             MAEs.append(MAE)
             RMSEs.append(RMSE)
             list_errors.append(errors)
+            print(f"MAE is {MAE}")
+            print(f"RMSE is {RMSE}")
         print("-------------------------------------------------")    
         mean_errors = [np.mean([list_errors[0][i], list_errors[-1][i]]) for i in range(len(list_errors[0]))]
         std_errors = [np.std([list_errors[0][i], list_errors[-1][i]]) for i in range(len(list_errors[0]))]

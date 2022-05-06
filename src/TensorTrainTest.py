@@ -49,12 +49,12 @@ class TrainTest():
         N_test = int(self.percent*N)
         N_train = N - N_test
 
-        mask_train = a.copy()
+        mask_train = (a != 0)*1
         # print(len(idx), N)
         # print(np.random.choice(idx, size = N_train, replace=False))
         np.put(mask_train, np.random.choice(idx, size = N_train), 0)
 
-        mask_a = a != 0
+        mask_a = (a != 0)*1
         test_idx = t.nonzero(t.tensor(np.subtract(mask_a, mask_train)).to(self.device))
 
         mask_train = t.tensor(mask_train).to(self.device)
