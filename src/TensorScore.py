@@ -72,8 +72,6 @@ class TensorScore():
             score_train.append(self.matrix_rating[int(user), int(product)])
             score_test.append(rating)
 
-        print(score_train[:100])
-        print(score_test[:100])
         # Get RMSE and MSE
         mae_loss = t.nn.L1Loss()
         mse_loss = t.nn.MSELoss()
