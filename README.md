@@ -44,7 +44,7 @@ or a simpler command is:
 
 Overall, we could reproduce experiements in tensor movielens by the following operations with GPU ID on only ```ml-1m``` dataset. Jester-2 dataset can only run in matrix, but not in tensor. 
 
-# Right now we focus testing on the following commands
+# Right now we focus testing on the following commands. Note that they run over 10 iterations.
 
 <!-- Adding one feature:
 
