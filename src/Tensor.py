@@ -77,13 +77,11 @@ class Tensor():
             print("-------------------------------------------------")
             print(f"Step {i+1}:")
             MAE, RMSE, errors = self.tensor_score.tensor_score()
-            MAE = float(MAE)
-            RMSE = float(RMSE)
-            MAEs.append(MAE)
-            RMSEs.append(RMSE)
+            MAEs.append(float(MAE))
+            RMSEs.append(float(RMSE))
             list_errors.append(errors)
-            print(f"MAE is {MAE}")
-            print(f"RMSE is {RMSE}")
+            print(f"MAE is {float(MAE)}")
+            print(f"RMSE is {float(RMSE)}")
         print("-------------------------------------------------")    
         mean_errors = [np.mean([list_errors[0][i], list_errors[-1][i]]) for i in range(len(list_errors[0]))]
         std_errors = [np.std([list_errors[0][i], list_errors[-1][i]]) for i in range(len(list_errors[0]))]

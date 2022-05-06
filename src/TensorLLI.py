@@ -75,7 +75,7 @@ class TensorLLI():
             latent_3 += rho_third
             error += (rho_third**2).sum()
 
-            errors.append(error)
+            errors.append(float(error))
             trial += 1
             print('This is my', trial, 'time with error', error)
             if error < self.epsilon:
