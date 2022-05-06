@@ -57,12 +57,12 @@ class TensorScore():
 
         print("Here we obtain the testing values")
         re_test = {}
-        ratings = []
-        # Get the maximum rating for each user and product 
+        # Get the maximum rating for each user and product from tensort_train 
+        # and the testing set
         for user, product, feature in tqdm(test_idx):
             rating = 1/(latent_user[user]*latent_prod[product]*latent_feature[feature])
-            ratings.append(rating)
-            re_test[(user, product)] = t.max(t.tensor(0.1), rating)
+            rating_train = tensor_train[user, product, feature]
+            re_test[(user, product)] = t.max(rating_train, rating)
 
         
         # Regroup the ratings to get RMSE and MSE
@@ -70,7 +70,7 @@ class TensorScore():
         score_test = []
         for key, rating in tqdm(re_test.items()):
             user, product = key
-            score_train.append(self.matrix_rating[int(user), int(product)])
+            score_train.append(self.matrix_rating[user, product])
             score_test.append(rating)
 
         # Get RMSE and MSE

@@ -92,7 +92,9 @@ class Tensor():
 
 
         
-        lines = [f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
+        lines = [f"Here we test the algorithm with features {self.features}",\
+                "-------------------------------------------------",\
+                f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
                 f"Error means from the iteration process is {mean_errors}", \
                 f"Error stds from the iteration process is {std_errors}",]
         with open(output_text, "a", encoding='utf-8') as f:
