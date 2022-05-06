@@ -1,5 +1,5 @@
 import torch as t
-from TrainTest import TrainTest
+from TensorTrainTest import TrainTest
 from TensorLLI import TensorLLI
 from tqdm import tqdm 
 

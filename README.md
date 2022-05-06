@@ -51,21 +51,20 @@ Adding one feature:
 
 ```python src/main.py tensor ml-1m --occup True``` (Testable)
 
-```python src/main.py tensor ml-1m --gender True``` (Not yet)
+```python src/main.py tensor ml-1m --gender True``` (Testable)
 
 Adding two features:
 
-```python src/main.py tensor ml-1m --age True --gender True``` (Not yet)
+```python src/main.py tensor ml-1m --age True --gender True``` (Testable)
 
-```python src/main.py tensor ml-1m --age True --occup True``` (Not yet)
+```python src/main.py tensor ml-1m --age True --occup True``` (Testable)
 
-```python src/main.py tensor ml-1m --gender True --occup True``` (Not yet)
+```python src/main.py tensor ml-1m --gender True --occup True``` (Testable)
 
 
 Adding three features:
 
 ```python src/main.py tensor ml-1m``` (Testable)
-
 Evaluation of other tensor methods
 ----------------------------------
 
