@@ -60,19 +60,19 @@ class TensorLLI():
             # Update in second dim
             rho_second = - t.div(tensor_log.sum([0, 2]), sigma_second).nan_to_num(0.0) #d2
             tensor_log += rho_second[None, :, None] * rho_sign # d2 - d1*d2*d3
-            latent_2 += rho_second 
+            latent_2 -= rho_second 
             error += (rho_second**2).sum()
 
             # Update in first dim
             rho_first = - t.div(tensor_log.sum([1, 2]), sigma_first).nan_to_num(0.0) # d1
             tensor_log += rho_first[:, None, None] * rho_sign  # d1 - d1*d2*d3
-            latent_1 += rho_first 
+            latent_1 -= rho_first 
             error += (rho_first**2).sum()
 
             # Update in third dim
             rho_third = - t.div(tensor_log.sum([0, 1]), sigma_third).nan_to_num(0.0) # d3
             tensor_log += rho_third[None, None, :] * rho_sign # d3 - d1*d2*d3
-            latent_3 += rho_third
+            latent_3 -= rho_third
             error += (rho_third**2).sum()
 
             errors.append(float(error))
@@ -80,5 +80,10 @@ class TensorLLI():
             print('This is my', trial, 'time with error', float(error))
             if error < self.epsilon:
                 break
+        
 
-        return t.exp(latent_1), t.exp(latent_2), t.exp(latent_3), errors
+        latent_1, latent_2, latent_3 = t.exp(latent_1), t.exp(latent_2), t.exp(latent_3)
+        
+        tensor_full = latent_1[:, None, None]* latent_2[None, :, None] * latent_3[None, None, :]
+
+        return tensor_full, errors

@@ -4,17 +4,17 @@ from TensorLLI import TensorLLI
 from tqdm import tqdm 
 
 class TensorScore(): 
-    def __init__(self, device, matrix_rating, features, ages, occupations, genders, percent, epsilon):
+    def __init__(self, device, matrix, features, ages, occupations, genders, percent, epsilon):
         self.percent = percent
         self.epsilon = epsilon
         self.device = device
-        self.matrix_rating = matrix_rating
+        self.matrix = matrix
         self.features = features
         self.ages = ages
         self.occupations = occupations
         self.genders = genders
 
-        self.train_test = TrainTest(self.device, self.matrix_rating, self.features, \
+        self.train_test = TrainTest(self.device, self.matrix, self.features, \
             self.ages, self.occupations, self.genders, self.percent)
 
     '''
@@ -51,34 +51,19 @@ class TensorScore():
         '''
 
         # Run the latent scaling
-        tensor_train, test_idx = self.train_test.train_test()
+        tensor_train, mask_test = self.train_test.train_test()
         self.tensor_LLI = TensorLLI(self.device, tensor_train, self.epsilon)
-        latent_user, latent_prod, latent_feature, errors = self.tensor_LLI.LLI()
+        tensor_full, errors = self.tensor_LLI.LLI()
 
-        print("Here we obtain the testing values")
-        re_test = {}
-        # Get the maximum rating for each user and product from tensort_train 
-        # and the testing set
-        for user, product, feature in tqdm(test_idx):
-            rating = 1/(latent_user[user]*latent_prod[product]*latent_feature[feature])
-            rating_train = tensor_train[user, product, feature]
-            re_test[(user, product)] = t.max(rating_train, rating)
-
-        
-        # Regroup the ratings to get RMSE and MSE
-        score_train = [] 
-        score_test = []
-        for key, rating in tqdm(re_test.items()):
-            user, product = key
-            score_train.append(self.matrix_rating[user, product])
-            score_test.append(rating)
+        # Get the testing result by getting the maximum value at the second dimension
+        matrix_test = t.amax(mask_test * tensor_full + tensor_train, dim = 2)
+        print("Here we obtain the testing values:")
 
         # Get RMSE and MSE
         mae_loss = t.nn.L1Loss()
         mse_loss = t.nn.MSELoss()
-        score_train, score_test = t.tensor(score_train), t.tensor(score_test)
-        RMSE = t.sqrt(mse_loss(score_train, score_test))
-        MAE = mae_loss(score_train, score_test)
+        RMSE = t.sqrt(mse_loss(matrix_test, self.matrix))
+        MAE = mae_loss(matrix_test, self.matrix)
 
         return MAE, RMSE, errors
 

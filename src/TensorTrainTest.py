@@ -55,12 +55,12 @@ class TrainTest():
         np.put(mask_train, np.random.choice(idx, size = N_train), 0)
 
         mask_a = (a != 0)*1
-        test_idx = t.nonzero(t.tensor(np.subtract(mask_a, mask_train)).to(self.device))
+        test_mask = t.tensor(np.subtract(mask_a, mask_train)).to(self.device)
 
         mask_train = t.tensor(mask_train).to(self.device)
         tensor_train = mask_train * tensor_rating
 
-        return tensor_train, test_idx
+        return tensor_train, test_mask
 
 
     def get_tensor(self):
