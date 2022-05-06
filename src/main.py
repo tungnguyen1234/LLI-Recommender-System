@@ -19,6 +19,7 @@ other_methods = ('LLI', 'svd', 'slope_one', 'norm_pred', 'nmf', 'knn_basic', 'kn
 # general arguments
 parser.add_argument("type", choices = ("matrix", "tensor"))
 parser.add_argument("dataname", choices=('ml-1m', 'jester'), default='ml-1m')
+parser.add_argument("--steps", type = int, default=10)
 parser.add_argument("--method", choices=other_methods, default='LLI')
 parser.add_argument("--percent", type=float, required=False, default = 0.2)
 parser.add_argument("--eps", type=float, required=False, default = 1e-10)
@@ -46,5 +47,5 @@ if args.type == 'matrix':
 
     
 if args.type == 'tensor':
-    tensor = Tensor(device, args.dataname, args.age, args.occup, args.gender, args.percent, args.eps, args.limit)
+    tensor = Tensor(device, args.dataname, args.age, args.occup, args.gender, args.percent, args.eps, args.steps, args.limit)
     tensor.retrieve_result()

@@ -8,9 +8,7 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
 import numpy as np
 import torch as t
-from tqdm import tqdm
-
-from matrix_movieLens import matrix_construct
+from tqdm import tqdmm
 
 
 class TrainTest():

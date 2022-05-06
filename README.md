@@ -33,10 +33,9 @@ Running tensor LLI
 ------------------
 
 For the tensor, there are 3 feature categories from the user: age, occupation, and gender. The 
-command to run the tensor LLI algorithm with train-test-split percentage, the number of limited data points, 
-and all the possible features in the third dimension of MovieLens1M data:
+command to run the tensor LLI algorithm with train-test percentage 0.2, the number of data as 800, steps of iterations 10, and all features in the third dimension of MovieLens1M data:
 
-```python src/main.py tensor ml-1m --method LLI --percent 0.2 --limit 800```
+```python src/main.py tensor ml-1m --method LLI --percent 0.2 --limit 800 --steps 10```
 
 or a simpler command is:
 

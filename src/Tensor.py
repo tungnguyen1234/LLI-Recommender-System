@@ -16,7 +16,7 @@ from TensorData import TensorData
 
 
 class Tensor():
-    def __init__(self, device, dataname, age, occup, gender, percent, epsilon, limit = None):
+    def __init__(self, device, dataname, age, occup, gender, percent, epsilon, steps, limit = None):
         '''
         Desciption:
             This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -45,6 +45,7 @@ class Tensor():
         self.limit = limit 
         self.dataname = dataname
         self.epsilon = epsilon
+        self.steps = steps
 
         
         self.tensor_data = TensorData(self.device, self.dataname, self.limit)
@@ -68,7 +69,7 @@ class Tensor():
             self.percent = 1
 
 
-    def retrieve_result(self, steps = 2):
+    def retrieve_result(self):
         '''
         Desciption:
             This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -88,7 +89,7 @@ class Tensor():
         
 
         print("The algorithm runs 2 times to get the mean and std!")
-        for i in range(steps):
+        for i in range(self.steps):
             print("-------------------------------------------------")
             print(f"Step {i+1}:")
             MAE, RMSE, errors = self.tensor_score.tensor_score()
@@ -107,8 +108,7 @@ class Tensor():
         
         lines = [f"Here we test the algorithm with features {self.features}",\
                 "-------------------------------------------------",\
-                f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
-                f"Errors from the iteration process are {list_errors}",]
+                f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}"]
         with open(output_text, "a", encoding='utf-8') as f:
             f.write('\n'.join(lines))
 
