@@ -17,6 +17,29 @@ from TensorData import TensorData
 
 class Tensor():
     def __init__(self, device, dataname, age, occup, gender, percent, epsilon, limit = None):
+        '''
+        Desciption:
+            This function runs all the steps to pre-processing MovieLens data, running the tensor latent
+            algorithm, and retrieving the MAE and RMSE score. 
+        Input:
+            device: 
+                The gpu device to run the algorithm on.
+            percent: float
+                The percentage of splitting for training and testing data. Default is None.
+            dataname: str
+                The dataset to run the algorithm on.
+            limit: int 
+                The limit number of data that would be process. Default is None, meaning having no limit
+            age, occup, gender: str
+                The features by string that would be added in the third dimension. There are three types:
+                age, occupation, and gender.
+            percent: str
+                The percentage of splitting for training and testing
+            epsilon: float
+                The convergence threshold for the algorithm.
+        Output:
+            Prints the MAE, RMSE and errors from the latent scaling convergence steps.
+        '''
         self.device = device 
         self.percent = percent
         self.limit = limit 
@@ -51,15 +74,7 @@ class Tensor():
             This function runs all the steps to pre-processing MovieLens data, running the tensor latent
             algorithm, and retrieving the MAE and RMSE score. 
         Input:
-            percent: int
-                The percentage of splitting for training and testing data. Default is None.
-            limit: int 
-                The limit number of data that would be process. Default is None, meaning having no limit
-            features: set()
-                The features by string that would be added in the third dimension. There are three types:
-                age, occupation, and gender.
-            epsilon: float
-                The convergence number for the algorithm.
+            steps: the number of steps to run the algorithm
         Output:
             Prints the MAE, RMSE and errors from the latent scaling convergence steps.
         '''
@@ -83,8 +98,6 @@ class Tensor():
             print(f"MAE is {float(MAE)}")
             print(f"RMSE is {float(RMSE)}")
         print("-------------------------------------------------")    
-        mean_errors = [np.mean([list_errors[0][i], list_errors[-1][i]]) for i in range(len(list_errors[0]))]
-        std_errors = [np.std([list_errors[0][i], list_errors[-1][i]]) for i in range(len(list_errors[0]))]
         meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
         meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
         print(f"MAE has mean {meanMAE} and std {stdMAE}")
@@ -95,8 +108,7 @@ class Tensor():
         lines = [f"Here we test the algorithm with features {self.features}",\
                 "-------------------------------------------------",\
                 f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
-                f"Error means from the iteration process is {mean_errors}", \
-                f"Error stds from the iteration process is {std_errors}",]
+                f"Errors from the iteration process are {list_errors}",]
         with open(output_text, "a", encoding='utf-8') as f:
             f.write('\n'.join(lines))
 
