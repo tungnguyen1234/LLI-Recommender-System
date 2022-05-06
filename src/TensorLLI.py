@@ -77,7 +77,7 @@ class TensorLLI():
 
             errors.append(float(error))
             trial += 1
-            print('This is my', trial, 'time with error', error)
+            print('This is my', trial, 'time with error', float(error))
             if error < self.epsilon:
                 break
 
