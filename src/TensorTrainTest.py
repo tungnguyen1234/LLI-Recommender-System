@@ -42,7 +42,7 @@ class TrainTest():
             Returns the training tensor and the index vectors for testing.
         '''
         tensor_rating = self.get_tensor()
-        a = tensor_rating.clone().numpy()
+        a = tensor_rating.clone().cpu().numpy()
 
         idx = np.flatnonzero(a)
         N = np.count_nonzero(a)

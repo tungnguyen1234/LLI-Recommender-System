@@ -13,7 +13,7 @@ class TensorLLI():
     def __init__(self, device, tensor, epsilon = 1e-10):
         self.device = device
         self.tensor = tensor
-        self.eps = epsilon 
+        self.epsilon = epsilon 
 
     def LLI(self):
         '''
@@ -78,7 +78,7 @@ class TensorLLI():
             errors.append(error)
             trial += 1
             print('This is my', trial, 'time with error', error)
-            if error < self.eps:
+            if error < self.epsilon:
                 break
 
         return np.exp(latent_1), np.exp(latent_2), np.exp(latent_3), errors
