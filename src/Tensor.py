@@ -6,17 +6,15 @@ File descriptions
 __author__      = 'Tung Nguyen, Sang Truong'
 __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
-import pandas as pd
-import torch as t
 import numpy as np
 from matrix_movieLens import matrix_construct
 from TensorScore import TensorScore
-from TensorData import TensorData
+from TensorObject import TensorObject
 
 
-
-class Tensor():
-    def __init__(self, device, dataname, age, occup, gender, percent, epsilon, steps, limit = None):
+class Tensor(TensorObject):
+    def __init__(self, device, dataname, num_feature, percent, epsilon, steps, limit):
+        super().__init__(device, dataname, percent, limit)
         '''
         Desciption:
             This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -40,36 +38,31 @@ class Tensor():
         Output:
             Prints the MAE, RMSE and errors from the latent scaling convergence steps.
         '''
-        self.device = device 
-        self.percent = percent
-        self.limit = limit 
-        self.dataname = dataname
+        self.num_feature = num_feature
         self.epsilon = epsilon
         self.steps = steps
-
-        
-        self.tensor_data = TensorData(self.device, self.dataname, self.limit)
-        self.ages, self.occupations, self.genders = self.tensor_data.extract_features()
-        
-
-        self.features= set()
-        if age == 'True':
-            self.features.add("age")
-        if occup == 'True':
-            self.features.add("occup")
-        if gender == 'True':
-            self.features.add("gender")
-
-        self.matrix_rating = matrix_construct(self.device)
-        self.tensor_score = TensorScore(self.device, self.matrix_rating, self.features, self.ages, \
-                                        self.occupations, self.genders, self.percent, self.epsilon,)
-
+        self.features = self.get_features_by_num()
+        self.matrix = matrix_construct(self.device)
 
         if not (0<= self.percent <1):
             self.percent = 1
 
 
-    def retrieve_result(self):
+    def get_features_by_num(self):
+        if self.num_feature == 1:
+            return [{"age"}, {"occup"}, {"gender"}]
+        if self.num_feature == 2:
+            return [{"age", "occup"}, {"occup", "gender"}, {"age", "gender"}]
+        if self.num_feature == 3:
+            return [{"age", "occup", "gender"}]
+
+
+    def performance_overall(self):
+        for feature in self.features:
+            self.performance_by_feature(feature)
+
+
+    def performance_by_feature(self, feature):
         '''
         Desciption:
             This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -86,36 +79,42 @@ class Tensor():
         output_text = f"result/tensor_{self.dataname}.txt"
         # os.remove(output_text)
 
-        
+        self.tensor_score = TensorScore(self.device, self.matrix, feature,\
+                                        self.dataname, self.percent, self.epsilon, self.limit)
 
-        print("The algorithm runs 2 times to get the mean and std!")
+        print("-------------------------------------------------")
+        print(f"Here we test the algorithm with feature {feature}")
+        print(f"The algorithm runs {self.steps} times to get the mean and std!")
         for i in range(self.steps):
-            print("-------------------------------------------------")
             print(f"Step {i+1}:")
             MAE, RMSE, errors = self.tensor_score.tensor_score()
             MAEs.append(float(MAE))
             RMSEs.append(float(RMSE))
-            list_errors.append(errors)
+            list_errors.append(str(errors))
             print(f"MAE is {float(MAE)}")
             print(f"RMSE is {float(RMSE)}")
-        print("-------------------------------------------------")    
+            print("-------------")  
         meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
         meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
+        print(f"The overall result after {self.steps} steps")
         print(f"MAE has mean {meanMAE} and std {stdMAE}")
         print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
 
-
         
-        lines = [f"Here we test the algorithm with features {self.features}",\
+        lines = [f"Here we test the algorithm with feature {feature}",\
                 "-------------------------------------------------",\
-                f"MAE has mean {meanMAE} and std {stdMAE}", f"RMSE has mean {meanRMSE} and std {stdRMSE}"]
+                f"MAE has mean {meanMAE} and std {stdMAE}", \
+                f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
+                f"The errors after {self.steps} steps are:"]\
+                + list_errors \
+                + ["-------------------------------------------------", "\n\n"]
         with open(output_text, "a", encoding='utf-8') as f:
             f.write('\n'.join(lines))
 
         
 
         # Testing purpose
-        # matrix_rating = t.tensor([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
+        # matrix = t.tensor([[1, 1, 0], [0, 0, 2], [3, 3, 4]])
         # ages = t.tensor([1, 20, 30])
         # occupations = t.tensor([0, 4, 5])
         # genders = t.tensor([0, 1, 0])

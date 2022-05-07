@@ -9,10 +9,12 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 import numpy as np
 import torch as t
 from tqdm import tqdm
+from TensorData import TensorData
+from TensorObject import TensorObject
 
-
-class TrainTest():
-    def __init__(self, device, matrix_rating, features, ages, occupations, genders, percent):
+class TrainTest(TensorObject):
+    def __init__(self, device, matrix, feature, dataname, percent, limit):
+        super().__init__(device, dataname, percent, limit)
         '''
         Desciption:
             This class performs operations to create the tensor and splits the tensor for 
@@ -20,16 +22,14 @@ class TrainTest():
         Input:
             .....
         '''
-        self.device = device 
-        self.percent = percent
-        self.features = features
-        self.ages, self.occupations, self.genders = ages, occupations, genders
-        self.matrix_rating = matrix_rating
-        self.first_dim, self.second_dim = matrix_rating.shape
+        self.feature = feature
+        self.matrix = matrix
+        self.first_dim, self.second_dim = self.matrix.shape
+        self.feature_data = TensorData(self.device, self.dataname, self.limit)
+        self.ages, self.occupations, self.genders = self.feature_data.extract_features()
         self.third_dim = 0
         # Get the nonzero for faster process
-        self.user_product = t.nonzero(self.matrix_rating).to(self.device)
-        self.tuples = []
+        self.user_product = t.nonzero(self.matrix).to(self.device)
 
 
     def train_test(self):
@@ -64,23 +64,23 @@ class TrainTest():
     def get_tensor(self):
         '''
         Desciption:
-            Get the tensor depending the configured features.
+            Get the tensor depending the configured feature.
         Output:
-            Returns the corresponding tensor based on the configured features.
+            Returns the corresponding tensor based on the configured feature.
         '''
-        if len(self.features) == 1:
-            if 'age' in self.features:
+        if len(self.feature) == 1:
+            if 'age' in self.feature:
                 return self.tensor_age()
-            if 'occup' in self.features:
+            if 'occup' in self.feature:
                 return self.tensor_occup()
-            if 'gender' in self.features:
+            if 'gender' in self.feature:
                 return self.tensor_gender()
-        elif len(self.features) == 2:
-            if self.features == set(['age', 'occup']):
+        elif len(self.feature) == 2:
+            if self.feature == {'age', 'occup'}:
                 return self.tensor_age_occup()
-            if self.features == set(['age', 'gender']):
+            if self.feature == {'age', 'gender'}:
                 return self.tensor_age_gender()
-            if self.features == set(['gender', 'occup']):
+            if self.feature == {'gender', 'occup'}:
                 return self.tensor_gender_occup()
         else:
             return self.tensor_all()
@@ -102,7 +102,7 @@ class TrainTest():
         for user, product in tqdm(self.user_product):
             if user < len(self.ages):
                 age = self.ages[user]
-                tensor_rating[user, product, age] = self.matrix_rating[user, product]      
+                tensor_rating[user, product, age] = self.matrix[user, product]      
         return tensor_rating
 
 
@@ -123,7 +123,7 @@ class TrainTest():
         for user, product in tqdm(self.user_product):
             if user < len(self.occupations):
                 occup = self.occupations[user]         
-                tensor_rating[user, product, occup] = self.matrix_rating[user, product]
+                tensor_rating[user, product, occup] = self.matrix[user, product]
         return tensor_rating
 
 
@@ -147,7 +147,7 @@ class TrainTest():
         for user, product in tqdm(self.user_product):
             if user < len(self.genders):
                 gender = self.genders[user]         
-                tensor_rating[user, product, gender] = self.matrix_rating[user, product]
+                tensor_rating[user, product, gender] = self.matrix[user, product]
         return tensor_rating
 
     def tensor_age_occup(self):

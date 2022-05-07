@@ -10,7 +10,7 @@ import numpy as np
 import torch as t
 
 class TensorLLI():
-    def __init__(self, device, tensor, epsilon = 1e-10):
+    def __init__(self, device, tensor, epsilon):
         self.device = device
         self.tensor = tensor
         self.epsilon = epsilon 
@@ -51,8 +51,8 @@ class TensorLLI():
         # Iteration errors
         errors = []
 
-        trial = 0
-        print('Start the scaling process')
+        step = 1
+        print('Start the LLI process:')
 
         while True:
             error = 0.0
@@ -77,8 +77,8 @@ class TensorLLI():
             error += (rho_second**2).sum()
 
             errors.append(float(error))
-            trial += 1
-            print('This is my', trial, 'time with error', float(error))
+            step += 1
+            print(f'This is step {step} with error {float(error)}')
             if error < self.epsilon:
                 break
         

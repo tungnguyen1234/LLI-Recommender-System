@@ -1,21 +1,17 @@
 import torch as t
 from TensorTrainTest import TrainTest
 from TensorLLI import TensorLLI
-from tqdm import tqdm 
+from TensorObject import TensorObject
 
-class TensorScore(): 
-    def __init__(self, device, matrix, features, ages, occupations, genders, percent, epsilon):
-        self.percent = percent
+
+class TensorScore(TensorObject): 
+    def __init__(self, device, matrix, feature, dataname, percent, epsilon, limit):
+        super().__init__(device, dataname, percent, limit)
         self.epsilon = epsilon
-        self.device = device
         self.matrix = matrix
-        self.features = features
-        self.ages = ages
-        self.occupations = occupations
-        self.genders = genders
-
-        self.train_test = TrainTest(self.device, self.matrix, self.features, \
-            self.ages, self.occupations, self.genders, self.percent)
+        self.feature = feature
+        self.train_test = TrainTest(self.device, self.matrix, self.feature, 
+                                    self.dataname, self.percent, self.limit)
 
     '''
     Desciption:

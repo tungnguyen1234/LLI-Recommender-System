@@ -3,10 +3,10 @@ import torch as t
 
 class TensorData():
     def __init__(self, device, dataname, limit):
+        self.device = device
         self.dataname = dataname
         self.limit = limit
-        self.device = device
-    
+        
     def extract_features(self):
         if self.dataname == 'ml-1m':
             return self.tensor_features()
