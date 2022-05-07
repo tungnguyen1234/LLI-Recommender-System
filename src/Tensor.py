@@ -6,7 +6,7 @@ File descriptions
 __author__      = 'Tung Nguyen, Sang Truong'
 __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
-import numpy as np
+import numpy as np, gc
 from matrix_movieLens import matrix_construct
 from TensorScore import TensorScore
 from TensorObject import TensorObject
@@ -93,7 +93,9 @@ class Tensor(TensorObject):
             list_errors.append(str(errors))
             print(f"MAE is {float(MAE)}")
             print(f"RMSE is {float(RMSE)}")
-            print("-------------")  
+            print("-------------")
+            gc.collect()
+            torch.cuda.empty_cache()
         meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
         meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
         print(f"The overall result after {self.steps} steps")
