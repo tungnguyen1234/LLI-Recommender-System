@@ -18,7 +18,7 @@ For the tensor, we have the following parser argument:
 * ```dataname```: the dataset to use. Here we only include ```ml-1m``` (MovieLens1M) and ```jester``` (Jester2).
 * ```--method```: indicating the method to evaluate the dataset. Default is ```LLI```.
 * ```--percent```: the ratio to divide between training and testing set. Default is ```0.2```.
-* ```--eps```: convergence threshold for the LLI algorithm. Default is ```1e-5```
+* ```--eps```: convergence threshold for the LLI algorithm. Default is ```1e-10```
 * ```--steps```: the number of evaluations on the MAE and RMSE for the LLI algorithm. Default is ```10```.
 * ```--limit```: the number of data to limit for debugging purpose. Default is ```None```, meaning full dataset.
 * ```--num_feature```: the number of features to add in the third dimension of the tensor. Default is ```3```.
