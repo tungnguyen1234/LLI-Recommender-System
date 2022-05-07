@@ -31,14 +31,6 @@ To run the matrix LLI algorithm with train-test-split percentage $20%$ and conve
 
 ```python src/main.py matrix ml-1m --method LLI --percent 0.2 --eps 1e-10```
 
-The command is also self-configured with a 20% percentage and convergence condition of $1e-10$:
-
-```python src/main.py matrix ml-1m```
-
-The same command for Jester2 dataset is 
-
-```python src/main.py matrix jester```
-
 # Evaluation of other matrix methods
 
 
@@ -48,33 +40,12 @@ The same command for Jester2 dataset is
 
 ```python src/main.py tensor ml-1m --method LLI --percent 0.2 --limit 800 --steps 10 --gpuid 0```
 
-* A simpler command is:
-
-```python src/main.py tensor ml-1m --gpuid 0.```
-
-* A similar command without using GPU id is:
-
-```python src/main.py tensor ml-1m.```
-
 * Also, Jester-2 dataset can only run in matrix, but not in tensor. 
 
-# Commands to evaluate the tensor algorithm based on the features added.
+# Evaluate the tensor algorithm
 
-Adding one feature:
-
+For example, when there is 2 features:
 ```python src/main.py tensor ml-1m --num_feature 1```
-
-Adding two features:
-
-```python src/main.py tensor ml-1m --num_feature 2```
-
-Adding three features is either
-
-```python src/main.py tensor ml-1m --num_feature 3```
-
-or 
-
-```python src/main.py tensor ml-1m```
 
 # Evaluation of other tensor methods
 
