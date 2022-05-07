@@ -29,7 +29,7 @@ For the tensor, we have the following parser argument:
 
 To run the matrix LLI algorithm with train-test-split percentage $20%$ and convergence threshold $1e-10$ on MovieLens1M data:
 
-```python src/main.py matrix ml-1m --method LLI --percent 0.2 --eps 1e-10```
+```python src/main.py matrix ml-1m --method LLI --percent 0.2 --eps 1e-10 --gpuid 1```
 
 # Evaluation of other matrix methods
 
@@ -45,7 +45,7 @@ To run the matrix LLI algorithm with train-test-split percentage $20%$ and conve
 # Evaluate the tensor algorithm
 
 For example, when there is 2 features:
-```python src/main.py tensor ml-1m --num_feature 1```
+```python src/main.py tensor ml-1m --num_feature 2 --gpuid 1```
 
 # Evaluation of other tensor methods
 
