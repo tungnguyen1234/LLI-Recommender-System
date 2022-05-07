@@ -6,7 +6,7 @@ File descriptions
 __author__      = 'Tung Nguyen, Sang Truong'
 __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
-import numpy as np, gc
+import numpy as np, gc, torch
 from matrix_movieLens import matrix_construct
 from TensorScore import TensorScore
 from TensorObject import TensorObject
