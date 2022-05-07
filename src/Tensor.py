@@ -10,7 +10,6 @@ import numpy as np
 from matrix_movieLens import matrix_construct
 from TensorScore import TensorScore
 from TensorObject import TensorObject
-import torch as t
 
 
 class Tensor(TensorObject):
@@ -80,14 +79,13 @@ class Tensor(TensorObject):
         output_text = f"result/tensor_{self.dataname}.txt"
         # os.remove(output_text)
 
-        
+        self.tensor_score = TensorScore(self.device, self.matrix, feature,\
+                                        self.dataname, self.percent, self.epsilon, self.limit)
 
         print("-------------------------------------------------")
         print(f"Here we test the algorithm with feature {feature}")
         print(f"The algorithm runs {self.steps} times to get the mean and std!")
         for i in range(self.steps):
-            self.tensor_score = TensorScore(self.device, self.matrix, feature,\
-                                        self.dataname, self.percent, self.epsilon, self.limit)
             print(f"Step {i+1}:")
             MAE, RMSE, errors = self.tensor_score.tensor_score()
             MAEs.append(float(MAE))
@@ -95,17 +93,13 @@ class Tensor(TensorObject):
             list_errors.append(str(errors))
             print(f"MAE is {float(MAE)}")
             print(f"RMSE is {float(RMSE)}")
-            print("-------------") 
-            del self.tensor_score
-            t.cuda.empty_cache()
+            print("-------------")  
         meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
         meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
         print(f"The overall result after {self.steps} steps")
         print(f"MAE has mean {meanMAE} and std {stdMAE}")
         print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
 
-        del MAEs, RMSEs, list_errors
-        t.cuda.empty_cache()
         
         lines = [f"Here we test the algorithm with feature {feature}",\
                 "-------------------------------------------------",\
