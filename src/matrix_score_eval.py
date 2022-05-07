@@ -2,7 +2,7 @@
 import torch as t
 import numpy as np
 from math import *
-from matrix_latent import matrix_latent
+from MatrixLLI import MatrixLLI
 
 def matrix_traintest_score(device, matrix, percent, epsilon):
     '''
@@ -40,7 +40,8 @@ def matrix_traintest_score(device, matrix, percent, epsilon):
         matrix[user, product] = 0
 
     # Scaling
-    latent_user, latent_prod, errors = matrix_latent(device, matrix, epsilon)
+    LLI = MatrixLLI()
+    latent_user, latent_prod, errors = LLI.LLI(device, matrix, epsilon)
     # Test
     for i in range(len(test)):
         user, product = user_product[test[i]]

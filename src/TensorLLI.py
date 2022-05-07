@@ -77,8 +77,8 @@ class TensorLLI():
             error += (rho_second**2).sum()
 
             errors.append(float(error))
-            step += 1
             print(f'This is step {step} with error {float(error)}')
+            step += 1
             if error < self.epsilon:
                 break
         

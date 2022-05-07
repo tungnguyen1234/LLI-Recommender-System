@@ -10,8 +10,6 @@ class TensorScore(TensorObject):
         self.epsilon = epsilon
         self.matrix = matrix
         self.feature = feature
-        self.train_test = TrainTest(self.device, self.matrix, self.feature, 
-                                    self.dataname, self.percent, self.limit)
 
     '''
     Desciption:
@@ -45,7 +43,8 @@ class TensorScore(TensorObject):
         Output:
             Returns the MAE, RMSE and errors from the latent scaling convergence steps.
         '''
-
+        self.train_test = TrainTest(self.device, self.matrix, self.feature, 
+                                    self.dataname, self.percent, self.limit)
         # Run the latent scaling
         tensor_train, mask_test = self.train_test.train_test()
         self.tensor_LLI = TensorLLI(self.device, tensor_train, self.epsilon)
