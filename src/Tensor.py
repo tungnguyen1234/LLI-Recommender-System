@@ -76,7 +76,7 @@ class Tensor(TensorObject):
         RMSEs = []
         list_errors = []
         
-        output_text = f"result/tensor_{self.dataname}.txt"
+        output_text = f"result/LLI_{self.dataname}_{self.num_feature}.txt"
         # os.remove(output_text)
 
         self.tensor_score = TensorScore(self.device, self.matrix, feature,\

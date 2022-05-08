@@ -57,8 +57,8 @@ class TensorScore(TensorObject):
         # Get RMSE and MSE
         mae_loss = t.nn.L1Loss()
         mse_loss = t.nn.MSELoss()
-        RMSE = t.sqrt(mse_loss(matrix_test, self.matrix))
-        MAE = mae_loss(matrix_test, self.matrix)
+        RMSE = t.sqrt(mse_loss(matrix_test - self.matrix, t.zeros(self.matrix.shape)))
+        MAE = mae_loss(matrix_test - self.matrix, t.zeros(self.matrix.shape))
 
         return MAE, RMSE, errors
 

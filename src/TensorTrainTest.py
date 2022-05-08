@@ -127,7 +127,6 @@ class TrainTest(TensorObject):
         return tensor_rating
 
 
-
     def tensor_gender(self):
         '''
         Desciption:
@@ -137,8 +136,6 @@ class TrainTest(TensorObject):
         Output:
             Returns the tensor having the rating by (user, product, gender) tuple
         '''
-
-
 
         # Get the dimensions 
         third_dim = max(self.genders) + 1
