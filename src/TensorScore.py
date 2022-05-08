@@ -55,10 +55,11 @@ class TensorScore(TensorObject):
         print("Here we obtain the testing values:")
 
         # Get RMSE and MSE
+        zero_tensor = t.zeros(self.matrix.shape).to(self.device)
         mae_loss = t.nn.L1Loss()
         mse_loss = t.nn.MSELoss()
-        RMSE = t.sqrt(mse_loss(matrix_test - self.matrix, t.zeros(self.matrix.shape)))
-        MAE = mae_loss(matrix_test - self.matrix, t.zeros(self.matrix.shape))
+        RMSE = t.sqrt(mse_loss(matrix_test - self.matrix, zero_tensor))
+        MAE = mae_loss(matrix_test - self.matrix, zero_tensor)
 
         return MAE, RMSE, errors
 
