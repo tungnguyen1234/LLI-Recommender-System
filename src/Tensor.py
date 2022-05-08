@@ -103,6 +103,7 @@ class Tensor(TensorObject):
         print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
 
         
+        
         lines = [f"Here we test the algorithm with feature {feature}",\
                 "-------------------------------------------------",\
                 f"MAE has mean {meanMAE} and std {stdMAE}", \
