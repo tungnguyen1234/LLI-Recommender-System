@@ -164,6 +164,7 @@ class TrainTest(TensorObject):
         tensor_occup = self.tensor_occup()
 
         tensor_rating = t.cat((tensor_age, tensor_occup), dim = 2).to(self.device)
+        del tensor_age, tensor_occup
         return tensor_rating
 
 
@@ -183,6 +184,7 @@ class TrainTest(TensorObject):
         tensor_gender = self.tensor_gender()
 
         tensor_rating = t.cat((tensor_age, tensor_gender), dim = 2).to(self.device)
+        del tensor_age, tensor_gender
         return tensor_rating
 
 
@@ -201,6 +203,7 @@ class TrainTest(TensorObject):
         tensor_occup = self.tensor_occup()
 
         tensor_rating = t.cat((tensor_gender, tensor_occup), dim = 2).to(self.device)
+        del tensor_occup, tensor_gender
         return tensor_rating
 
 
@@ -220,6 +223,7 @@ class TrainTest(TensorObject):
         tensor_age_occup = self.tensor_age_occup()   
         tensor_gender = self.tensor_gender()
         tensor_rating = t.cat((tensor_age_occup, tensor_gender), dim = 2).to(self.device)
+        del tensor_age_occup, tensor_gender
         return tensor_rating
 
     
