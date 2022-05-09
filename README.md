@@ -6,33 +6,13 @@ The LLI method is based on latent variable model. The LLI algorithm extracts the
 
 # Packages
 
-The main packages for LLI are ```PyTorch```, ```Numpy```, and ```Pandas```. 
-
-We also use the [SurPRISE](http://surpriselib.com) python package to run other benchmark recommendation methods. The installation instruction is in the Installation section of the attached [link](https://github.com/NicolasHug/Surprise/tree/fa7455880192383f01475162b4cbd310d91d29ca)
-
-# Parser arguments
-
-For the tensor, we have the following parser argument:
-
-* ```type```: matrix or tensor for evaluation.
-* ```dataname```: the dataset to use. Here we only include ```ml-1m``` (MovieLens1M) and ```jester``` (Jester2).
-* ```--method```: indicating the method to evaluate the dataset. Default is ```LLI```.
-* ```--percent```: the ratio to divide between training and testing set. Default is ```0.2```.
-* ```--eps```: convergence threshold for the LLI algorithm. Default is ```1e-10```
-* ```--steps```: the number of evaluations on the MAE and RMSE for the LLI algorithm. Default is ```10```.
-* ```--limit```: the number of data to limit for debugging purpose. Default is ```None```, meaning full dataset.
-* ```--num_feature```: the number of features to add in the third dimension of the tensor. Default is ```3```.
-* ```--gpuid```: the index number of the GPU. 
-
+The main packages for LLI are ```PyTorch```, ```Numpy```, and ```Pandas```. We also use the [SurPRISE](http://surpriselib.com) python package to run other benchmark recommendation methods. The installation instruction is in the Installation section of the attached [link](https://github.com/NicolasHug/Surprise/tree/fa7455880192383f01475162b4cbd310d91d29ca)
 
 # Running matrix LLI
 
 To run the matrix LLI algorithm with train-test-split percentage $20%$ and convergence threshold $1e-10$ on MovieLens1M data:
 
 ```python src/main.py matrix ml-1m --method LLI --percent 0.2 --eps 1e-10 --gpuid 1```
-
-# Evaluation of other matrix methods
-
 
 # Running tensor LLI
 
@@ -46,11 +26,6 @@ To run the matrix LLI algorithm with train-test-split percentage $20%$ and conve
 
 For example, when there is 2 features:
 ```python src/main.py tensor ml-1m --num_feature 2 --gpuid 1```
-
-# Evaluation of other tensor methods
-
-
-# License
 
 
 # Citation
