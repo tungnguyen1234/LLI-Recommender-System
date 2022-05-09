@@ -28,6 +28,7 @@ class TrainTest(TensorObject):
         self.feature_data = TensorData(self.device, self.dataname, self.limit)
         self.ages, self.occupations, self.genders = self.feature_data.extract_features()
         self.third_dim = 0
+        self.user_dim = self.first_dim
         # Get the nonzero for faster process
         self.user_product = t.nonzero(self.matrix).to(self.device)
 
@@ -99,10 +100,10 @@ class TrainTest(TensorObject):
         # For Age: from 0 to 56 -> group 1 to 6. 
         third_dim = max(self.ages) + 1
         tensor_rating = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
-        for user, product in tqdm(self.user_product):
+        for user in tqdm(range(self.user_dim)):
             if user < len(self.ages):
                 age = self.ages[user]
-                tensor_rating[user, product, age] = self.matrix[user, product]      
+                tensor_rating[user, :, age] = self.matrix[user, :]      
         return tensor_rating
 
 
@@ -120,10 +121,10 @@ class TrainTest(TensorObject):
         # Get the dimensions 
         third_dim = max(self.occupations) + 1
         tensor_rating = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
-        for user, product in tqdm(self.user_product):
+        for user in tqdm(range(self.user_dim)):
             if user < len(self.occupations):
                 occup = self.occupations[user]         
-                tensor_rating[user, product, occup] = self.matrix[user, product]
+                tensor_rating[user, :, occup] = self.matrix[user, :]
         return tensor_rating
 
 
@@ -141,10 +142,10 @@ class TrainTest(TensorObject):
         third_dim = max(self.genders) + 1
         
         tensor_rating = t.zeros((self.first_dim, self.second_dim, third_dim)).to(self.device)
-        for user, product in tqdm(self.user_product):
+        for user in tqdm(range(self.user_dim)):
             if user < len(self.genders):
                 gender = self.genders[user]         
-                tensor_rating[user, product, gender] = self.matrix[user, product]
+                tensor_rating[user, :, gender] = self.matrix[user, :]
         return tensor_rating
 
     def tensor_age_occup(self):
