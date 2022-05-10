@@ -98,9 +98,10 @@ class Tensor(TensorObject):
             gc.collect()
             torch.cuda.empty_cache()
 
-        del MAEs, RMSEs, list_errors
+
         meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
         meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
+        del MAEs, RMSEs, list_errors
         print(f"The overall result after {self.steps} steps")
         print(f"MAE has mean {meanMAE} and std {stdMAE}")
         print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
