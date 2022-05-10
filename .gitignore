@@ -4,5 +4,4 @@ tensor_movieLens/.ipynb_checkpoints/*
 .DS_Store
 *.pyc
 data/sushi3-2016/.ipynb_checkpoints/*
-*.txt
 *.csv
