@@ -5,10 +5,9 @@ from TensorObject import TensorObject
 import gc
 
 class TensorScore(TensorObject): 
-    def __init__(self, device, matrix, feature, dataname, percent, epsilon, limit):
-        super().__init__(device, dataname, percent, limit)
+    def __init__(self, device, dim, feature, dataname, percent, epsilon, limit):
+        super().__init__(device, dim, dataname, percent, limit)
         self.epsilon = epsilon
-        self.matrix = matrix
         self.feature = feature
 
     '''
@@ -43,23 +42,31 @@ class TensorScore(TensorObject):
         Output:
             Returns the MAE, RMSE and errors from the latent scaling convergence steps.
         '''
-        self.train_test = TrainTest(self.device, self.matrix, self.feature, 
+        self.train_test = TrainTest(self.device, self.dim, self.feature, 
                                     self.dataname, self.percent, self.limit)
         # Run the latent scaling
         tensor_train, mask_test = self.train_test.train_test()
-        self.tensor_LLI = TensorLLI(self.device, tensor_train, self.epsilon)
-        tensor_full, errors = self.tensor_LLI.LLI()
+        
+        tensor_LLI = TensorLLI(self.device, self.dim, tensor_train, self.epsilon)
+        tensor_full, errors = tensor_LLI.LLI()
 
+        mae_loss = t.nn.L1Loss()
+        mse_loss = t.nn.MSELoss()
+        RMSE = MAE = tensor_test = None
+
+        
         # Get the testing result by getting the maximum value at the second dimension
-        matrix_test = t.amax(mask_test * tensor_full + tensor_train, dim = 2)
+        if self.dim == 2:
+            tensor_test = mask_test * tensor_full + tensor_train
+        elif self.dim == 3:
+            tensor_test = t.amax(mask_test * tensor_full + tensor_train, dim = 2)
+            
         print("Here we obtain the testing values:")
 
         # Get RMSE and MSE
-        zero_tensor = t.zeros(self.matrix.shape).to(self.device)
-        mae_loss = t.nn.L1Loss()
-        mse_loss = t.nn.MSELoss()
-        RMSE = t.sqrt(mse_loss(matrix_test - self.matrix, zero_tensor))
-        MAE = mae_loss(matrix_test - self.matrix, zero_tensor)
+        zero_tensor = t.zeros(self.tensor.shape).to(self.device)
+        RMSE = t.sqrt(mse_loss(tensor_test - self.tensor, zero_tensor))
+        MAE = mae_loss(tensor_test - self.tensor, zero_tensor)
 
         # release memory
         gc.collect()

@@ -12,8 +12,8 @@ from TensorData import TensorData
 from TensorObject import TensorObject
 
 class TrainTest(TensorObject):
-    def __init__(self, device, matrix, feature, dataname, percent, limit):
-        super().__init__(device, dataname, percent, limit)
+    def __init__(self, device, dim, feature, dataname, percent, limit):
+        super().__init__(device, dim, dataname, percent, limit)
         '''
         Desciption:
             This class performs operations to create the tensor and splits the tensor for 
@@ -21,15 +21,18 @@ class TrainTest(TensorObject):
         Input:
             .....
         '''
+
+        data = TensorData(self.device, self.dataname, self.limit)
         self.feature = feature
-        self.matrix = matrix
-        self.first_dim, self.second_dim = self.matrix.shape
-        self.feature_data = TensorData(self.device, self.dataname, self.limit)
-        self.ages, self.occupations, self.genders = self.feature_data.extract_features()
-        self.third_dim = 0
-        self.user_dim = self.first_dim
+        self.tensor_2_dim = data.tensor_2_dims()
+
+        # for 3 dimension
+        self.ages, self.occupations, self.genders = data.tensor_3_dim_features()
         # Get the nonzero for faster process
-        self.user_product = t.nonzero(self.matrix).to(self.device)
+
+        self.first_dim, self.second_dim = self.tensor_2_dim.shape
+        self.user_dim = self.first_dim
+        self.third_dim = 0
 
 
     def train_test(self):
@@ -39,11 +42,18 @@ class TrainTest(TensorObject):
         Output:
             Returns the training tensor and the index vectors for testing.
         '''
-
-        tensor_rating = self.get_tensor()
-        sizes = tensor_rating.size()
-        tensor_rating = t.flatten(tensor_rating)
+        assert self.dataname == 'ml-1m'
+        sizes = tensor_rating = None
         
+        if self.dim == 2:
+            sizes = self.tensor_2_dim.size()
+            tensor_rating = self.tensor_2_dim
+        elif self.dim == 3:
+            tensor_rating = self.get_tensor()
+            sizes = tensor_rating.size()
+        
+        
+        tensor_rating = t.flatten(tensor_rating)
         mask = (tensor_rating !=0)*1
         nonzero_mask = t.nonzero(mask)
 
@@ -57,27 +67,9 @@ class TrainTest(TensorObject):
         del idx_test, nonzero_mask, N, N_test
         tensor_train = t.reshape((mask - mask_test)*tensor_rating, sizes)
         mask_test = t.reshape(mask_test, sizes)
-        
-
-        # idx = np.flatnonzero(a)
-        # N = np.count_nonzero(a)
-        # N_test = int(self.percent*N)
-        # N_train = N - N_test
-
-        # mask_train = (a != 0)*1
-        # # print(len(idx), N)
-        # # print(np.random.choice(idx, size = N_train, replace=False))
-        # np.put(mask_train, np.random.choice(idx, size = N_train), 0)
-
-        # mask_a = (a != 0)*1
-        # test_mask = t.tensor(np.subtract(mask_a, mask_train)).to(self.device)
-
-        # mask_train = t.tensor(mask_train).to(self.device)
-        # tensor_train = mask_train * tensor_rating
-
-        # return tensor_train, test_mask
 
         return tensor_train, mask_test
+
 
 
     def get_tensor(self):
