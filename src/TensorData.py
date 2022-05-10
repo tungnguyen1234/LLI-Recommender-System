@@ -29,10 +29,10 @@ class TensorData():
             df = df.head(self.limit)
 
         # Get age and profile info
-        ages = t.tensor(df['Age'].to_numpy() // 10, dtype = t.int).to(self.device)
+        ages = t.tensor(df['Age'].to_numpy() // 10, dtype = t.int)
 
         # Job
-        occupations = t.tensor(df['Occupation'].to_numpy()).to(self.device)
+        occupations = t.tensor(df['Occupation'].to_numpy())
 
         # Gender
         genders = []
@@ -42,5 +42,5 @@ class TensorData():
             elif gender == 'M':
                 genders.append(0)
 
-        genders = t.tensor(genders).to(self.device)
+        genders = t.tensor(genders)
         return ages, occupations, genders

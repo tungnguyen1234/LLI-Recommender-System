@@ -50,7 +50,7 @@ class Tensor(TensorObject):
 
     def get_features_by_num(self):
         if self.num_feature == 1:
-            return [{"age"}, {"occup"}, {"gender"}]
+            return [{"occup"}, {"age"}, {"gender"}]
         if self.num_feature == 2:
             return [{"age", "occup"}, {"occup", "gender"}, {"age", "gender"}]
         if self.num_feature == 3:
@@ -94,8 +94,11 @@ class Tensor(TensorObject):
             print(f"MAE is {float(MAE)}")
             print(f"RMSE is {float(RMSE)}")
             print("-------------")
+            # release memory
             gc.collect()
             torch.cuda.empty_cache()
+
+        del MAEs, RMSEs, list_errors
         meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
         meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
         print(f"The overall result after {self.steps} steps")

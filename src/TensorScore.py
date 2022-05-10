@@ -2,7 +2,7 @@ import torch as t
 from TensorTrainTest import TrainTest
 from TensorLLI import TensorLLI
 from TensorObject import TensorObject
-
+import gc
 
 class TensorScore(TensorObject): 
     def __init__(self, device, matrix, feature, dataname, percent, epsilon, limit):
@@ -60,6 +60,10 @@ class TensorScore(TensorObject):
         mse_loss = t.nn.MSELoss()
         RMSE = t.sqrt(mse_loss(matrix_test - self.matrix, zero_tensor))
         MAE = mae_loss(matrix_test - self.matrix, zero_tensor)
+
+        # release memory
+        gc.collect()
+        t.cuda.empty_cache()
 
         return MAE, RMSE, errors
 

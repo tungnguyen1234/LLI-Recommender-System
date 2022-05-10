@@ -6,8 +6,7 @@ File descriptions
 __author__      = 'Tung Nguyen, Sang Truong'
 __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
-import numpy as np
-import torch as t
+import torch as t, gc
 from tqdm import tqdm
 from TensorData import TensorData
 from TensorObject import TensorObject
@@ -28,6 +27,7 @@ class TrainTest(TensorObject):
         self.feature_data = TensorData(self.device, self.dataname, self.limit)
         self.ages, self.occupations, self.genders = self.feature_data.extract_features()
         self.third_dim = 0
+        self.user_dim = self.first_dim
         # Get the nonzero for faster process
         self.user_product = t.nonzero(self.matrix).to(self.device)
 
@@ -39,26 +39,45 @@ class TrainTest(TensorObject):
         Output:
             Returns the training tensor and the index vectors for testing.
         '''
+
         tensor_rating = self.get_tensor()
-        a = tensor_rating.clone().cpu().numpy()
+        sizes = tensor_rating.size()
+        tensor_rating = t.flatten(tensor_rating)
+        
+        mask = (tensor_rating !=0)*1
+        nonzero_mask = t.nonzero(mask)
 
-        idx = np.flatnonzero(a)
-        N = np.count_nonzero(a)
+        N = len(t.nonzero(nonzero_mask))
         N_test = int(self.percent*N)
-        N_train = N - N_test
+        # test indices
+        idx_test = t.randperm(len(nonzero_mask))[:N_test]
+        mask_test = t.zeros(mask.size()).to(self.device)
+        mask_test[idx_test] = 1
 
-        mask_train = (a != 0)*1
-        # print(len(idx), N)
-        # print(np.random.choice(idx, size = N_train, replace=False))
-        np.put(mask_train, np.random.choice(idx, size = N_train), 0)
+        del idx_test, nonzero_mask, N, N_test
+        tensor_train = t.reshape((mask - mask_test)*tensor_rating, sizes)
+        mask_test = t.reshape(mask_test, sizes)
+        
 
-        mask_a = (a != 0)*1
-        test_mask = t.tensor(np.subtract(mask_a, mask_train)).to(self.device)
+        # idx = np.flatnonzero(a)
+        # N = np.count_nonzero(a)
+        # N_test = int(self.percent*N)
+        # N_train = N - N_test
 
-        mask_train = t.tensor(mask_train).to(self.device)
-        tensor_train = mask_train * tensor_rating
+        # mask_train = (a != 0)*1
+        # # print(len(idx), N)
+        # # print(np.random.choice(idx, size = N_train, replace=False))
+        # np.put(mask_train, np.random.choice(idx, size = N_train), 0)
 
-        return tensor_train, test_mask
+        # mask_a = (a != 0)*1
+        # test_mask = t.tensor(np.subtract(mask_a, mask_train)).to(self.device)
+
+        # mask_train = t.tensor(mask_train).to(self.device)
+        # tensor_train = mask_train * tensor_rating
+
+        # return tensor_train, test_mask
+
+        return tensor_train, mask_test
 
 
     def get_tensor(self):
@@ -99,10 +118,10 @@ class TrainTest(TensorObject):
         # For Age: from 0 to 56 -> group 1 to 6. 
         third_dim = max(self.ages) + 1
         tensor_rating = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
-        for user, product in tqdm(self.user_product):
+        for user in tqdm(range(self.user_dim)):
             if user < len(self.ages):
                 age = self.ages[user]
-                tensor_rating[user, product, age] = self.matrix[user, product]      
+                tensor_rating[user, :, age] = self.matrix[user, :]      
         return tensor_rating
 
 
@@ -120,10 +139,10 @@ class TrainTest(TensorObject):
         # Get the dimensions 
         third_dim = max(self.occupations) + 1
         tensor_rating = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
-        for user, product in tqdm(self.user_product):
+        for user in tqdm(range(self.user_dim)):
             if user < len(self.occupations):
                 occup = self.occupations[user]         
-                tensor_rating[user, product, occup] = self.matrix[user, product]
+                tensor_rating[user, :, occup] = self.matrix[user, :]
         return tensor_rating
 
 
@@ -141,10 +160,10 @@ class TrainTest(TensorObject):
         third_dim = max(self.genders) + 1
         
         tensor_rating = t.zeros((self.first_dim, self.second_dim, third_dim)).to(self.device)
-        for user, product in tqdm(self.user_product):
+        for user in tqdm(range(self.user_dim)):
             if user < len(self.genders):
                 gender = self.genders[user]         
-                tensor_rating[user, product, gender] = self.matrix[user, product]
+                tensor_rating[user, :, gender] = self.matrix[user, :]
         return tensor_rating
 
     def tensor_age_occup(self):
@@ -163,6 +182,8 @@ class TrainTest(TensorObject):
         tensor_occup = self.tensor_occup()
 
         tensor_rating = t.cat((tensor_age, tensor_occup), dim = 2).to(self.device)
+        del tensor_occup, tensor_age
+        t.cuda.empty_cache()
         return tensor_rating
 
 
@@ -182,6 +203,7 @@ class TrainTest(TensorObject):
         tensor_gender = self.tensor_gender()
 
         tensor_rating = t.cat((tensor_age, tensor_gender), dim = 2).to(self.device)
+        del tensor_gender, tensor_age
         return tensor_rating
 
 
@@ -200,6 +222,7 @@ class TrainTest(TensorObject):
         tensor_occup = self.tensor_occup()
 
         tensor_rating = t.cat((tensor_gender, tensor_occup), dim = 2).to(self.device)
+        del tensor_gender, tensor_occup
         return tensor_rating
 
 
@@ -219,6 +242,8 @@ class TrainTest(TensorObject):
         tensor_age_occup = self.tensor_age_occup()   
         tensor_gender = self.tensor_gender()
         tensor_rating = t.cat((tensor_age_occup, tensor_gender), dim = 2).to(self.device)
+        gc.collect()
+        t.cuda.empty_cache()
         return tensor_rating
 
     
