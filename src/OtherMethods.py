@@ -1,10 +1,7 @@
-import random
 import numpy as np
-from surprise import Dataset, accuracy, Reader
-from surprise.model_selection import train_test_split, KFold
-from surprise import SVD, NMF, SlopeOne, NormalPredictor, KNNBasic, KNNWithMeans, KNNWithZScore, KNNBaseline
-
-import os
+# from surprise import Dataset, accuracy, Reader
+# from surprise.model_selection import train_test_split, KFold
+# from surprise import SVD, NMF, SlopeOne, NormalPredictor, KNNBasic, KNNWithMeans, KNNWithZScore, KNNBaseline
 
 
 def other_methods(percent, dataname, other_method):
