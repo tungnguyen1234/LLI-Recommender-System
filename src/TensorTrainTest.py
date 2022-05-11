@@ -53,7 +53,7 @@ class TrainTest(TensorObject):
             sizes = tensor_rating.size()
             tensor_rating = self.get_tensor()
         
-        tensor= tensor_rating.clone()
+        
         tensor_rating = t.flatten(tensor_rating)
         mask = (tensor_rating !=0)*1
         nonzero_mask = t.nonzero(mask)
@@ -69,9 +69,9 @@ class TrainTest(TensorObject):
 
         del idx_test, nonzero_mask, N, N_test
         tensor_train = t.reshape((mask - mask_test)*tensor_rating, sizes)
-        tensor_test = tensor - tensor_train
-
         mask_test = t.reshape(mask_test, sizes)
+
+
         return self.tensor_2_dim, tensor_train, mask_test
 
 
