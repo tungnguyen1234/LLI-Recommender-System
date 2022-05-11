@@ -58,8 +58,8 @@ class TensorData():
             # Change 99 into 0 and rescale the matrix by the fill value 
             observed_matrix = (tensor != 99)*1
             fill_value = t.abs(t.min(tensor)) + 1
-            tensor = tensor + t.full(tensor.shape, fill_value = fill_value)
-            tensor = t.mul(tensor, observed_matrix).to(self.device)
+            tensor = tensor + t.full(tensor.shape, fill_value = fill_value).to(self.device)
+            tensor = t.mul(tensor, observed_matrix)
 
             return tensor
 

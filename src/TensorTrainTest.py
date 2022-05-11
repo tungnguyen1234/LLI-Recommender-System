@@ -44,16 +44,14 @@ class TrainTest(TensorObject):
             Returns the training tensor and the index vectors for testing.
         '''
         
-        sizes = tensor_rating = None
+        tensor_rating = None
         
         if self.dim == 2:
-            sizes = self.tensor_2_dim.size()
             tensor_rating = self.tensor_2_dim
         elif self.dim == 3:
-            sizes = tensor_rating.size()
             tensor_rating = self.get_tensor()
         
-        
+        sizes = tensor_rating.size()
         tensor_rating = t.flatten(tensor_rating)
         mask = (tensor_rating !=0)*1
         nonzero_mask = t.nonzero(mask)
