@@ -7,15 +7,13 @@ __author__      = 'Tung Nguyen, Sang Truong'
 __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
 import numpy as np, gc, torch
-from MatrixLLI import MatrixLLI
-from matrix_movieLens import matrix_construct
 from TensorScore import TensorScore
 from TensorObject import TensorObject
 
 
 class Tensor(TensorObject):
-    def __init__(self, device, method, dataname, num_feature, percent, epsilon, steps, limit):
-        super().__init__(device, method, dataname, percent, limit)
+    def __init__(self, device, dim, dataname, num_feature, percent, epsilon, steps, limit):
+        super().__init__(device, dim, dataname, percent, limit)
         '''
         Desciption:
             This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -43,23 +41,22 @@ class Tensor(TensorObject):
         self.epsilon = epsilon
         self.steps = steps
         self.features = self.get_features_by_num()
-        self.matrix = matrix_construct(self.device)
 
         if not (0<= self.percent <1):
             self.percent = 1
 
     
-    def performance_overall_LLI(self):
-        assert self.method == 'LLI'
+    def performance_overal_LLI(self):
         if self.dim == 2:
-            self.performance_by_feature(feature = None)
+            self.performance(feature = None)
             # release memory
             gc.collect()
             torch.cuda.empty_cache()
 
         elif self.dim == 3:
+            assert self.dataname == 'ml-1m'
             for feature in self.features:
-                self.performance_by_feature(feature)
+                self.performance(feature)
 
             # release memory
             gc.collect()
@@ -67,7 +64,6 @@ class Tensor(TensorObject):
 
     def get_features_by_num(self):
         # this method only works for tensor larger than 3 dim
-        assert self.dim == 3
         if self.num_feature == 1:
             return [{"occup"}, {"age"}, {"gender"}]
         if self.num_feature == 2:
@@ -77,7 +73,6 @@ class Tensor(TensorObject):
 
 
     def performance(self, feature):
-        assert self.dim == 3
         '''
         Desciption:
             This function runs all the steps to pre-processing MovieLens data, running the tensor latent
@@ -94,7 +89,7 @@ class Tensor(TensorObject):
         output_text = f"result/LLI_{self.dataname}_dim_{self.dim}_{self.num_feature}.txt"
         # os.remove(output_text)
 
-        self.tensor_score = TensorScore(self.device, self.matrix, feature,\
+        self.tensor_score = TensorScore(self.device, self.dim, feature,\
                                         self.dataname, self.percent, self.epsilon, self.limit)
 
         print("-------------------------------------------------")

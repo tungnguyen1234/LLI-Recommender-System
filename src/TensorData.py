@@ -19,7 +19,6 @@ class TensorData():
             Array of ages, occupation, and genders of the users
         '''
 
-        assert self.dataname == 'ml-1m'
         csv_users = pd.read_csv('data/users.csv', names = ["UserID", "Gender","Age","Occupation", "Zip-code"])
         df = pd.DataFrame(csv_users)
         if self.limit:

@@ -75,7 +75,6 @@ class TensorLLI():
             latent_1 -= rho_first 
             error += (rho_first**2).sum()
 
-
             # Update in second dim
             rho_second = - t.div(tensor_log.sum([0, 2]), sigma_second).nan_to_num(0.0) #d2
             tensor_log += rho_second[None, :, None] * rho_sign # d2 - d1*d2*d3
@@ -99,7 +98,7 @@ class TensorLLI():
     def LLI_2D(self):
         '''
         Desciption:
-            This function runs the matrix latent invariant algorithm.
+            This function runs the tensor latent invariant algorithm.
         Input:
             tensor: torch.tensor
                 The tensor to retrive the latent variables from. 
@@ -109,24 +108,24 @@ class TensorLLI():
             Returns the latent vectors and the convergent errors from the iterative steps.
         '''
 
-        d1, d2 = self.matrix.shape
+        d1, d2 = self.tensor.shape
 
         # Create a mask of non-zero elements
-        rho_sign = (self.matrix != 0)*1
+        rho_sign = (self.tensor != 0)*1
             
         # Get the number of nonzeros inside each row
         sigma_first = rho_sign.sum(1)
         sigma_second = rho_sign.sum(0)
 
-        # Take log spaceof matrix
-        matrix_log = t.log(self.matrix)
+        # Take log spaceof tensor
+        tensor_log = t.log(self.tensor)
         
         # After log, all 0 values will be -inf, so we set them to 0
-        matrix_log[matrix_log == - float("Inf")] = 0.0
+        tensor_log[tensor_log == - float("Inf")] = 0.0
     
         # Initiate lantent variables
-        latent_first = t.zeros((d1, 1)).to(self.device)
-        latent_second = t.zeros((d2, 1)).to(self.device)
+        latent_1 = t.zeros(d1).to(self.device)
+        latent_2 = t.zeros(d2).to(self.device)
         
         # Starting the iterative steps
         step = 1
@@ -140,16 +139,15 @@ class TensorLLI():
             
             error = 0.0
 
-            rho_first = - t.div(matrix_log.sum(1), sigma_first).nan_to_num(0.0) # d1
-            matrix_log = rho_first[:, None] * rho_sign
-            latent_first += rho_first
-            error += float(rho_first**2).sum()
+            rho_second = - t.div(tensor_log.sum(0), sigma_second).nan_to_num(0.0) # d1
+            tensor_log += rho_second[None, :] * rho_sign
+            latent_2 -= rho_second
+            error += (rho_second**2).sum()
 
-
-            rho_second = - t.div(matrix_log.sum(0), sigma_second).nan_to_num(0.0) # d1
-            matrix_log = rho_second[None, :] * rho_sign
-            latent_second += rho_second
-            error += float(rho_second**2).sum()
+            rho_first = - t.div(tensor_log.sum(1), sigma_first).nan_to_num(0.0) # d1
+            tensor_log += rho_first[:, None] * rho_sign
+            latent_1 -= rho_first
+            error += (rho_first**2).sum()
 
             errors.append(float(error))
                 
@@ -159,4 +157,8 @@ class TensorLLI():
                 break
 
         # return the latent variables and errors
-        return t.exp(latent_first), t.exp(latent_second), errors
+        latent_1, latent_2 = t.exp(latent_1), t.exp(latent_2)
+        
+        tensor_full = latent_1[:, None]* latent_2[None, :]
+
+        return tensor_full, errors

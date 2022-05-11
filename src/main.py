@@ -34,7 +34,7 @@ device = torch.device(f"cuda:{args.gpuid}" if torch.cuda.is_available() else "cp
 if args.dim == 3 and args.num_feature == 0:
     args.num_feature = 3
 
-tensor = Tensor(device, args.dim, args.dataname, args.method, args.num_feature, args.percent, args.eps, args.steps, args.limit)
+tensor = Tensor(device, args.dim, args.dataname, args.num_feature, args.percent, args.eps, args.steps, args.limit)
 
 if args.method == 'LLI':
     tensor.performance_overal_LLI()
