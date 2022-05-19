@@ -60,7 +60,7 @@ class TensorScore(TensorObject):
             tensor_test = tensor_full * mask_test
             # Get RMSE and MSE
             length = len(mask_test.nonzero())
-            a = t.flatten(tensor_test * mask_test)
+            a = t.flatten(tensor_test)
             b = t.flatten(tensor_2_dim * mask_test)
 
             RMSE = t.sqrt(((a - b)**2).sum()/length)
