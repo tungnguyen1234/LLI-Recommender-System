@@ -160,5 +160,4 @@ class TensorLLI():
         latent_1, latent_2 = t.exp(latent_1), t.exp(latent_2)
         
         tensor_full = latent_1[:, None]* latent_2[None, :]
-
         return tensor_full, errors

@@ -61,6 +61,7 @@ class TrainTest(TensorObject):
         
         # test indices
         idx_test = t.randperm(N)[:N_test]
+        idx_test = nonzero_mask[idx_test]
         mask_test = t.zeros(mask.size()).to(self.device)
         mask_test[idx_test] = 1
 
@@ -68,7 +69,6 @@ class TrainTest(TensorObject):
         del idx_test, nonzero_mask, N, N_test
         tensor_train = t.reshape((mask - mask_test)*tensor_rating, sizes)
         mask_test = t.reshape(mask_test, sizes)
-
 
         return self.tensor_2_dim, tensor_train, mask_test
 

@@ -46,34 +46,35 @@ class TensorScore(TensorObject):
                                     self.dataname, self.percent, self.limit)
         # Run the latent scaling
         tensor_2_dim, tensor_train, mask_test = self.train_test.train_test()
-        
+
         tensor_LLI = TensorLLI(self.device, self.dim, tensor_train, self.epsilon)
         tensor_full, errors = tensor_LLI.LLI()
 
         mae_loss = t.nn.L1Loss()
         mse_loss = t.nn.MSELoss()
-        RMSE = MAE = tensor_test = None
-
-        
+        tensor_test = None
+        RMSE = MAE = None
         
         print("Here we obtain the testing values:")
-        
         if self.dim == 2:
-            tensor_test = mask_test * tensor_full
+            tensor_test = tensor_full * mask_test
         elif self.dim == 3:
             # Get the testing result by getting the maximum value at the second dimension
             tensor_test = t.amax(mask_test * tensor_full + tensor_train, dim = 2)
         
 
         # Get RMSE and MSE
-        zero_tensor = t.zeros(tensor_2_dim.shape).to(self.device)
-        RMSE = t.sqrt(mse_loss(tensor_test - mask_test*tensor_2_dim, zero_tensor))
-        MAE = mae_loss(tensor_test - mask_test*tensor_2_dim, zero_tensor)
+        length = len(mask_test.nonzero())
+        a = t.flatten(tensor_test)
+        b = t.flatten(tensor_2_dim * mask_test)
+
+        RMSE = t.sqrt(((a - b)**2).sum()/length)
+        MAE = t.abs(a-b).sum()/length
 
         # release memory
         gc.collect()
         t.cuda.empty_cache()
-
+        print(MAE, RMSE)
         return MAE, RMSE, errors
 
 
