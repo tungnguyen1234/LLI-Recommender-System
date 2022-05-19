@@ -50,8 +50,6 @@ class TensorScore(TensorObject):
         tensor_LLI = TensorLLI(self.device, self.dim, tensor_train, self.epsilon)
         tensor_full, errors = tensor_LLI.LLI()
 
-        mae_loss = t.nn.L1Loss()
-        mse_loss = t.nn.MSELoss()
         tensor_test = None
         RMSE = MAE = None
         
@@ -60,14 +58,16 @@ class TensorScore(TensorObject):
             tensor_test = tensor_full * mask_test
             # Get RMSE and MSE
             length = len(mask_test.nonzero())
-            a = t.flatten(tensor_test)
+            a = t.flatten(tensor_test * mask_test)
             b = t.flatten(tensor_2_dim * mask_test)
 
             RMSE = t.sqrt(((a - b)**2).sum()/length)
             MAE = t.abs(a - b).sum()/length
         elif self.dim == 3:
             # Get the testing result by getting the maximum value at the second dimension
-            tensor_test = t.amax(mask_test * tensor_full + tensor_train, dim = 2)
+            mask_full = tensor_train.clone()
+            mask_full = (mask_full != 0)*1 + mask_test
+            tensor_test = t.amax(mask_full * tensor_full, dim = 2)
             length = len(tensor_2_dim.nonzero())
             a = t.flatten(tensor_test)
             b = t.flatten(tensor_2_dim)
