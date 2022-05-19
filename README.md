@@ -24,12 +24,15 @@ or a shorter/simpler command is:
 
 ```python src/main.py 3 ml-1m```
 
-* Also, Jester-2 dataset can only run in matrix, but not in tensor. 
 
-# Evaluate the tensor algorithm
+# Evaluate the tensor algorithm (need to run!!)
 
 * For example, to run 3D LLI and there is 2 features:
-```python src/main.py 3 ml-1m --num_feature 2 --gpuid 1```
+```python src/main.py 3 ml-1m --num_feature 1 --gpuid 0```
+
+```python src/main.py 3 ml-1m --num_feature 2 --gpuid 0```
+
+```python src/main.py 3 ml-1m --num_feature 3 --gpuid 0```
 
 
 # Citation
