@@ -1,0 +1,6 @@
+Here is the result of dataset ml-1m for co_clustering method
+---------------------------------
+MAE has mean 0.7182255344295538 and std 0.00159449634751117
+RMSE has mean 0.9162023034639655 and std 0.002123544671847834
+---------------------------------
+

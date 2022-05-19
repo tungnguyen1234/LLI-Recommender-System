@@ -59,7 +59,7 @@ class TensorScore(TensorObject):
         print("Here we obtain the testing values:")
         
         if self.dim == 2:
-            tensor_test = mask_test * tensor_full + tensor_train
+            tensor_test = mask_test * tensor_full
         elif self.dim == 3:
             # Get the testing result by getting the maximum value at the second dimension
             tensor_test = t.amax(mask_test * tensor_full + tensor_train, dim = 2)
@@ -67,8 +67,8 @@ class TensorScore(TensorObject):
 
         # Get RMSE and MSE
         zero_tensor = t.zeros(tensor_2_dim.shape).to(self.device)
-        RMSE = t.sqrt(mse_loss(tensor_test - tensor_2_dim, zero_tensor))
-        MAE = mae_loss(tensor_test - tensor_2_dim, zero_tensor)
+        RMSE = t.sqrt(mse_loss(tensor_test - mask_test*tensor_2_dim, zero_tensor))
+        MAE = mae_loss(tensor_test - mask_test*tensor_2_dim, zero_tensor)
 
         # release memory
         gc.collect()

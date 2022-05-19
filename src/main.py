@@ -12,11 +12,10 @@ from OtherMethods import OtherMethods
 import torch 
 
 parser = ArgumentParser()
-# other_methods = ('LLI', 'svd', 'slope_one', \
-#     'norm_pred', 'nmf', 'knn_basic', 'knn_with_means', \
-#         'knn_with_z_score', 'knn_baseline', 'co_clustering', 'svdpp')
+methods = ('LLI', 'svd', 'slope_one', \
+    'norm_pred', 'nmf', 'knn_basic', 'knn_with_means', \
+        'knn_with_z_score', 'knn_baseline', 'co_clustering', 'svdpp')
 
-methods = ('co_clustering', 'svdpp')
 
 # general arguments
 parser.add_argument("dim", type = int, choices = (2, 3))
@@ -40,4 +39,4 @@ tensor = Tensor(device, args.dim, args.dataname, args.num_feature, args.percent,
 if args.method == 'LLI':
     tensor.performance_overal_LLI()
 elif args.dim == 2:
-    OtherMethods(args.percent, args.dataname, methods)     
+    OtherMethods(args.percent, args.dataname, args.method)     
