@@ -1,7 +1,7 @@
 import numpy as np
-from surprise import Dataset, accuracy
-from surprise.model_selection import KFold
-from surprise import SVD, NMF, SlopeOne, NormalPredictor, KNNBasic, KNNWithMeans, KNNWithZScore, KNNBaseline, CoClustering, SVDpp
+# from surprise import Dataset, accuracy
+# from surprise.model_selection import KFold
+# from surprise import SVD, NMF, SlopeOne, NormalPredictor, KNNBasic, KNNWithMeans, KNNWithZScore, KNNBaseline, CoClustering, SVDpp
 
 
 def OtherMethods(percent, dataname, other_method):
