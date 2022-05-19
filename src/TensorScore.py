@@ -69,7 +69,7 @@ class TensorScore(TensorObject):
         b = t.flatten(tensor_2_dim * mask_test)
 
         RMSE = t.sqrt(((a - b)**2).sum()/length)
-        MAE = t.abs(a-b).sum()/length
+        MAE = t.abs(a - b).sum()/length
 
         # release memory
         gc.collect()
