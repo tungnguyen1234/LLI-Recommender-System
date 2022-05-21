@@ -45,7 +45,6 @@ class TensorData():
                 genders.append(0)
 
         genders = t.tensor(genders)
-        print(ages, occupations, genders)
         return ages, occupations, genders
 
     def tensor_2_dims(self):

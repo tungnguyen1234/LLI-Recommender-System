@@ -1,7 +1,5 @@
-
 tensor_movieLens/.DS_Store
 tensor_movieLens/.ipynb_checkpoints/*
 .DS_Store
 *.pyc
-data/*
 *.csv
