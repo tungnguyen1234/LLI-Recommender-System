@@ -58,15 +58,6 @@ def download_builtin_dataset(name):
     dataset = BUILTIN_DATASETS[name]
 
     print('Trying to download dataset from ' + dataset.url + '...')
-    # tmp_file_path = join(get_dataset_dir(), 'tmp.zip')
-    # tmp_file_path = get_dataset_dir() + f'/{name}'
-    # with urlopen(dataset.url) as in_stream, open(tmp_file_path, 'wb') as out_file:
-    #     print(dataset.url, tmp_file_path)
-    #     copyfileobj(in_stream, out_file)
-
-    # with zipfile.ZipFile(tmp_file_path, 'r') as tmp_zip:
-    #     tmp_zip.extractall(get_dataset_dir())
-
     tmp_file_path = join(get_dataset_dir(), 'tmp.zip')
     urlretrieve(dataset.url, tmp_file_path)
 
