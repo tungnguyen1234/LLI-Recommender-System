@@ -1,5 +1,9 @@
 import pandas as pd
 import torch as t
+from os.path import join
+from builtin_datasets import get_dataset_dir
+from reader import ReaderFeatures
+from dataset import Dataset
 
 class TensorData():
     def __init__(self, device, dataname, limit):
@@ -18,9 +22,11 @@ class TensorData():
         Output:
             Array of ages, occupation, and genders of the users
         '''
+        file_path = join(get_dataset_dir() + '/ml-1m/ml-1m/users.dat')
+        reader = ReaderFeatures(line_format='id gender age occupation zip', sep='::')
 
-        csv_users = pd.read_csv('data/users.csv', names = ["UserID", "Gender","Age","Occupation", "Zip-code"])
-        df = pd.DataFrame(csv_users)
+        data = Dataset.load_features_from_file(file_path, reader=reader)
+        df = pd.DataFrame(data.raw_features, columns = ["UserID", "Gender","Age","Occupation", "Zip-code"])
         if self.limit:
             df = df.head(self.limit)
 
@@ -39,6 +45,7 @@ class TensorData():
                 genders.append(0)
 
         genders = t.tensor(genders)
+        print(ages, occupations, genders)
         return ages, occupations, genders
 
     def tensor_2_dims(self):
@@ -48,27 +55,17 @@ class TensorData():
         Output:
         A numpy matrix of user-rating
         '''
+        
+        data = Dataset.load_builtin(self.dataname)
+        df = pd.DataFrame(data.raw_ratings, columns = ["UserID", "MovieID","Rating","Timestamp"])
+        sort_rating = df.sort_values(by = ['UserID', 'MovieID'], ignore_index = True)
+        sort_rating_fill_0 = sort_rating.fillna(0)
+        tensor = sort_rating_fill_0.pivot(index = 'UserID', columns = 'MovieID', values = 'Rating').fillna(0)
+        tensor = t.tensor(tensor.to_numpy(), dtype = t.float).to(self.device)
+        
         if self.dataname == 'jester':
-            ratings = pd.read_csv('data/jester.csv')
-            # Eliminate the first column
-            ratings = ratings.iloc[:,1:]
-            tensor = pd.DataFrame(ratings).to_numpy()    
-            tensor = t.tensor(tensor, dtype = t.float).to(self.device)
-
-            # Change 99 into 0 and rescale the matrix by the fill value 
-            observed_matrix = (tensor != 99)*1
+            observed_matrix = (tensor != 0)*1
             fill_value = t.abs(t.min(tensor)) + 1
             tensor = tensor + t.full(tensor.shape, fill_value = fill_value).to(self.device)
             tensor = t.mul(tensor, observed_matrix)
-
-            return tensor
-
-        elif self.dataname == 'ml-1m':
-            ratings = pd.read_csv('data/ratings.csv', names = ["UserID", "MovieID","Rating","Timestamp"])
-            df = pd.DataFrame(ratings)    
-            sort_rating = df.sort_values(by = ['UserID', 'MovieID'], ignore_index = True)
-            sort_rating_fill_0 = sort_rating.fillna(0)
-            tensor = sort_rating_fill_0.pivot(index = 'UserID', columns = 'MovieID', values = 'Rating').fillna(0)
-            tensor = t.tensor(tensor.to_numpy(), dtype = t.float).to(self.device)
-            
-            return tensor
+        return tensor
