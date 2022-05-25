@@ -1,28 +1,11 @@
-"""
-The :mod:`dataset <surprise.dataset>` module defines the :class:`Dataset` class
-and other subclasses which are used for managing datasets.
-Users may use both *built-in* and user-defined datasets (see the
-:ref:`getting_started` page for examples). Right now, three built-in datasets
-are available:
-* The `movielens-10m <http://grouplens.org/datasets/movielens/>`_ dataset.
-* The `movielens-1m <http://grouplens.org/datasets/movielens/>`_ dataset.
-* The `Jester <http://eigentaste.berkeley.edu/dataset/>`_ dataset 2.
-Built-in datasets can all be loaded (or downloaded if you haven't already)
-using the :meth:`Dataset.load_builtin` method.
-Summary:
-.. autosummary::
-    :nosignatures:
-    Dataset.load_builtin
-"""
-
-
+"""This feature was deployed directly from SurPRISE package"""
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 import sys
 import os
 import itertools
 
-from reader import Reader, ReaderFeatures
+from reader import Reader
 from builtin_datasets import download_builtin_dataset, BUILTIN_DATASETS
 
 
@@ -33,7 +16,6 @@ class Dataset:
     available methods for loading datasets."""
 
     def __init__(self, reader):
-
         self.reader = reader
 
     @classmethod
