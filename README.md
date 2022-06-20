@@ -11,7 +11,11 @@
 
 * To run the 2D LLI algorithm with train-test-split percentage $20%$ and convergence threshold $1e-10$ on MovieLens1M data:
 
-```python src/main.py 2 ml-1m --percent 0.2 --eps 1e-10 --gpuid 1```
+```python src/main.py 2 ml-1m --percent 0.2 --eps 1e-10 --gpuid 0```
+
+* A shorter/simpler command is:
+
+```python src/main.py 2 ml-1m```
 
 # Running tensor LLI
 
