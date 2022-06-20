@@ -17,6 +17,8 @@ def get_dataset_dir():
     """
 
     folder = os.environ.get('PWD') + '/.data'
+    if not os.path.exists(folder):
+        os.makedirs(folder) 
     return folder
 
 
