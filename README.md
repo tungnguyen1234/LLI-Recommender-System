@@ -6,19 +6,18 @@
 
 # Packages
 
-* The main packages for LLI are ```PyTorch```, ```Numpy```, and ```Pandas```. We also use the [SurPRISE](http://surpriselib.com) python package to run other benchmark recommendation methods. The installation instruction is in the Installation section of the attached [link](https://github.com/NicolasHug/Surprise/tree/fa7455880192383f01475162b4cbd310d91d29ca)
-
+* The main packages for LLI are ```PyTorch```, ```Numpy```, and ```Pandas```. We also test other benchmarks using the [SurPRISE](http://surpriselib.com) package.
 # Running matrix LLI
 
 * To run the 2D LLI algorithm with train-test-split percentage $20%$ and convergence threshold $1e-10$ on MovieLens1M data:
 
-```python src/main.py 2 ml-1m --method LLI --percent 0.2 --eps 1e-10 --gpuid 1```
+```python src/main.py 2 ml-1m --percent 0.2 --eps 1e-10 --gpuid 1```
 
 # Running tensor LLI
 
 * This command runs the LLI method on the MovieLens1M dataset with percentage $0.2$, $800$ data points, $10$ steps of evaluations, and GPU 0 is.
 
-```python src/main.py 3 ml-1m --method LLI --percent 0.2 --limit 800 --steps 10 --gpuid 0```
+```python src/main.py 3 ml-1m --percent 0.2 --limit 800 --steps 10 --gpuid 0```
 
 * A shorter/simpler command is:
 
