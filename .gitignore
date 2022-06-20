@@ -5,3 +5,4 @@ tensor_movieLens/.ipynb_checkpoints/*
 *.pyc
 *.csv
 visualization
+result

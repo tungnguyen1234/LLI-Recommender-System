@@ -8,7 +8,7 @@ __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
 from argparse import ArgumentParser
 from Tensor import Tensor
-import torch 
+import torch as t
 
 parser = ArgumentParser()
 
@@ -26,7 +26,7 @@ parser.add_argument("--gpuid", type=int, required=False, default = None)
 
 # JSON-like format
 args = parser.parse_args()
-device = torch.device(f"cuda:{args.gpuid}" if torch.cuda.is_available() else "cpu")
+device = t.device(f"cuda:{args.gpuid}" if t.cuda.is_available() else "cpu")
 tensor = Tensor(device, args.dim, args.dataname, args.num_feature, args.percent, \
     args.eps, args.steps, args.limit)
 

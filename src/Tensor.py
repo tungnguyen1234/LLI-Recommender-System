@@ -85,7 +85,7 @@ class Tensor(TensorObject):
         MAEs = RMSEs = FCPs = []
         list_errors = []
         
-        output_text = f"result/LLI_{self.dataname}_dim_{self.dim}_{self.num_feature}.txt"
+        output_text = f'result/LLI_{self.dataname}_dim_{self.dim}_{self.num_feature}.txt'
         # os.remove(output_text)
 
         self.tensor_score = TensorScore(self.device, self.dim, feature,\
@@ -99,14 +99,14 @@ class Tensor(TensorObject):
             self.tensor_score.tensor_pred()
             MAE = self.tensor_score.mae()
             RMSE = self.tensor_score.rmse()
-            FCP = self.tensor_score.fcp()
+            # FCP = self.tensor_score.fcp()
             MAEs.append(float(MAE))
             RMSEs.append(float(RMSE))
-            FCPs.append(float(FCP))
+            # FCPs.append(float(FCP))
             list_errors.append(str(self.tensor_score.errors))
             print(f"MAE is {float(MAE)}")
             print(f"RMSE is {float(RMSE)}")
-            print(f"FCP is {float(FCP)}")
+            # print(f"FCP is {float(FCP)}")
             print("-------------")
             # release memory
             gc.collect()
@@ -115,11 +115,11 @@ class Tensor(TensorObject):
 
         meanMAE, stdMAE =  np.mean(MAEs), np.std(MAEs)
         meanRMSE, stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
-        meanFCP, stdFCP =  np.mean(FCPs), np.std(FCPs)
+        # meanFCP, stdFCP =  np.mean(FCPs), np.std(FCPs)
         print(f"The overall result after {self.steps} steps")
         print(f"MAE has mean {meanMAE} and std {stdMAE}")
         print(f"RMSE has mean {meanRMSE} and std {stdRMSE}")
-        print(f"FCP has mean {meanFCP} and std {stdFCP}")
+        # print(f"FCP has mean {meanFCP} and std {stdFCP}")
 
         
         
@@ -127,7 +127,7 @@ class Tensor(TensorObject):
                 "-------------------------------------------------",\
                 f"MAE has mean {meanMAE} and std {stdMAE}", \
                 f"RMSE has mean {meanRMSE} and std {stdRMSE}",\
-                f"FCP has mean {meanFCP} and std {stdFCP}",\
+                # f"FCP has mean {meanFCP} and std {stdFCP}",\
                 f"The errors after {self.steps} steps are:"]\
                 + list_errors \
                 + ["-------------------------------------------------", "\n\n"]

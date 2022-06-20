@@ -33,7 +33,7 @@ class TensorScore(TensorObject):
         tensor_test = None
         self.pred = self.org = self.length = None
         self.errors = errors
-        
+
         print("Here we obtain the testing values:")
         if self.dim == 2:
             tensor_test = tensor_full * mask_test
