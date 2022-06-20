@@ -22,7 +22,7 @@ parser.add_argument("--steps", type = int, required=False, default=10)
 # Configure for tensor
 parser.add_argument("--limit", type=int, required=False, default = None)
 parser.add_argument("--num_feature", type=int, required=False, default = 3)
-parser.add_argument("--gpuid", type=int)
+parser.add_argument("--gpuid", type=int, required=False, default = None)
 
 # JSON-like format
 args = parser.parse_args()
