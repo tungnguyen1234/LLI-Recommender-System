@@ -1,4 +1,4 @@
-# Learning Latent Invariance (LLI)
+# Learning Latent Invariance (LLI) for Recommender System
 
 # Getting started
 
@@ -20,7 +20,7 @@
 
 ```python src/main.py 3 ml-1m --method LLI --percent 0.2 --limit 800 --steps 10 --gpuid 0```
 
-or a shorter/simpler command is:
+* A shorter/simpler command is:
 
 ```python src/main.py 3 ml-1m```
 
