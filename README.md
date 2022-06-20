@@ -25,12 +25,9 @@ or a shorter/simpler command is:
 ```python src/main.py 3 ml-1m```
 
 
-# Evaluate the tensor algorithm (need to run!!)
+# To run the command with GPU and some number of features, we could do the following:
 
 ```python src/main.py 3 ml-1m --num_feature 2 --gpuid 0```
-
-```python src/main.py 3 ml-1m --num_feature 3 --gpuid 0```
-
 
 # Citation
 ```

@@ -13,10 +13,10 @@ from urllib.request import urlretrieve
 
 def get_dataset_dir():
     """Return folder where downloaded datasets and other data are stored.
-    Default folder is ~/data/ and path is 'PWD'
+    Default folder is ~/.data/ and path is 'PWD'
     """
 
-    folder = os.environ.get('PWD') + '/data'
+    folder = os.environ.get('PWD') + '/.data'
     return folder
 
 
