@@ -6,7 +6,6 @@ from __future__ import (absolute_import, division, print_function,
 
 from builtin_datasets import BUILTIN_DATASETS
 
-
 class Reader():
     """The Reader class is used to parse a file containing ratings.
     Such a file is assumed to specify only one rating per line, and each line

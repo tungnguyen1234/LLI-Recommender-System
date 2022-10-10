@@ -5,6 +5,8 @@ from builtin_datasets import get_dataset_dir
 from reader import ReaderFeatures
 from dataset import Dataset
 
+# https://keras.io/examples/keras_recipes/memory_efficient_embeddings/
+
 class TensorData():
     def __init__(self, device, dataname, limit):
         '''

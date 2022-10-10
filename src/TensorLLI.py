@@ -109,7 +109,7 @@ class TensorLLI():
         '''
 
         d1, d2 = self.tensor.shape
-
+        print(d1, d2)
         # Create a mask of non-zero elements
         rho_sign = (self.tensor != 0)*1
             
@@ -136,18 +136,28 @@ class TensorLLI():
         print('Start the LLI process:')
         step = 1
         while True:
-            
             error = 0.0
+            if step % 2 == 0:
+                rho_second = - t.div(tensor_log.sum(0), sigma_second).nan_to_num(0.0) # d1
+                tensor_log += rho_second[None, :] * rho_sign
+                latent_2 -= rho_second
+                error += (rho_second**2).sum()
 
-            rho_second = - t.div(tensor_log.sum(0), sigma_second).nan_to_num(0.0) # d1
-            tensor_log += rho_second[None, :] * rho_sign
-            latent_2 -= rho_second
-            error += (rho_second**2).sum()
+                rho_first = - t.div(tensor_log.sum(1), sigma_first).nan_to_num(0.0) # d1
+                tensor_log += rho_first[:, None] * rho_sign
+                latent_1 -= rho_first
+                error += (rho_first**2).sum()
+            else:
+                rho_first = - t.div(tensor_log.sum(1), sigma_first).nan_to_num(0.0) # d1
+                tensor_log += rho_first[:, None] * rho_sign
+                latent_1 -= rho_first
+                error += (rho_first**2).sum()
 
-            rho_first = - t.div(tensor_log.sum(1), sigma_first).nan_to_num(0.0) # d1
-            tensor_log += rho_first[:, None] * rho_sign
-            latent_1 -= rho_first
-            error += (rho_first**2).sum()
+                rho_second = - t.div(tensor_log.sum(0), sigma_second).nan_to_num(0.0) # d1
+                tensor_log += rho_second[None, :] * rho_sign
+                latent_2 -= rho_second
+                error += (rho_second**2).sum()
+
 
             errors.append(float(error))
                 
@@ -158,6 +168,5 @@ class TensorLLI():
 
         # return the latent variables and errors
         latent_1, latent_2 = t.exp(latent_1), t.exp(latent_2)
-        
-        tensor_full = latent_1[:, None]* latent_2[None, :]
+        tensor_full = latent_1[:, None]* t.exp(tensor_log) * latent_2[None, :]
         return tensor_full, errors

@@ -13,7 +13,7 @@ class TensorScore(TensorObject):
         self.epsilon = epsilon
         self.feature = feature
 
-    def tensor_pred(self): 
+    def tensor_pred(self, tensor_2_dim, tensor_train, mask_test): 
         '''
         Desciption:
             This function splits a training tensor for latent scaling algorithm. For testing, we obtain the 
@@ -24,33 +24,37 @@ class TensorScore(TensorObject):
         '''
         self.train_test = TrainTest(self.device, self.dim, self.feature, 
                                     self.dataname, self.percent, self.limit)
+
+        
+
         # Run the latent scaling
         tensor_2_dim, tensor_train, mask_test = self.train_test.train_test()
 
         tensor_LLI = TensorLLI(self.device, self.dim, tensor_train, self.epsilon)
         tensor_full, errors = tensor_LLI.LLI()
-
         tensor_test = None
         self.pred = self.org = self.length = None
         self.errors = errors
 
         print("Here we obtain the testing values:")
         if self.dim == 2:
-            tensor_test = tensor_full * mask_test
             # Get RMSE and MSE
-            self.length = len(mask_test.nonzero())
-            self.pred = tensor_test * mask_test
+            self.length = t.sum(mask_test)
+            self.pred = tensor_full * mask_test
             self.org = tensor_2_dim * mask_test
-
-            
+            # print(self.pred[:15, :15])
+            # print(self.org[:15, :15])
         elif self.dim == 3:
             # Get the testing result by getting the maximum value at the second dimension
-            mask_full = tensor_train.clone()
-            mask_full = (mask_full != 0)*1 + mask_test
-            tensor_test = t.amax(mask_full * tensor_full, dim = 2)
-            self.length = len(tensor_2_dim.nonzero())
-            self.pred = tensor_test
-            self.org = tensor_2_dim
+            # get the mask of only the entries exists for the test
+            mask_test_2d = t.amax(mask_test, dim = 2)
+            # get the tensor by testing dim
+            # tensor_train 
+            tensor_test = t.amax(mask_test * tensor_full, dim = 2)
+            # total test values
+            self.length = t.sum(mask_test_2d)
+            self.pred = tensor_test * mask_test_2d
+            self.org = tensor_2_dim * mask_test_2d
 
         # release memory
         gc.collect()

@@ -2,7 +2,7 @@
 
 # Getting started
 
-* The LLI method is based on latent variable model. The LLI algorithm extracts the latent variable vectors from using a linear optimization framework for tensor and retrieve recommendation from caculations of those latent variable vectors.
+* The LLI method is based on latent variable model. The LLI algorithm extracts the latent variable vectors from using a linear optimization framework for tensor and retrieve recommendation from caculations of those latent variable vectors. The current research paper is in progress.
 
 # Packages
 
@@ -40,15 +40,4 @@ python src/main.py 3 ml-1m
 
 ```bash 
 python src/main.py 3 ml-1m --num_feature 2 --gpuid 0
-```
-
-# Citation
-```
-@misc{
-    nguyen2022LLI,
-    title={Learning Latent Invariant with Tensor Decomposition for Recommender Systems},
-    author={Tung Nguyen, Sang Truong, and Jeffrey Uhlmann},
-    publisher={arXiv},
-    year={2022},
-}
 ```
