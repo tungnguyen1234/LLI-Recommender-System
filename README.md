@@ -1,4 +1,4 @@
-# Learning Latent Invariance (LLI) for Recommender System
+# Learning Latent Invariance (LLI) for the Recommender System
 
 # Getting started
 
