@@ -1,1 +1,4 @@
 scikit-surprise
+numpy
+pandas
+torch
