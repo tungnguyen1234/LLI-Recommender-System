@@ -59,10 +59,9 @@ class Tensor(TensorObject):
             assert self.dataname == 'ml-1m'
             for feature in self.features:
                 self.performance(feature)
-            
-            # release memory
-            gc.collect()
-            t.cuda.empty_cache()
+                # release memory
+                gc.collect()
+                t.cuda.empty_cache()
 
     def get_features_by_num(self):
         # this method only works for tensor larger than 3 dim
