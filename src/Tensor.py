@@ -50,22 +50,16 @@ class Tensor(TensorObject):
     
     def performance_overal_LLI(self):
         if self.dim == 2:
-            if not self.debug:
-                self.performance(feature = None)
-            else:
-                self.performance_debug(feature = None)
+            self.performance(feature = None)
             # release memory
             gc.collect()
             t.cuda.empty_cache()
 
         elif self.dim == 3:
             assert self.dataname == 'ml-1m'
-            if not self.debug:
-                for feature in self.features:
-                    self.performance(feature)
-            else:
-                self.performance_debug(feature = None)
-
+            for feature in self.features:
+                self.performance(feature)
+            
             # release memory
             gc.collect()
             t.cuda.empty_cache()
@@ -104,7 +98,7 @@ class Tensor(TensorObject):
         MAEs, RMSEs = [], []
         self.list_errors = []
         for i in range(self.steps):
-            print(f"Step {i+1}:")
+            print(f"Iteration {i+1}:")
             self.tensor_score.tensor_pred()
             MAE = self.tensor_score.mae()
             RMSE = self.tensor_score.rmse()
@@ -124,7 +118,7 @@ class Tensor(TensorObject):
         self.meanMAE, self.stdMAE =  np.mean(MAEs), np.std(MAEs)
         self.meanRMSE, self.stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
         # meanFCP, stdFCP =  np.mean(FCPs), np.std(FCPs)
-        print(f"The overall result after {self.steps} steps")
+        print(f"The overall result after {self.steps} iterations")
         print(f"MAE has mean {self.meanMAE} and std {self.stdMAE}")
         print(f"RMSE has mean {self.meanRMSE} and std {self.stdRMSE}")
         # print(f"FCP has mean {meanFCP} and std {stdFCP}")

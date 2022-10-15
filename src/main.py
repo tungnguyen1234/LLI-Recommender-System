@@ -25,7 +25,7 @@ parser.add_argument("--limit", type=int, required=False, default = None)
 parser.add_argument("--num_feature", type=int, required=False, default = 3)
 parser.add_argument("--gpuid", type=int, required=False, default = None)
 
-# JSON-like format
+# Pass arguments into the Tensor object to provide recommender system result
 args = parser.parse_args()
 device = t.device(f"cuda:{args.gpuid}" if t.cuda.is_available() else "cpu")
 tensor = Tensor(device, args.dim, args.dataname, args.num_feature, args.percent, \

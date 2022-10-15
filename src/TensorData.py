@@ -33,8 +33,6 @@ class TensorData():
 
         data = Dataset.load_features_from_file(file_path, reader=reader)
         df = pd.DataFrame(data.raw_features, columns = ["UserID", "Gender","Age","Occupation", "Zip-code"])
-        if self.limit:
-            df = df.head(self.limit)
 
         # Get age and profile info
         ages = t.tensor(df['Age'].to_numpy() // 10, dtype = t.int)
@@ -64,6 +62,8 @@ class TensorData():
         
         data = Dataset.load_builtin(self.dataname)
         df = pd.DataFrame(data.raw_ratings, columns = ["UserID", "ProductID","Rating","Timestamp"])
+        if self.limit:
+            df = df.sample(n = self.limit)
         sort_rating = df.sort_values(by = ['UserID', 'ProductID'], ignore_index = True)
         tensor = sort_rating.pivot(index = 'UserID', columns = 'ProductID', values = 'Rating').fillna(float('inf'))
         tensor = t.tensor(tensor.to_numpy(), dtype = t.float).to(self.device)

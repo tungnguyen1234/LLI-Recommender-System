@@ -109,7 +109,6 @@ class TensorLLI():
         '''
 
         d1, d2 = self.tensor.shape
-        print(d1, d2)
         # Create a mask of non-zero elements
         rho_sign = (self.tensor != 0)*1
             
@@ -138,7 +137,7 @@ class TensorLLI():
         while True:
             error = 0.0
             if step % 2 == 0:
-                rho_second = - t.div(tensor_log.sum(0), sigma_second).nan_to_num(0.0) # d1
+                rho_second = - t.div(tensor_log.sum(0), sigma_second).nan_to_num(0.0) # d2
                 tensor_log += rho_second[None, :] * rho_sign
                 latent_2 -= rho_second
                 error += (rho_second**2).sum()
@@ -153,7 +152,7 @@ class TensorLLI():
                 latent_1 -= rho_first
                 error += (rho_first**2).sum()
 
-                rho_second = - t.div(tensor_log.sum(0), sigma_second).nan_to_num(0.0) # d1
+                rho_second = - t.div(tensor_log.sum(0), sigma_second).nan_to_num(0.0) # d2
                 tensor_log += rho_second[None, :] * rho_sign
                 latent_2 -= rho_second
                 error += (rho_second**2).sum()

@@ -25,53 +25,17 @@ class TrainTest(TensorObject):
         data = TensorData(self.device, self.dataname, self.limit)
         self.feature = feature
         self.tensor_2_dim = data.tensor_2_dims()
-
-        # for 3 dimension
-        if self.dataname == 'ml-1m':
-            self.ages, self.occupations, self.genders = data.tensor_3_dim_features()
-        # Get the nonzero for faster process
-
         self.first_dim, self.second_dim = self.tensor_2_dim.shape
         self.user_dim = self.first_dim
         self.tensor_train, self.mask_test, self.tensor_train_3D, self.mask_test_3D = None, None, None, None
         self.third_dim = 0
 
+        # for 3 dimension
+        if self.dataname == 'ml-1m' and dim == 3:
+            self.ages, self.occupations, self.genders = data.tensor_3_dim_features()
+        # Get the nonzero for faster process
 
-    # def train_test(self):
-    #     '''
-    #     Desciption:
-    #         Split the tensor into the training tensor and the index vectors for testing.
-    #     Output:
-    #         Returns the training tensor and the index vectors for testing.
-    #     '''
         
-    #     tensor_rating = None
-        
-    #     if self.dim == 2:
-    #         tensor_rating = self.tensor_2_dim
-    #     elif self.dim == 3:
-    #         tensor_rating = self.get_tensor()
-        
-    #     sizes = tensor_rating.size()
-    #     tensor_rating = t.flatten(tensor_rating)
-    #     mask = (tensor_rating !=0)*1
-    #     nonzero_mask = t.nonzero(mask)
-
-    #     N = len(nonzero_mask)
-    #     N_test = int(self.percent*N)
-        
-    #     # test indices
-    #     idx_test = t.randperm(N)[:N_test]
-    #     idx_test = nonzero_mask[idx_test]
-    #     mask_test = t.zeros(mask.size()).to(self.device)
-    #     mask_test[idx_test] = 1
-
-
-    #     del idx_test, nonzero_mask, N, N_test
-    #     tensor_train = t.reshape((mask - mask_test)*tensor_rating, sizes)
-    #     mask_test = t.reshape(mask_test, sizes)
-
-    #     return self.tensor_2_dim, tensor_train, mask_test
 
     def train_test(self):
         '''
@@ -194,12 +158,14 @@ class TrainTest(TensorObject):
         # Get the dimensions 
         third_dim = max(self.genders) + 1
         
-        tensor_rating = t.zeros((self.first_dim, self.second_dim, third_dim)).to(self.device)
+        tensor_train_3D = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
+        mask_test_3D = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
         for user in tqdm(range(self.user_dim)):
             if user < len(self.genders):
                 gender = self.genders[user]         
-                tensor_rating[user, :, gender] = self.tensor_train_3D[user, :]
-        return tensor_rating
+                tensor_train_3D[user, :, gender] = self.tensor_train[user, :]
+                mask_test_3D[user, :, gender] = self.mask_test[user, :]
+        return tensor_train_3D, mask_test_3D
 
     def tensor_age_occup(self):
         '''
@@ -235,12 +201,14 @@ class TrainTest(TensorObject):
         '''
 
 
-        tensor_age = self.tensor_age()
-        tensor_gender = self.tensor_gender()
+        tensor_age, mask_age = self.tensor_age()
+        tensor_gender, mask_gender = self.tensor_gender()
 
-        tensor_rating = t.cat((tensor_age, tensor_gender), dim = 2).to(self.device)
-        del tensor_gender, tensor_age
-        return tensor_rating
+        tensor_train_3D = t.cat((tensor_age, tensor_gender), dim = 2).to(self.device)
+        mask_test_3D = t.cat((mask_age, mask_gender), dim = 2).to(self.device)
+        del tensor_age, mask_age, tensor_gender, mask_gender
+        t.cuda.empty_cache()
+        return tensor_train_3D, mask_test_3D
 
 
     def tensor_gender_occup(self):
@@ -254,13 +222,14 @@ class TrainTest(TensorObject):
         '''
 
 
-        tensor_gender = self.tensor_gender()
-        tensor_occup = self.tensor_occup()
+        tensor_gender, mask_gender = self.tensor_gender()
+        tensor_occup, mask_occup = self.tensor_occup()
 
-        tensor_rating = t.cat((tensor_gender, tensor_occup), dim = 2).to(self.device)
-        del tensor_gender, tensor_occup
-        return tensor_rating
-
+        tensor_train_3D = t.cat((tensor_occup, tensor_gender), dim = 2).to(self.device)
+        mask_test_3D = t.cat((mask_occup, mask_gender), dim = 2).to(self.device)
+        del tensor_gender, mask_gender, tensor_occup, mask_occup
+        t.cuda.empty_cache()
+        return tensor_train_3D, mask_test_3D
 
 
     def tensor_all(self):
@@ -274,13 +243,13 @@ class TrainTest(TensorObject):
             Returns a bag having the indices by (user, product, gender), (user, product, age)
             and (user, product, occupation) tuples
         '''
-
-        tensor_age_occup = self.tensor_age_occup()   
-        tensor_gender = self.tensor_gender()
-        tensor_rating = t.cat((tensor_age_occup, tensor_gender), dim = 2).to(self.device)
-        gc.collect()
+        tensor_age_occup, mask_age_occup = self.tensor_gender_occup()   
+        tensor_gender, mask_gender = self.tensor_age()
+        tensor_train_3D = t.cat((tensor_age_occup, tensor_gender), dim = 2).to(self.device)
+        mask_test_3D = t.cat((mask_age_occup, mask_gender), dim = 2).to(self.device)
+        del tensor_age_occup, mask_age_occup, tensor_gender, mask_gender
         t.cuda.empty_cache()
-        return tensor_rating
+        return tensor_train_3D, mask_test_3D
 
     
 

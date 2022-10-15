@@ -22,17 +22,14 @@ class TensorScore(TensorObject):
         Output:
             Returns the original matrix and prediction result from latent scaling convergence steps.
         '''
-        self.train_test = TrainTest(self.device, self.dim, self.feature, 
-                                    self.dataname, self.percent, self.limit)
+        tensor_2_dim, tensor_train, mask_test = TrainTest(self.device, self.dim, self.feature, \
+                                    self.dataname, self.percent, self.limit).train_test()
 
         
 
-        Run the latent scaling
-        tensor_2_dim, tensor_train, mask_test = self.train_test.train_test()
-
+        # Run the latent scaling
         tensor_LLI = TensorLLI(self.device, self.dim, tensor_train, self.epsilon)
         tensor_full, errors = tensor_LLI.LLI()
-        print(tensor_full)
         tensor_test = None
         self.pred = self.org = self.length = None
         self.errors = errors
@@ -43,8 +40,6 @@ class TensorScore(TensorObject):
             self.length = t.sum(mask_test)
             self.pred = tensor_full * mask_test
             self.org = tensor_2_dim * mask_test
-            # print(self.pred[:15, :15])
-            # print(self.org[:15, :15])
         elif self.dim == 3:
             # Get the testing result by getting the maximum value at the second dimension
             # get the mask of only the entries exists for the test
@@ -117,8 +112,6 @@ class TensorScore(TensorObject):
 
         nc = t.mean(t.tensor(list(nc_u.values()), dtype = float))
         nd = t.mean(t.tensor(list(nd_u.values()), dtype = float))
-
-        print(nc, nd)
 
         try:
             fcp = nc / (nc + nd)
