@@ -51,9 +51,9 @@ class TensorLLI():
         tensor_log[tensor_log == - float("Inf")] = 0.0
 
         # Initiate convergence 
-        latent_1 = t.zeros(d1).to(self.device)
-        latent_2 = t.zeros(d2).to(self.device)
-        latent_3 = t.zeros(d3).to(self.device)
+        latent_1 = t.zeros(d1)
+        latent_2 = t.zeros(d2)
+        latent_3 = t.zeros(d3)
 
         # Iteration errors
         errors = []
@@ -81,9 +81,6 @@ class TensorLLI():
             tensor_log += rho_second[None, :, None] * rho_sign # d2 - d1*d2*d3
             latent_2 -= rho_second 
             error += (rho_second**2).sum()
-            
-            gc.collect()
-            t.cuda.empty_cache()
 
             errors.append(float(error))
             print(f'This is step {step} with error {float(error)}')
@@ -91,11 +88,9 @@ class TensorLLI():
             if error < self.epsilon:
                 break
         
-
-        latent_1, latent_2, latent_3 = t.exp(latent_1), t.exp(latent_2), t.exp(latent_3)
         gc.collect()
         t.cuda.empty_cache()
-        tensor_full = latent_1[:, None, None]* latent_2[None, :, None] * latent_3[None, None, :] * t.exp(tensor_log)
+        tensor_full = t.exp(latent_1[:, None, None])* t.exp(latent_2[None, :, None]) * t.exp(latent_3[None, None, :])
         gc.collect()
         t.cuda.empty_cache()
 
@@ -176,7 +171,7 @@ class TensorLLI():
 
         # return the latent variables and errors
         latent_1, latent_2 = t.exp(latent_1), t.exp(latent_2)
-        tensor_full = latent_1[:, None]* t.exp(tensor_log) * latent_2[None, :]
+        tensor_full = latent_1[:, None]* latent_2[None, :]
         gc.collect()
         t.cuda.empty_cache()
         return tensor_full, errors
