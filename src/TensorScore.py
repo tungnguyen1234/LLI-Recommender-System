@@ -13,7 +13,7 @@ class TensorScore(TensorObject):
         self.epsilon = epsilon
         self.feature = feature
 
-    def tensor_pred(self, tensor_2_dim, tensor_train, mask_test): 
+    def tensor_pred(self): 
         '''
         Desciption:
             This function splits a training tensor for latent scaling algorithm. For testing, we obtain the 
@@ -27,11 +27,12 @@ class TensorScore(TensorObject):
 
         
 
-        # Run the latent scaling
+        Run the latent scaling
         tensor_2_dim, tensor_train, mask_test = self.train_test.train_test()
 
         tensor_LLI = TensorLLI(self.device, self.dim, tensor_train, self.epsilon)
         tensor_full, errors = tensor_LLI.LLI()
+        print(tensor_full)
         tensor_test = None
         self.pred = self.org = self.length = None
         self.errors = errors

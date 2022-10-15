@@ -33,8 +33,45 @@ class TrainTest(TensorObject):
 
         self.first_dim, self.second_dim = self.tensor_2_dim.shape
         self.user_dim = self.first_dim
+        self.tensor_train, self.mask_test, self.tensor_train_3D, self.mask_test_3D = None, None, None, None
         self.third_dim = 0
 
+
+    # def train_test(self):
+    #     '''
+    #     Desciption:
+    #         Split the tensor into the training tensor and the index vectors for testing.
+    #     Output:
+    #         Returns the training tensor and the index vectors for testing.
+    #     '''
+        
+    #     tensor_rating = None
+        
+    #     if self.dim == 2:
+    #         tensor_rating = self.tensor_2_dim
+    #     elif self.dim == 3:
+    #         tensor_rating = self.get_tensor()
+        
+    #     sizes = tensor_rating.size()
+    #     tensor_rating = t.flatten(tensor_rating)
+    #     mask = (tensor_rating !=0)*1
+    #     nonzero_mask = t.nonzero(mask)
+
+    #     N = len(nonzero_mask)
+    #     N_test = int(self.percent*N)
+        
+    #     # test indices
+    #     idx_test = t.randperm(N)[:N_test]
+    #     idx_test = nonzero_mask[idx_test]
+    #     mask_test = t.zeros(mask.size()).to(self.device)
+    #     mask_test[idx_test] = 1
+
+
+    #     del idx_test, nonzero_mask, N, N_test
+    #     tensor_train = t.reshape((mask - mask_test)*tensor_rating, sizes)
+    #     mask_test = t.reshape(mask_test, sizes)
+
+    #     return self.tensor_2_dim, tensor_train, mask_test
 
     def train_test(self):
         '''
@@ -44,12 +81,7 @@ class TrainTest(TensorObject):
             Returns the training tensor and the index vectors for testing.
         '''
         
-        tensor_rating = None
-        
-        if self.dim == 2:
-            tensor_rating = self.tensor_2_dim
-        elif self.dim == 3:
-            tensor_rating = self.get_tensor()
+        tensor_rating = self.tensor_2_dim
         
         sizes = tensor_rating.size()
         tensor_rating = t.flatten(tensor_rating)
@@ -67,12 +99,17 @@ class TrainTest(TensorObject):
 
 
         del idx_test, nonzero_mask, N, N_test
-        tensor_train = t.reshape((mask - mask_test)*tensor_rating, sizes)
-        mask_test = t.reshape(mask_test, sizes)
+        self.tensor_train = t.reshape((mask - mask_test)*tensor_rating, sizes)
+        self.mask_test = t.reshape(mask_test, sizes)
 
-        return self.tensor_2_dim, tensor_train, mask_test
+        if self.dim == 2:
+            return self.tensor_2_dim, self.tensor_train, self.mask_test
 
+        elif self.dim == 3:
+            tensor_train_3D, mask_test_3D = self.get_tensor()
+            return self.tensor_2_dim, tensor_train_3D, mask_test_3D
 
+        
 
     def get_tensor(self):
         '''
@@ -111,12 +148,14 @@ class TrainTest(TensorObject):
 
         # For Age: from 0 to 56 -> group 1 to 6. 
         third_dim = max(self.ages) + 1
-        tensor_rating = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
+        tensor_train_3D = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
+        mask_test_3D = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
         for user in tqdm(range(self.user_dim)):
             if user < len(self.ages):
                 age = self.ages[user]
-                tensor_rating[user, :, age] = self.tensor_2_dim[user, :]      
-        return tensor_rating
+                tensor_train_3D[user, :, age] = self.tensor_train[user, :]    
+                mask_test_3D[user, :, age] = self.mask_test[user, :]      
+        return tensor_train_3D, mask_test_3D
 
 
     def tensor_occup(self):
@@ -132,12 +171,14 @@ class TrainTest(TensorObject):
 
         # Get the dimensions 
         third_dim = max(self.occupations) + 1
-        tensor_rating = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
+        tensor_train_3D = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
+        mask_test_3D = t.zeros(self.first_dim, self.second_dim, third_dim).to(self.device)
         for user in tqdm(range(self.user_dim)):
             if user < len(self.occupations):
                 occup = self.occupations[user]         
-                tensor_rating[user, :, occup] = self.tensor_2_dim[user, :]
-        return tensor_rating
+                tensor_train_3D[user, :, occup] = self.tensor_train[user, :]
+                mask_test_3D[user, :, occup] = self.mask_test[user, :]
+        return tensor_train_3D, mask_test_3D
 
 
     def tensor_gender(self):
@@ -157,7 +198,7 @@ class TrainTest(TensorObject):
         for user in tqdm(range(self.user_dim)):
             if user < len(self.genders):
                 gender = self.genders[user]         
-                tensor_rating[user, :, gender] = self.tensor_2_dim[user, :]
+                tensor_rating[user, :, gender] = self.tensor_train_3D[user, :]
         return tensor_rating
 
     def tensor_age_occup(self):
@@ -172,13 +213,14 @@ class TrainTest(TensorObject):
         '''
 
         # First group by occupation then age.
-        tensor_age = self.tensor_age()
-        tensor_occup = self.tensor_occup()
+        tensor_age, mask_age = self.tensor_age()
+        tensor_occup, mask_occup = self.tensor_occup()
 
-        tensor_rating = t.cat((tensor_age, tensor_occup), dim = 2).to(self.device)
-        del tensor_occup, tensor_age
+        tensor_train_3D = t.cat((tensor_age, tensor_occup), dim = 2).to(self.device)
+        mask_test_3D = t.cat((mask_age, mask_occup), dim = 2).to(self.device)
+        del tensor_age, mask_age, tensor_occup, mask_occup
         t.cuda.empty_cache()
-        return tensor_rating
+        return tensor_train_3D, mask_test_3D
 
 
 

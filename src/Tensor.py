@@ -105,7 +105,7 @@ class Tensor(TensorObject):
         self.list_errors = []
         for i in range(self.steps):
             print(f"Step {i+1}:")
-            self.tensor_score.tensor_pred(None, None, None)
+            self.tensor_score.tensor_pred()
             MAE = self.tensor_score.mae()
             RMSE = self.tensor_score.rmse()
             # FCP = self.tensor_score.fcp()
