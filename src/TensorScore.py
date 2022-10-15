@@ -22,34 +22,35 @@ class TensorScore(TensorObject):
         Output:
             Returns the original matrix and prediction result from latent scaling convergence steps.
         '''
-        self.org, tensor_train, mask_test = TrainTest(self.device, self.dim, self.feature, \
+        self.original, tensor_train, mask_test = TrainTest(self.device, self.dim, self.feature, \
                                     self.dataname, self.percent, self.limit).train_test()
 
         
-
         # Run the latent scaling
-        tensor_LLI = TensorLLI(self.device, self.dim, tensor_train, self.epsilon)
-        self.pred, errors = tensor_LLI.LLI()
+        self.pred, self.errors = TensorLLI(self.device, self.dim, tensor_train, self.epsilon).LLI()
+        # release memory
+        gc.collect()
+        t.cuda.empty_cache()
+
         tensor_test = None
-        self.pred = self.org = self.length = None
-        self.errors = errors
+        self.length = None
 
         print("Here we obtain the testing values:")
         if self.dim == 2:
             # Get RMSE and MSE
             self.length = t.sum(mask_test)
             self.pred *= mask_test
-            self.org *= mask_test
+            self.original *= mask_test
         elif self.dim == 3:
             # Get the testing result by getting the maximum value at the second dimension
             # get the mask of only the entries exists for the test
             mask_test_2d = t.amax(mask_test, dim = 2)
             # get the tensor by testing dim
-            tensor_test = t.amax(mask_test * self.pred, dim = 2) * mask_test_2d
+            self.pred = t.amax(mask_test * self.pred, dim = 2)
             # total test values
             self.length = t.sum(mask_test_2d)
-            self.pred *= tensor_test 
-            self.org *= mask_test_2d
+            self.pred *= mask_test_2d
+            self.original *= mask_test_2d
 
         # release memory
         gc.collect()
@@ -64,9 +65,7 @@ class TensorScore(TensorObject):
         Returns: 
             MAE between prediction and original value
         """
-        pred_copy = t.flatten(self.pred.clone())
-        org_copy = t.flatten(self.org.clone())
-        MAE = t.abs(pred_copy - org_copy).sum()/self.length
+        MAE = t.abs(self.pred - self.original).sum()/self.length
         return MAE
 
     def rmse(self):
@@ -76,9 +75,7 @@ class TensorScore(TensorObject):
         Returns: 
             RMSE between prediction and original value
         """
-        pred_copy = t.flatten(self.pred.clone())
-        org_copy = t.flatten(self.org.clone())
-        RMSE = t.sqrt(((pred_copy - org_copy)**2).sum()/self.length)
+        RMSE = t.sqrt(((self.pred - self.original)**2).sum()/self.length)
         return RMSE
 
 
@@ -99,7 +96,7 @@ class TensorScore(TensorObject):
         nd_u = defaultdict(int)
 
         for u, p in tqdm(self.pred.nonzero()):
-            predictions_u[int(u)].append((self.org[int(u), int(p)], self.pred[int(u), int(p)]))
+            predictions_u[int(u)].append((self.original[int(u), int(p)], self.pred[int(u), int(p)]))
 
         for u0, preds in tqdm(predictions_u.items()):
             for r0i, esti in preds:
