@@ -94,10 +94,7 @@ class TensorLLI():
             if error < self.epsilon:
                 break
         
-        tensor_full = t.exp(latent_1[:, None, None]) * t.exp(latent_2[None, :, None]) 
-        gc.collect()
-        t.cuda.empty_cache()
-        tensor_full *= t.exp(latent_3[None, None, :])
+        tensor_full = t.exp(latent_1[:, None, None]) * t.exp(latent_2[None, :, None]) * t.exp(latent_3[None, None, :])
         gc.collect()
         t.cuda.empty_cache()
 
