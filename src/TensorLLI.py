@@ -7,6 +7,7 @@ __author__      = 'Tung Nguyen, Sang Truong'
 __copyright__   = 'Copyright 2022, University of Missouri, Stanford University'
 
 import torch as t
+import gc
 
 class TensorLLI():
     def __init__(self, device, dim, tensor, epsilon):
