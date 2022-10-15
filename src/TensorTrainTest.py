@@ -184,7 +184,7 @@ class TrainTest(TensorObject):
 
         tensor_train_3D = t.cat((tensor_age, tensor_occup), dim = 2).to(self.device)
         mask_test_3D = t.cat((mask_age, mask_occup), dim = 2).to(self.device)
-        del tensor_age, mask_age, tensor_occup, mask_occup
+        gc.collect()
         t.cuda.empty_cache()
         return tensor_train_3D, mask_test_3D
 
@@ -206,7 +206,7 @@ class TrainTest(TensorObject):
 
         tensor_train_3D = t.cat((tensor_age, tensor_gender), dim = 2).to(self.device)
         mask_test_3D = t.cat((mask_age, mask_gender), dim = 2).to(self.device)
-        del tensor_age, mask_age, tensor_gender, mask_gender
+        gc.collect()
         t.cuda.empty_cache()
         return tensor_train_3D, mask_test_3D
 
@@ -227,7 +227,7 @@ class TrainTest(TensorObject):
 
         tensor_train_3D = t.cat((tensor_occup, tensor_gender), dim = 2).to(self.device)
         mask_test_3D = t.cat((mask_occup, mask_gender), dim = 2).to(self.device)
-        del tensor_gender, mask_gender, tensor_occup, mask_occup
+        gc.collect()
         t.cuda.empty_cache()
         return tensor_train_3D, mask_test_3D
 
@@ -247,7 +247,7 @@ class TrainTest(TensorObject):
         tensor_gender, mask_gender = self.tensor_age()
         tensor_train_3D = t.cat((tensor_age_occup, tensor_gender), dim = 2).to(self.device)
         mask_test_3D = t.cat((mask_age_occup, mask_gender), dim = 2).to(self.device)
-        del tensor_age_occup, mask_age_occup, tensor_gender, mask_gender
+        gc.collect()
         t.cuda.empty_cache()
         return tensor_train_3D, mask_test_3D
 

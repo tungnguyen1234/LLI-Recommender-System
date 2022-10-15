@@ -80,6 +80,9 @@ class TensorLLI():
             tensor_log += rho_second[None, :, None] * rho_sign # d2 - d1*d2*d3
             latent_2 -= rho_second 
             error += (rho_second**2).sum()
+            
+            gc.collect()
+            t.cuda.empty_cache()
 
             errors.append(float(error))
             print(f'This is step {step} with error {float(error)}')
@@ -90,7 +93,9 @@ class TensorLLI():
 
         latent_1, latent_2, latent_3 = t.exp(latent_1), t.exp(latent_2), t.exp(latent_3)
         
-        tensor_full = latent_1[:, None, None]* latent_2[None, :, None] * latent_3[None, None, :]
+        tensor_full = latent_1[:, None, None]* latent_2[None, :, None] * latent_3[None, None, :] * t.exp(tensor_log)
+        gc.collect()
+        t.cuda.empty_cache()
 
         return tensor_full, errors
     
@@ -157,6 +162,8 @@ class TensorLLI():
                 latent_2 -= rho_second
                 error += (rho_second**2).sum()
 
+            gc.collect()
+            t.cuda.empty_cache()
 
             errors.append(float(error))
                 
@@ -168,4 +175,6 @@ class TensorLLI():
         # return the latent variables and errors
         latent_1, latent_2 = t.exp(latent_1), t.exp(latent_2)
         tensor_full = latent_1[:, None]* t.exp(tensor_log) * latent_2[None, :]
+        gc.collect()
+        t.cuda.empty_cache()
         return tensor_full, errors
