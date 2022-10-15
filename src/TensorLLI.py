@@ -51,9 +51,9 @@ class TensorLLI():
         tensor_log[tensor_log == - float("Inf")] = 0.0
 
         # Initiate convergence 
-        latent_1 = t.zeros(d1)
-        latent_2 = t.zeros(d2)
-        latent_3 = t.zeros(d3)
+        latent_1 = t.zeros(d1).to(self.device)
+        latent_2 = t.zeros(d2).to(self.device)
+        latent_3 = t.zeros(d3).to(self.device)
 
         # Iteration errors
         errors = []
