@@ -22,14 +22,14 @@ class TensorScore(TensorObject):
         Output:
             Returns the original matrix and prediction result from latent scaling convergence steps.
         '''
-        tensor_2_dim, tensor_train, mask_test = TrainTest(self.device, self.dim, self.feature, \
+        self.org, tensor_train, mask_test = TrainTest(self.device, self.dim, self.feature, \
                                     self.dataname, self.percent, self.limit).train_test()
 
         
 
         # Run the latent scaling
         tensor_LLI = TensorLLI(self.device, self.dim, tensor_train, self.epsilon)
-        tensor_full, errors = tensor_LLI.LLI()
+        self.pred, errors = tensor_LLI.LLI()
         tensor_test = None
         self.pred = self.org = self.length = None
         self.errors = errors
@@ -38,19 +38,18 @@ class TensorScore(TensorObject):
         if self.dim == 2:
             # Get RMSE and MSE
             self.length = t.sum(mask_test)
-            self.pred = tensor_full * mask_test
-            self.org = tensor_2_dim * mask_test
+            self.pred *= mask_test
+            self.org *= mask_test
         elif self.dim == 3:
             # Get the testing result by getting the maximum value at the second dimension
             # get the mask of only the entries exists for the test
             mask_test_2d = t.amax(mask_test, dim = 2)
             # get the tensor by testing dim
-            # tensor_train 
-            tensor_test = t.amax(mask_test * tensor_full, dim = 2)
+            tensor_test = t.amax(mask_test * self.pred, dim = 2) * mask_test_2d
             # total test values
             self.length = t.sum(mask_test_2d)
-            self.pred = tensor_test * mask_test_2d
-            self.org = tensor_2_dim * mask_test_2d
+            self.pred *= tensor_test 
+            self.org *= mask_test_2d
 
         # release memory
         gc.collect()
