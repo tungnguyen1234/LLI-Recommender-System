@@ -93,7 +93,8 @@ class TensorLLI():
         
 
         latent_1, latent_2, latent_3 = t.exp(latent_1), t.exp(latent_2), t.exp(latent_3)
-        
+        gc.collect()
+        t.cuda.empty_cache()
         tensor_full = latent_1[:, None, None]* latent_2[None, :, None] * latent_3[None, None, :] * t.exp(tensor_log)
         gc.collect()
         t.cuda.empty_cache()
