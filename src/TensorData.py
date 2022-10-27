@@ -66,11 +66,12 @@ class TensorData():
             df = df.sample(n = self.limit)
         sort_rating = df.sort_values(by = ['UserID', 'ProductID'], ignore_index = True)
         tensor = sort_rating.pivot(index = 'UserID', columns = 'ProductID', values = 'Rating').fillna(float('inf'))
-        tensor = t.tensor(tensor.to_numpy(), dtype = t.float).to(self.device)
+        tensor = t.tensor(tensor.to_numpy(), dtype = t.float).to(self.device)                                                                                                                                                                                                                                                                                                                                                                            
 
         if self.dataname == 'jester':
             fill_value = t.abs(t.min(tensor)) + 1
             tensor = tensor + t.full(tensor.shape, fill_value = fill_value)
             
         tensor[tensor == float('inf')] = 0
+        # tensor = tensor * 5
         return tensor

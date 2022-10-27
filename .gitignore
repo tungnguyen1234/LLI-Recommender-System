@@ -6,3 +6,5 @@ tensor_movieLens/.ipynb_checkpoints/*
 *.csv
 visualization/*
 .result/*
+src/TensorOthers.py
+src/main_test.py
