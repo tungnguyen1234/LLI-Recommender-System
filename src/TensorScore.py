@@ -13,49 +13,6 @@ class TensorScore(TensorObject):
         self.epsilon = epsilon
         self.feature = feature
 
-    # def tensor_pred(self): 
-    #     '''
-    #     Desciption:
-    #         This function splits a training tensor for latent scaling algorithm. For testing, we obtain the 
-    #         recommendation result as the maximum value by the feature dimension for each (user, product) pair 
-    #         as max(tensor[user, product, :]) 
-    #     Output:
-    #         Returns the original matrix and prediction result from latent scaling convergence steps.
-    #     '''
-    #     self.original, tensor_train, mask_test = TrainTest(self.device, self.dim, self.feature, \
-    #                                 self.dataname, self.percent, self.limit).train_test()
-
-        
-    #     # Run the latent scaling
-    #     self.pred, self.errors = TensorLLI(self.device, self.dim, tensor_train, self.epsilon).LLI()
-    #     # release memory
-    #     gc.collect()
-    #     t.cuda.empty_cache()
-
-    #     tensor_test = None
-    #     self.length = None
-
-    #     print("Here we obtain the testing values:")
-    #     if self.dim == 2:
-    #         # Get RMSE and MSE
-    #         self.length = t.sum(mask_test)
-    #         self.pred *= mask_test
-    #         self.original *= mask_test
-    #     elif self.dim == 3:
-    #         # Get the testing result by getting the maximum value at the second dimension
-    #         # get the mask of only the entries exists for the test
-    #         mask_test_2d = t.amax(mask_test, dim = 2)
-    #         # get the tensor by testing dim
-    #         self.pred = t.amax(mask_test * self.pred, dim = 2)
-    #         # total test values
-    #         self.length = t.sum(mask_test_2d)
-    #         self.pred *= mask_test_2d
-    #         self.original *= mask_test_2d
-
-    #     # release memory
-    #     gc.collect()
-    #     t.cuda.empty_cache()
-
     def tensor_pred(self, epochs): 
         '''
         Desciption:
@@ -82,7 +39,7 @@ class TensorScore(TensorObject):
 
             tensor_test = None
             self.length = None
-
+            
             print("Here we obtain the testing values:")
             if self.dim == 2:
                 # Get RMSE and MSE
@@ -100,6 +57,7 @@ class TensorScore(TensorObject):
                 self.pred *= mask_test_2d
                 self.original *= mask_test_2d
 
+            
             MAE = self.mae()
             RMSE = self.rmse()
             # FCP = self.tensor_score.fcp()
@@ -114,6 +72,7 @@ class TensorScore(TensorObject):
             # release memory
             gc.collect()
             t.cuda.empty_cache()
+        
 
         self.meanMAE, self.stdMAE =  np.mean(MAEs), np.std(MAEs)
         self.meanRMSE, self.stdRMSE =  np.mean(RMSEs), np.std(RMSEs)

@@ -198,8 +198,8 @@ class TensorLLI():
         self.rho_sign = (self.tensor != 0)*1
             
         # Get the number of nonzeros inside each row
-        self.sigma_first = 2*self.rho_sign.sum(1)
-        self.sigma_second = 3*self.rho_sign.sum(0)
+        self.sigma_first = self.rho_sign.sum(1)
+        self.sigma_second = self.rho_sign.sum(0)
 
         # Take log spaceof tensor
         self.tensor_log = t.log(self.tensor)
@@ -218,14 +218,12 @@ class TensorLLI():
         self.tensor_log += self.rho_first[:, None] * self.rho_sign
         self.latent_1 -= self.rho_first
         error += (self.rho_first**2).sum()
-        print(self.tensor_log)
 
 
         self.rho_second = - t.div(self.tensor_log.sum(0), self.sigma_second).nan_to_num(0.0) # d2
         self.tensor_log += self.rho_second[None, :] * self.rho_sign
         self.latent_2 -= self.rho_second
         error += (self.rho_second**2).sum()
-        print(self.tensor_log)
 
 
         gc.collect()
