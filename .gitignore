@@ -2,6 +2,7 @@ tensor_movieLens/.DS_Store
 tensor_movieLens/.ipynb_checkpoints/*
 .DS_Store
 .data/*
+.plot/*
 *.pyc
 *.csv
 visualization/*

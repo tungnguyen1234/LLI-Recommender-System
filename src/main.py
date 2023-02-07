@@ -14,10 +14,10 @@ parser = ArgumentParser()
 
 # general arguments
 parser.add_argument("dim", type = int, choices = (2, 3))
-parser.add_argument("dataname", choices=('ml-1m', 'jester', 'ml-10m'), default='ml-1m')
+parser.add_argument("dataname", choices=('ml-100k', 'ml-1m', 'jester', 'ml-10m'), default='ml-1m')
 parser.add_argument("--percent", type=float, required=False, default = 0.2)
 parser.add_argument("--eps", type=float, required=False, default = 1e-10)
-parser.add_argument("--steps", type = int, required=False, default=10)
+parser.add_argument("--steps", type = int, required=False, default=20)
 
 # Configure for tensor
 parser.add_argument("--limit", type=int, required=False, default = None)

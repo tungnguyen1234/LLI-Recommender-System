@@ -71,59 +71,6 @@ class Tensor(TensorObject):
         if self.num_feature == 3:
             return [{"age", "occup", "gender"}]
 
-
-
-    # def performance(self, feature):
-    #     '''
-    #     Desciption:
-    #         This function runs all the steps to pre-processing MovieLens data, running the tensor latent
-    #         algorithm, and retrieving the MAE and RMSE score. 
-    #     Input:
-    #         steps: the number of steps to run the algorithm
-    #     Output:
-    #         Prints the MAE, RMSE and errors from the latent scaling convergence steps.
-    #     '''
-        
-
-    #     self.tensor_score = TensorScore(self.device, self.dim, feature,\
-    #                                     self.dataname, self.percent, self.epsilon, self.limit)
-
-    #     print("-------------------------------------------------")
-    #     print(f"Here we test the algorithm with feature {feature}")
-    #     print(f"The algorithm runs {self.steps} times to get the mean and std!")
-
-
-    #     MAEs, RMSEs = [], []
-    #     self.list_errors = []
-    #     for epoch in range(self.steps):
-    #         print(f"Iteration {epoch+1}:")
-    #         self.tensor_score.tensor_pred(epoch)
-    #         MAE = self.tensor_score.mae()
-    #         RMSE = self.tensor_score.rmse()
-    #         # FCP = self.tensor_score.fcp()
-    #         MAEs.append(float(MAE))
-    #         RMSEs.append(float(RMSE))
-    #         # FCPs.append(float(FCP))
-    #         self.list_errors.append(str(self.tensor_score.error))
-    #         print(f"MAE is {float(MAE)}")
-    #         print(f"RMSE is {float(RMSE)}")
-    #         # print(f"FCP is {float(FCP)}")
-    #         print("-------------")
-    #         # release memory
-    #         gc.collect()
-    #         t.cuda.empty_cache()
-
-    #     self.meanMAE, self.stdMAE =  np.mean(MAEs), np.std(MAEs)
-    #     self.meanRMSE, self.stdRMSE =  np.mean(RMSEs), np.std(RMSEs)
-    #     # meanFCP, stdFCP =  np.mean(FCPs), np.std(FCPs)
-    #     print(f"The overall result after {self.steps} iterations")
-    #     print(f"MAE has mean {self.meanMAE} and std {self.stdMAE}")
-    #     print(f"RMSE has mean {self.meanRMSE} and std {self.stdRMSE}")
-    #     # print(f"FCP has mean {meanFCP} and std {stdFCP}")
-        
-    #     # save result
-    #     self.save_result(feature)
-
     def performance(self, feature):
         '''
         Desciption:
@@ -143,9 +90,6 @@ class Tensor(TensorObject):
         print(f"Here we test the algorithm with feature {feature}")
         print(f"The algorithm runs {self.steps} times to get the mean and std!")
 
-
-        MAEs, RMSEs = [], []
-        self.list_errors = []
         self.tensor_score.tensor_pred(self.steps)
              
 
